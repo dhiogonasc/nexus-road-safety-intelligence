@@ -8,7 +8,7 @@ from src.shared.db.operation import (
     load_extensions,
     attach_connections,
 )
-from pipeline.setup.extension import install_extension
+from src.pipeline.setup.extension import install_extension
 
 
 @task(

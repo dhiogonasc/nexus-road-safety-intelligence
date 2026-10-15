@@ -1,5 +1,8 @@
 from typing import Callable
 from prefect import task
+from pipeline.stage.dag_bronze import flow_bronze
+from pipeline.stage.dag_gold import flow_gold
+from pipeline.stage.dag_silver import flow_silver
 from src.shared.db.connection import create_connection
 from src.shared.db.operation import create_schema
 
@@ -29,3 +32,25 @@ def task_create_table_from_fn(
 ) -> None:
     with create_connection(database=database) as conn:
         create_table_fn(conn=conn)
+
+
+@task(
+    name="Run Schema Pipeline",
+    task_run_name="schema: {schema_name}",
+)
+def run_schema_pipeline(
+    database: str,
+    schema_name: str,
+) -> None:
+    flow_bronze(
+        database=database,
+        schema=schema_name,
+    )
+    flow_silver(
+        database=database,
+        schema=schema_name,
+    )
+    flow_gold(
+        database=database,
+        schema=schema_name,
+    )
