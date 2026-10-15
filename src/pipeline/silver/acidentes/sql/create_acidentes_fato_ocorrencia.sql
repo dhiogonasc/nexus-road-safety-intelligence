@@ -67,7 +67,9 @@ OR REPLACE TABLE "acidentes"."fato_ocorrencia" AS WITH origin AS (
         ) AS uop,
         TRY_CAST(REPLACE(km :: VARCHAR, ',', '.') AS DOUBLE) AS km,
         TRY_CAST(REPLACE(latitude :: VARCHAR, ',', '.') AS DOUBLE) AS latitude,
-        TRY_CAST(REPLACE(longitude :: VARCHAR, ',', '.') AS DOUBLE) AS longitude,
+        TRY_CAST(
+            REPLACE(longitude :: VARCHAR, ',', '.') AS DOUBLE
+        ) AS longitude,
         LOWER(
             REGEXP_REPLACE(
                 strip_accents(
@@ -96,7 +98,10 @@ OR REPLACE TABLE "acidentes"."fato_ocorrencia" AS WITH origin AS (
             REGEXP_REPLACE(
                 strip_accents(
                     TRIM(
-                        COALESCE(classificacao_acidente :: VARCHAR, 'nao_informado')
+                        COALESCE(
+                            classificacao_acidente :: VARCHAR,
+                            'nao_informado'
+                        )
                     )
                 ),
                 '[^a-zA-Z0-9]+',
@@ -108,7 +113,10 @@ OR REPLACE TABLE "acidentes"."fato_ocorrencia" AS WITH origin AS (
             REGEXP_REPLACE(
                 strip_accents(
                     TRIM(
-                        COALESCE(condicao_metereologica :: VARCHAR, 'nao_informado')
+                        COALESCE(
+                            condicao_metereologica :: VARCHAR,
+                            'nao_informado'
+                        )
                     )
                 ),
                 '[^a-zA-Z0-9]+',
@@ -174,6 +182,44 @@ OR REPLACE TABLE "acidentes"."fato_ocorrencia" AS WITH origin AS (
         veiculos
     FROM
         "acidentes"."stg_ocorrencias"
+),
+origin_with_keys AS (
+    SELECT
+        o.*,
+        md5(
+            concat_ws(
+                '_',
+                COALESCE(o.uf, ''),
+                COALESCE(o.br, ''),
+                COALESCE(o.km :: VARCHAR, ''),
+                COALESCE(o.municipio, ''),
+                COALESCE(o.regional, ''),
+                COALESCE(o.delegacia, ''),
+                COALESCE(o.uop, ''),
+                COALESCE(o.latitude :: VARCHAR, ''),
+                COALESCE(o.longitude :: VARCHAR, '')
+            )
+        ) AS calculated_sk_localizacao,
+        md5(
+            concat_ws(
+                '_',
+                COALESCE(o.causa_acidente, ''),
+                COALESCE(o.tipo_acidente, ''),
+                COALESCE(o.classificacao_acidente, '')
+            )
+        ) AS calculated_sk_classificacao,
+        md5(
+            concat_ws(
+                '_',
+                COALESCE(o.condicao_metereologica, ''),
+                COALESCE(o.sentido_via, ''),
+                COALESCE(o.tracado_via, ''),
+                COALESCE(o.tipo_pista, ''),
+                COALESCE(o.uso_solo, '')
+            )
+        ) AS calculated_sk_pista
+    FROM
+        origin AS o
 )
 SELECT
     md5(
@@ -200,28 +246,8 @@ SELECT
     o.ignorados,
     o.veiculos
 FROM
-    origin AS o
+    origin_with_keys AS o
     LEFT JOIN "acidentes".dim_tempo AS t ON o.data_hora = t.data_hora
-    LEFT JOIN "acidentes".dim_localizacao AS l ON l.uf = o.uf
-    AND l.br = o.br
-    AND l.municipio = o.municipio
-    AND l.regional = o.regional
-    AND l.delegacia = o.delegacia
-    AND l.uop = o.uop
-    AND l.km IS NOT DISTINCT
-FROM
-    o.km
-    AND l.latitude IS NOT DISTINCT
-FROM
-    o.latitude
-    AND l.longitude IS NOT DISTINCT
-FROM
-    o.longitude
-    LEFT JOIN "acidentes".dim_classificacao AS c ON c.causa_acidente = o.causa_acidente
-    AND c.tipo_acidente = o.tipo_acidente
-    AND c.classificacao_acidente = o.classificacao_acidente
-    LEFT JOIN "acidentes".dim_pista AS p ON p.sentido_via = o.sentido_via
-    AND p.condicao_metereologica = o.condicao_metereologica
-    AND p.tipo_pista = o.tipo_pista
-    AND p.tracado_via = o.tracado_via
-    AND p.uso_solo = o.uso_solo;
+    LEFT JOIN "acidentes".dim_localizacao AS l ON o.calculated_sk_localizacao = l.id
+    LEFT JOIN "acidentes".dim_classificacao AS c ON o.calculated_sk_classificacao = c.id
+    LEFT JOIN "acidentes".dim_pista AS p ON o.calculated_sk_pista = p.id;
