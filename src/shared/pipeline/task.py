@@ -6,16 +6,16 @@ from src.shared.db.operation import create_schema
 
 @task(
     name="Create Schema",
-    task_run_name="create schema: {schema}",
+    task_run_name="create schema: {schema_name}",
 )
 def task_create_schema(
     database: str,
-    schema: str,
+    schema_name: str,
 ) -> None:
     with create_connection(database=database) as conn:
         create_schema(
             conn=conn,
-            schema=schema,
+            schema=schema_name,
         )
 
 
