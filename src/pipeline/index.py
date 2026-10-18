@@ -18,7 +18,7 @@ PIPELINE_CONFIG = {
     "acidentes": {
         # stage
         "bronze": {
-            "stg_ocorrencias": str(AC_OCORRENCIA_DIR / "*.csv"),
+            "ocorrencias": str(AC_OCORRENCIA_DIR / "*.csv"),
         },
         "silver": {
             "dim_tempo": {

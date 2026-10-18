@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE TABLE "acidentes"."dim_tempo" AS WITH base_tempo AS (
+OR REPLACE TABLE "silver"."dim_tempo" AS WITH base_tempo AS (
     SELECT
         DISTINCT LOWER(
             REGEXP_REPLACE(
@@ -24,7 +24,7 @@ OR REPLACE TABLE "acidentes"."dim_tempo" AS WITH base_tempo AS (
         TRY_CAST(data_inversa AS DATE) AS base_data,
         TRY_CAST(horario AS TIME) AS base_hora
     FROM
-        "acidentes"."stg_ocorrencias"
+        "bronze"."ocorrencias"
     WHERE
         data_inversa IS NOT NULL
         AND horario IS NOT NULL

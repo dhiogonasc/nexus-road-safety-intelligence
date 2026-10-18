@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE TABLE "acidentes"."fato_ocorrencia" AS WITH origin AS (
+OR REPLACE TABLE "silver"."fato_ocorrencia" AS WITH origin AS (
     SELECT
         id AS id_ocorrencia,
         (
@@ -181,7 +181,7 @@ OR REPLACE TABLE "acidentes"."fato_ocorrencia" AS WITH origin AS (
         ignorados,
         veiculos
     FROM
-        "acidentes"."stg_ocorrencias"
+        "bronze"."ocorrencias"
 ),
 origin_with_keys AS (
     SELECT
@@ -247,7 +247,7 @@ SELECT
     o.veiculos
 FROM
     origin_with_keys AS o
-    LEFT JOIN "acidentes".dim_tempo AS t ON o.data_hora = t.data_hora
-    LEFT JOIN "acidentes".dim_localizacao AS l ON o.calculated_sk_localizacao = l.id
-    LEFT JOIN "acidentes".dim_classificacao AS c ON o.calculated_sk_classificacao = c.id
-    LEFT JOIN "acidentes".dim_pista AS p ON o.calculated_sk_pista = p.id;
+    LEFT JOIN "silver".dim_tempo AS t ON o.data_hora = t.data_hora
+    LEFT JOIN "silver".dim_localizacao AS l ON o.calculated_sk_localizacao = l.id
+    LEFT JOIN "silver".dim_classificacao AS c ON o.calculated_sk_classificacao = c.id
+    LEFT JOIN "silver".dim_pista AS p ON o.calculated_sk_pista = p.id;

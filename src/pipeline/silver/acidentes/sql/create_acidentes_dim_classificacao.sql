@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE TABLE "acidentes"."dim_classificacao" AS WITH base_acidente AS (
+OR REPLACE TABLE "silver"."dim_classificacao" AS WITH base_acidente AS (
     SELECT
         DISTINCT LOWER(
             REGEXP_REPLACE(
@@ -29,7 +29,10 @@ OR REPLACE TABLE "acidentes"."dim_classificacao" AS WITH base_acidente AS (
             REGEXP_REPLACE(
                 strip_accents(
                     TRIM(
-                        COALESCE(classificacao_acidente :: VARCHAR, 'nao_informado')
+                        COALESCE(
+                            classificacao_acidente :: VARCHAR,
+                            'nao_informado'
+                        )
                     )
                 ),
                 '[^a-zA-Z0-9]+',
@@ -38,7 +41,7 @@ OR REPLACE TABLE "acidentes"."dim_classificacao" AS WITH base_acidente AS (
             )
         ) AS classificacao_acidente
     FROM
-        "acidentes"."stg_ocorrencias"
+        "bronze"."ocorrencias"
 ),
 ref_acidente AS (
     SELECT

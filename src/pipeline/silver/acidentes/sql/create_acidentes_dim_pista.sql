@@ -1,11 +1,14 @@
 CREATE
-OR REPLACE TABLE "acidentes"."dim_pista" AS WITH base_pista AS (
+OR REPLACE TABLE "silver"."dim_pista" AS WITH base_pista AS (
     SELECT
         DISTINCT LOWER(
             REGEXP_REPLACE(
                 strip_accents(
                     TRIM(
-                        COALESCE(condicao_metereologica :: VARCHAR, 'nao_informado')
+                        COALESCE(
+                            condicao_metereologica :: VARCHAR,
+                            'nao_informado'
+                        )
                     )
                 ),
                 '[^a-zA-Z0-9]+',
@@ -62,7 +65,7 @@ OR REPLACE TABLE "acidentes"."dim_pista" AS WITH base_pista AS (
             )
         ) AS uso_solo
     FROM
-        "acidentes"."stg_ocorrencias"
+        "bronze"."ocorrencias"
 ),
 ref_pista AS (
     SELECT

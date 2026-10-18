@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE TABLE "acidentes"."agg_sazonalidade_mensal" AS
+OR REPLACE TABLE "gold"."agg_sazonalidade_mensal" AS
 SELECT
     md5(
         concat_ws(
@@ -27,10 +27,10 @@ SELECT
         2
     ) AS pct_mortalidade
 FROM
-    "acidentes"."fato_ocorrencia" AS f
-    JOIN "acidentes"."dim_tempo" AS t ON f.sk_tempo = t.id
-    JOIN "acidentes"."dim_localizacao" AS l ON f.sk_localizacao = l.id
-    JOIN "acidentes"."dim_classificacao" AS c ON f.sk_classificacao = c.id
+    "silver"."fato_ocorrencia" AS f
+    JOIN "silver"."dim_tempo" AS t ON f.sk_tempo = t.id
+    JOIN "silver"."dim_localizacao" AS l ON f.sk_localizacao = l.id
+    JOIN "silver"."dim_classificacao" AS c ON f.sk_classificacao = c.id
 GROUP BY
     t.ano,
     t.mes,

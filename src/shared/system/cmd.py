@@ -2,19 +2,24 @@ import argparse
 from config import settings
 
 
-def run_flow(flow_factory: callable):
+def domain_arg():
+    """Define dominio como argumento de execução"""
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--schema",
+        "--domain",
         type=str,
         required=True,
-        help="schema",
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    flow_factory(
-        database=settings.DUCKDB_PATH,
-        schema=args.schema,
-    )
+
+def run_flow(flow_factory: callable):
+    """Executa o flow dedicado para um domínio"""
+    args = domain_arg()
+
+    domain = args.domain
+    database = settings.domain_db_path(domain=domain)
+
+    flow_factory(database=database, domain=domain)

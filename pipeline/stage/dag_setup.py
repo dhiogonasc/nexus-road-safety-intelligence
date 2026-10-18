@@ -1,7 +1,8 @@
-from prefect import flow, task
 from functools import partial
+from prefect import flow, task
 
 from config import settings
+from src.shared.system.cmd import run_flow
 from src.shared.db.connection import create_connection
 from src.shared.db.operation import (
     create_schema,
@@ -59,7 +60,7 @@ def task_create_analytics_schema(database: str) -> None:
 
 
 @flow(name="Setup")
-def flow_setup(database: str):
+def flow_setup(database: str, domain: str):
 
     for extension in settings.DUCKDB_EXTENSIONS:
         task_install_extension.submit(
@@ -71,4 +72,4 @@ def flow_setup(database: str):
 
 
 if __name__ == "__main__":
-    flow_setup(database=settings.DUCKDB_PATH)
+    run_flow(flow_factory=flow_setup)

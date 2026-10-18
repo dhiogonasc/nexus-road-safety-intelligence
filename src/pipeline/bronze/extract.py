@@ -8,17 +8,16 @@ QUERIES = load_module_queries(current_file=__file__)
 
 def create_stage_table_from_csv(
     conn: duckdb.DuckDBPyConnection,
-    schema: str,
     table: str,
     csv_path: str,
     delim: str = ";",
     encoding: str = "latin-1",
 ) -> None:
+    """Consolida a ingestão de dados csv em stage"""
     execute_query(
         conn=conn,
         query_key="create_stage_table_from_csv",
         query_dict=QUERIES,
-        schema=schema,
         table=table,
         csv_path=csv_path,
         delim=delim,

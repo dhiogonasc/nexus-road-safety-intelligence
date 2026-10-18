@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE TABLE "acidentes"."dim_localizacao" AS WITH base_localizacao AS (
+OR REPLACE TABLE "silver"."dim_localizacao" AS WITH base_localizacao AS (
     SELECT
         DISTINCT LOWER(
             REGEXP_REPLACE(
@@ -63,9 +63,11 @@ OR REPLACE TABLE "acidentes"."dim_localizacao" AS WITH base_localizacao AS (
         ) AS uop,
         TRY_CAST(REPLACE(km :: VARCHAR, ',', '.') AS DOUBLE) AS km,
         TRY_CAST(REPLACE(latitude :: VARCHAR, ',', '.') AS DOUBLE) AS latitude,
-        TRY_CAST(REPLACE(longitude :: VARCHAR, ',', '.') AS DOUBLE) AS longitude
+        TRY_CAST(
+            REPLACE(longitude :: VARCHAR, ',', '.') AS DOUBLE
+        ) AS longitude
     FROM
-        "acidentes"."stg_ocorrencias"
+        "bronze"."ocorrencias"
 ),
 ref_localizacao AS (
     SELECT

@@ -1,5 +1,4 @@
-CREATE
-OR REPLACE TABLE "{schema}"."{table}" AS
+CREATE OR REPLACE TABLE "bronze"."{table}" AS
 SELECT
     *
 FROM
