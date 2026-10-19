@@ -26,12 +26,12 @@ def flow_silver(
     pipeline_stage = "silver"
     silver_tables = pipeline_domain[pipeline_stage]
 
-    duckdb_conn_fn = partial(
+    conn_fn = partial(
         create_connection,
         database=database,
     )
     schema_future = task_create_schema.submit(
-        conn_fn=duckdb_conn_fn,
+        conn_fn=conn_fn,
         schema=pipeline_stage,
     )
 
@@ -47,7 +47,7 @@ def flow_silver(
                 wait_tasks.append(table_futures[dep])
 
         future = task_create_table.submit(
-            conn_fn=duckdb_conn_fn,
+            conn_fn=conn_fn,
             create_table_fn=create_table_fn,
             wait_for=wait_tasks,
         )

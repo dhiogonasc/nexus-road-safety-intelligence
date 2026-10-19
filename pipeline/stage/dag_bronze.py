@@ -40,13 +40,13 @@ def flow_bronze(
     pipeline_stage = "bronze"
     bronze_tables = pipeline_domain[pipeline_stage]
 
-    duckdb_conn_fn = partial(
+    conn_fn = partial(
         create_connection,
         database=database,
     )
     schema_future = task_create_schema(
         schema=pipeline_stage,
-        conn_fn=duckdb_conn_fn,
+        conn_fn=conn_fn,
     )
 
     table_futures = []
@@ -57,7 +57,7 @@ def flow_bronze(
             data_path=data_path,
         )
         future = task_create_table.submit(
-            conn_fn=duckdb_conn_fn,
+            conn_fn=conn_fn,
             create_table_fn=create_table_fn,
             wait_for=[schema_future],
         )
