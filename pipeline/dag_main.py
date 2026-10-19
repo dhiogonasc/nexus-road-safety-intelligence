@@ -4,7 +4,7 @@ from pipeline.stage.dag_setup import flow_setup
 from pipeline.stage.dag_bronze import flow_bronze
 from pipeline.stage.dag_silver import flow_silver
 from pipeline.stage.dag_gold import flow_gold
-from src.shared.system.cmd import run_flow
+from src.shared.pipeline.run import run_flow
 
 
 @flow(name="Main")

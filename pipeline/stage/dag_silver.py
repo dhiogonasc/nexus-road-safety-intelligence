@@ -1,8 +1,11 @@
 from prefect import flow
 
 from src.pipeline.index import PIPELINE_CONFIG
-from src.shared.pipeline.task import task_create_schema, task_create_table_from_fn
-from src.shared.system.cmd import run_flow
+from src.shared.pipeline.task import (
+    task_create_schema,
+    task_create_table_from_fn,
+)
+from src.shared.pipeline.run import run_flow
 
 
 @flow(name="Silver", flow_run_name="flow_silver: {domain}")

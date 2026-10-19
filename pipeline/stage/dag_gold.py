@@ -10,7 +10,7 @@ from src.shared.db.operation import (
     attach_connections,
     load_extensions,
 )
-from src.shared.system.cmd import run_flow
+from src.shared.pipeline.run import run_flow
 
 
 @task(
@@ -19,7 +19,6 @@ from src.shared.system.cmd import run_flow
 )
 def task_export_table(
     database: str,
-    schema: str,
     table: str,
     table_config: dict,
 ) -> None:

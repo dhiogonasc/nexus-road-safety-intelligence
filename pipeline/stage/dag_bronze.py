@@ -1,5 +1,5 @@
-from prefect import flow, settings
 from functools import partial
+from prefect import flow
 
 from src.pipeline.index import PIPELINE_CONFIG
 from src.pipeline.bronze.extract import create_stage_table_from_csv
@@ -7,7 +7,7 @@ from src.shared.pipeline.task import (
     task_create_schema,
     task_create_table_from_fn,
 )
-from src.shared.system.cmd import run_flow
+from src.shared.pipeline.run import run_flow
 
 
 def create_stage_table(table: str, data_path):
