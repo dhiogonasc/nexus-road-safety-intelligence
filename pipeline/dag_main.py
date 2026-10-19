@@ -1,3 +1,5 @@
+"""pipeline/dag_main.py"""
+
 from prefect import flow
 from pipeline.stage.dag_setup import flow_setup
 from pipeline.stage.dag_bronze import flow_bronze
