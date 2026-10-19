@@ -1,7 +1,10 @@
+"""src/shared/system/file.py"""
+
 from pathlib import Path
 
 
 def load_dir_files(dir_path: str | Path) -> dict[str, str]:
+    """Carrega o conteudo dos arquivos de um diretorio em um dicionario"""
     path = Path(dir_path)
     files_dict = {}
 
@@ -19,6 +22,10 @@ def load_dir_files(dir_path: str | Path) -> dict[str, str]:
 
 
 def load_module_queries(current_file: str | Path) -> dict[str, str]:
+    """
+    Carrega os scripts sql de um diretorio em um dicionario
+    de acordo com a estrutura definida no projeto
+    """
     path = Path(current_file).resolve().parent / "sql"
 
     if not path.is_dir():
