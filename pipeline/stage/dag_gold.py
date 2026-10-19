@@ -7,7 +7,7 @@ from prefect import flow, task
 from config import settings
 from src.shared.system.cmd import declare_domain
 from src.pipeline.index import PIPELINE_CONFIG
-from src.pipeline.gold.merge import export_aggregation
+from src.pipeline.gold.export import export_table
 from src.shared.pipeline.task import (
     task_create_schema,
     task_create_table,
@@ -31,13 +31,12 @@ def task_export_table(
 ) -> None:
     """Consolida a criação de tabelas na entidade de persistencia dedicada"""
     with conn_fn() as conn:
-        export_aggregation(
+        export_table(
             source_schema="gold",
             source_table=table,
             target_catalog=catalog,
             target_schema="analytics",
             target_table=table_config["target"],
-            primary_keys=table_config["primary_keys"],
             conn=conn,
         )
 

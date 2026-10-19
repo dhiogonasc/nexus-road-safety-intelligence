@@ -71,22 +71,18 @@ PIPELINE_CONFIG = {
             "agg_localidade": {
                 "fn": create_acidentes_agg_localidade,
                 "target": "acidentes_agg_localidade",
-                "primary_keys": ["id"],
             },
             "agg_condicoes_via": {
                 "fn": create_acidentes_agg_condicoes_via,
                 "target": "acidentes_agg_condicoes_via",
-                "primary_keys": ["id"],
             },
             "agg_sazonalidade": {
                 "fn": create_acidentes_agg_sazonalidade,
                 "target": "acidentes_agg_sazonalidade",
-                "primary_keys": ["id"],
             },
             "agg_trechos_criticos": {
                 "fn": create_acidentes_agg_trechos_criticos,
                 "target": "acidentes_agg_trechos_criticos",
-                "primary_keys": ["id"],
             },
         },
     }

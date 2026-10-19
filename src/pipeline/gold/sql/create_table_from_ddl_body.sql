@@ -1,1 +1,0 @@
-CREATE TABLE IF NOT EXISTS {full_target} ({ddl_body});
