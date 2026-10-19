@@ -8,13 +8,13 @@ from src.shared.system.cmd import run_flow
 
 
 @flow(name="Main")
-def flow_domain(domain: str) -> None:
+def flow_domain(database: str, domain: str) -> None:
     """Orquestra a pipeline ETL de um dominio."""
 
-    database = settings.domain_db_path(domain=domain)
-
-    flow_setup(database=database)
-
+    flow_setup(
+        database=database, 
+        domain=domain,
+    )
     flow_bronze(
         database=database,
         domain=domain,

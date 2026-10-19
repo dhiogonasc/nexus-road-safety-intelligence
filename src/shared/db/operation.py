@@ -8,10 +8,10 @@ def execute_query(
     query_dict: dict[str, str],
     query_key: str,
     **kwargs
-):
+) -> duckdb.DuckDBPyRelation:
     sql = query_dict[query_key]
     query = sql.format(**kwargs)
-    conn.execute(query)
+    return conn.execute(query)
 
 
 def load_extensions(

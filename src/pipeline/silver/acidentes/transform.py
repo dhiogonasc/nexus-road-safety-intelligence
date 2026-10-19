@@ -13,6 +13,12 @@ def create_acidentes_dim_tempo(conn: duckdb.DuckDBPyConnection) -> None:
         query_dict=QUERIES,
     )
 
+def create_acidentes_dim_coordenada(conn: duckdb.DuckDBPyConnection) -> None:
+    execute_query(
+        conn=conn,
+        query_key="create_acidentes_dim_coordenada",
+        query_dict=QUERIES,
+    )
 
 def create_acidentes_dim_localizacao(conn: duckdb.DuckDBPyConnection) -> None:
     execute_query(
@@ -29,7 +35,20 @@ def create_acidentes_dim_pista(conn: duckdb.DuckDBPyConnection) -> None:
         query_dict=QUERIES,
     )
 
+def create_acidentes_dim_causa(conn: duckdb.DuckDBPyConnection) -> None:
+    execute_query(
+        conn=conn,
+        query_key="create_acidentes_dim_causa",
+        query_dict=QUERIES,
+    )
 
+def create_acidentes_dim_tipo(conn: duckdb.DuckDBPyConnection) -> None:
+    execute_query(
+        conn=conn,
+        query_key="create_acidentes_dim_tipo",
+        query_dict=QUERIES,
+    )
+    
 def create_acidentes_dim_classificacao(conn: duckdb.DuckDBPyConnection) -> None:
     execute_query(
         conn=conn,

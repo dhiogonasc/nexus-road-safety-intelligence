@@ -1,5 +1,4 @@
-CREATE
-OR REPLACE TABLE "gold"."agg_localidade" AS
+CREATE OR REPLACE TABLE "gold"."agg_localidade" AS
 SELECT
     md5(
         concat_ws(

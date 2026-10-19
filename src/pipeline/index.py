@@ -1,15 +1,18 @@
 from constants import AC_OCORRENCIA_DIR
 from src.pipeline.gold.acidentes.load import (
     create_acidentes_agg_localidade,
-    create_acidentes_agg_sazonalidade_anual,
-    create_acidentes_agg_sazonalidade_diaria,
-    create_acidentes_agg_sazonalidade_mensal,
+    create_acidentes_agg_condicoes_via,
+    create_acidentes_agg_sazonalidade,
+    create_acidentes_agg_trechos_criticos
 )
 from src.pipeline.silver.acidentes.transform import (
+    create_acidentes_dim_causa,
     create_acidentes_dim_classificacao,
+    create_acidentes_dim_coordenada,
     create_acidentes_dim_localizacao,
     create_acidentes_dim_pista,
     create_acidentes_dim_tempo,
+    create_acidentes_dim_tipo,
     create_acidentes_fato_ocorrencia,
 )
 
@@ -29,8 +32,20 @@ PIPELINE_CONFIG = {
                 "fn": create_acidentes_dim_localizacao,
                 "depends_on": [],
             },
+            "dim_coordenada": {
+                "fn": create_acidentes_dim_coordenada,
+                "depends_on": [],
+            },
             "dim_pista": {
                 "fn": create_acidentes_dim_pista,
+                "depends_on": [],
+            },
+            "dim_causa": {
+                "fn": create_acidentes_dim_causa,
+                "depends_on": [],
+            },
+            "dim_tipo": {
+                "fn": create_acidentes_dim_tipo,
                 "depends_on": [],
             },
             "dim_classificacao": {
@@ -42,30 +57,33 @@ PIPELINE_CONFIG = {
                 "depends_on": [
                     "dim_tempo",
                     "dim_localizacao",
+                    "dim_coordenada",
                     "dim_pista",
+                    "dim_causa",
+                    "dim_tipo",
                     "dim_classificacao",
                 ],
             },
         },
         "gold": {
-            "agg_sazonalidade_anual": {
-                "fn": create_acidentes_agg_sazonalidade_anual,
-                "target": "acidentes_sazonalidade_anual",
-                "primary_keys": ["id"],
-            },
-            "agg_sazonalidade_mensal": {
-                "fn": create_acidentes_agg_sazonalidade_mensal,
-                "target": "acidentes_sazonalidade_mensal",
-                "primary_keys": ["id"],
-            },
-            "agg_sazonalidade_diaria": {
-                "fn": create_acidentes_agg_sazonalidade_diaria,
-                "target": "acidentes_sazonalidade_diaria",
-                "primary_keys": ["id"],
-            },
             "agg_localidade": {
                 "fn": create_acidentes_agg_localidade,
-                "target": "acidentes_localidade",
+                "target": "acidentes_agg_localidade",
+                "primary_keys": ["id"],
+            },
+            "agg_condicoes_via": {
+                "fn": create_acidentes_agg_condicoes_via,
+                "target": "acidentes_agg_condicoes_via",
+                "primary_keys": ["id"],
+            },
+            "agg_sazonalidade": {
+                "fn": create_acidentes_agg_sazonalidade,
+                "target": "acidentes_agg_sazonalidade",
+                "primary_keys": ["id"],
+            },
+            "agg_trechos_criticos": {
+                "fn": create_acidentes_agg_trechos_criticos,
+                "target": "acidentes_agg_trechos_criticos",
                 "primary_keys": ["id"],
             },
         },

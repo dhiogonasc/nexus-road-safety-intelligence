@@ -1,5 +1,58 @@
 import duckdb
 
+from src.shared.db.operation import execute_query
+from src.shared.system.file import load_module_queries
+
+QUERIES = load_module_queries(current_file=__file__)
+
+
+def _fetch_columns_info(
+    conn: duckdb.DuckDBPyConnection,
+    source_schema: str,
+    source_table: str,
+):
+    return execute_query(
+        conn=conn,
+        query_key="fetch_columns_info",
+        query_dict=QUERIES,
+        source_schema=source_schema,
+        source_table=source_table,
+    )
+
+
+def _create_table_from_ddl_body(
+    conn: duckdb.DuckDBPyConnection,
+    full_target: str,
+    ddl_body: str,
+):
+    execute_query(
+        conn=conn,
+        query_key="create_table_from_ddl_body",
+        query_dict=QUERIES,
+        full_target=full_target,
+        ddl_body=ddl_body,
+    )
+
+
+def _upsert(
+    conn: duckdb.DuckDBPyConnection,
+    full_target: str,
+    full_source: str,
+    cols_str: str,
+    conflict_str: str,
+    update_str: str,
+):
+    execute_query(
+        conn=conn,
+        query_key="upsert",
+        query_dict=QUERIES,
+        full_target=full_target,
+        full_source=full_source,
+        cols_str=cols_str,
+        conflict_str=conflict_str,
+        update_str=update_str,
+    )
+
 
 def _create_target_table(
     conn: duckdb.DuckDBPyConnection,
@@ -8,36 +61,25 @@ def _create_target_table(
     full_target: str,
     primary_keys: list[str],
 ) -> list[str]:
-    columns_info = conn.execute(f"""
-        SELECT 
-            column_name, 
-            data_type 
-        FROM information_schema.columns 
-        WHERE table_schema = '{source_schema}' 
-          AND table_name = '{source_table}'
-        ORDER BY ordinal_position;
-    """).fetchall()
 
-    if not columns_info:
-        raise ValueError(
-            f"A tabela origem '{source_schema}.{source_table}' não foi encontrada."
-        )
-
-    column_names = [col[0] for col in columns_info]
+    columns_info = _fetch_columns_info(
+        conn=conn,
+        source_schema=source_schema,
+        source_table=source_table,
+    ).fetchall()
 
     ddl_columns = [f"{col[0]} {col[1]}" for col in columns_info]
     pk_str = ", ".join(primary_keys)
     ddl_columns.append(f"PRIMARY KEY ({pk_str})")
-    ddl_body = ",\n            ".join(ddl_columns)
+    ddl_body = ",\n".join(ddl_columns)
 
-    create_table_sql = f"""
-        CREATE TABLE IF NOT EXISTS {full_target} (
-            {ddl_body}
-        );
-    """
-    conn.execute(create_table_sql)
+    _create_table_from_ddl_body(
+        conn=conn,
+        full_target=full_target,
+        ddl_body=ddl_body,
+    )
 
-    return column_names
+    return [col[0] for col in columns_info]
 
 
 def _upsert_target_table(
@@ -47,26 +89,19 @@ def _upsert_target_table(
     column_names: list[str],
     primary_keys: list[str],
 ) -> None:
+    update_cols = [col for col in column_names if col not in primary_keys]
+    update_str = ",\n ".join([f"{col} = EXCLUDED.{col}" for col in update_cols])
     cols_str = ", ".join(column_names)
     conflict_str = ", ".join(primary_keys)
 
-    update_cols = [col for col in column_names if col not in primary_keys]
-    update_str = ",\n            ".join(
-        [f"{col} = EXCLUDED.{col}" for col in update_cols]
+    _upsert(
+        conn=conn,
+        full_target=full_target,
+        full_source=full_source,
+        cols_str=cols_str,
+        conflict_str=conflict_str,
+        update_str=update_str,
     )
-
-    upsert_sql = f"""
-        INSERT INTO {full_target} (
-            {cols_str}
-        )
-        SELECT
-            {cols_str}
-        FROM {full_source}
-        ON CONFLICT ({conflict_str}) 
-        DO UPDATE SET
-            {update_str};
-    """
-    conn.execute(upsert_sql)
 
 
 def export_aggregation(

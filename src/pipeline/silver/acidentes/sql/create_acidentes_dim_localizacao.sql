@@ -1,7 +1,7 @@
-CREATE
-OR REPLACE TABLE "silver"."dim_localizacao" AS WITH base_localizacao AS (
-    SELECT
-        DISTINCT LOWER(
+CREATE OR REPLACE TABLE "silver"."dim_localizacao" AS 
+WITH base AS (
+    SELECT DISTINCT 
+        LOWER(
             REGEXP_REPLACE(
                 strip_accents(
                     TRIM(COALESCE(uf :: VARCHAR, 'nao_informado'))
@@ -60,45 +60,15 @@ OR REPLACE TABLE "silver"."dim_localizacao" AS WITH base_localizacao AS (
                 '_',
                 'g'
             )
-        ) AS uop,
-        TRY_CAST(REPLACE(km :: VARCHAR, ',', '.') AS DOUBLE) AS km,
-        TRY_CAST(REPLACE(latitude :: VARCHAR, ',', '.') AS DOUBLE) AS latitude,
-        TRY_CAST(
-            REPLACE(longitude :: VARCHAR, ',', '.') AS DOUBLE
-        ) AS longitude
-    FROM
-        "bronze"."ocorrencias"
-),
-ref_localizacao AS (
-    SELECT
-        *,
-        md5(
-            concat_ws(
-                '_',
-                COALESCE(uf, ''),
-                COALESCE(br, ''),
-                COALESCE(km :: VARCHAR, ''),
-                COALESCE(municipio, ''),
-                COALESCE(regional, ''),
-                COALESCE(delegacia, ''),
-                COALESCE(uop, ''),
-                COALESCE(latitude :: VARCHAR, ''),
-                COALESCE(longitude :: VARCHAR, '')
-            )
-        ) AS id
-    FROM
-        base_localizacao
+        ) AS uop
+    FROM "bronze"."ocorrencias"
 )
-SELECT
-    id,
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY uf, br, municipio, regional, delegacia, uop) AS id,
     uf,
     br,
-    km,
     municipio,
     regional,
     delegacia,
-    uop,
-    latitude,
-    longitude
-FROM
-    ref_localizacao;
+    uop
+FROM base;
