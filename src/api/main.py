@@ -9,17 +9,34 @@ app = FastAPI(
     version="1.0.0",
 )
 
-app.include_router(
-    router=ingest.router,
-    prefix="",
-    tags=["Ingestão"],
-)
+app.include_router(ingest.router, prefix="", tags=["Ingestão"])
 
 
-@app.get(
-    path="/health",
-    status_code=200,
-)
+@app.get("/", status_code=200)
+def root_endpoints():
+    """Mapeia dinamicamente todos os endpoints disponíveis na aplicação."""
+    endpoints_list = []
+
+    for route in app.routes:
+        if hasattr(route, "path") and hasattr(route, "methods"):
+            endpoints_list.append(
+                {
+                    "path": route.path,
+                    "methods": sorted(list(route.methods)),
+                    "name": route.name,
+                }
+            )
+
+    return {
+        "service": "Nexus Road Safety Intelligence API",
+        "version": "1.0.0",
+        "total_endpoints": len(endpoints_list),
+        "endpoints": endpoints_list,
+        "documentation": {"swagger": "/docs", "redoc": "/redoc"},
+    }
+
+
+@app.get("/health", status_code=200)
 def health_check():
     """Endpoint de verificação de saúde da API."""
     return {"status": "healthy", "service": "rsi-api"}
