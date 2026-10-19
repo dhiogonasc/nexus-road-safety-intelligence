@@ -1,3 +1,5 @@
+"""test_connection.py"""
+
 import sys
 import duckdb
 from config import settings
@@ -50,10 +52,14 @@ if __name__ == "__main__":
 
     print("-" * 100)
     if duck_ok:
-        print(f" RESULTADO: Todos os testes passaram para o ambiente {settings.ENV.upper()}!")
+        print(
+            f" RESULTADO: Todos os testes passaram para o ambiente {settings.ENV.upper()}!"
+        )
         print("=" * 100)
         sys.exit(0)
     else:
-        print(f" RESULTADO: Ocorreram falhas no teste do ambiente {settings.ENV.upper()}.")
+        print(
+            f" RESULTADO: Ocorreram falhas no teste do ambiente {settings.ENV.upper()}."
+        )
         print("=" * 100)
         sys.exit(1)
