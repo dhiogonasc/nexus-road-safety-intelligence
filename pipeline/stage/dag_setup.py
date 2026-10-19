@@ -39,6 +39,16 @@ def task_install_extension(
 def flow_setup(database: str):
     """Orquestra a configuracao inicial das entidades de persistencia"""
 
+    duckdb_conn_fn = partial(
+        create_connection,
+        database=database,
+    )
+    for extension in settings.DUCKDB_EXTENSIONS:
+        task_install_extension.submit(
+            extension=extension,
+            conn_fn=duckdb_conn_fn,
+        )
+
     catalog = settings.DB_NAME
     load_postgres_extension = partial(
         load_extensions,
@@ -54,23 +64,16 @@ def flow_setup(database: str):
             }
         ],
     )
-    conn_fn = partial(
+    pg_conn_fn = partial(
         create_connection,
         database=database,
         load_extensions_fn=load_postgres_extension,
         attach_connections_fn=attach_postgres,
     )
-
-    for extension in settings.DUCKDB_EXTENSIONS:
-        task_install_extension.submit(
-            extension=extension,
-            conn_fn=conn_fn,
-        )
-
     task_create_schema(
         catalog=catalog,
         schema="analytics",
-        conn_fn=conn_fn,
+        conn_fn=pg_conn_fn,
     )
 
 
