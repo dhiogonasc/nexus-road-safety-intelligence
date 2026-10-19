@@ -1,7 +1,6 @@
 """src/api/main.py"""
 
 from fastapi import FastAPI
-from fastapi.routing import APIRoute
 from src.api.routes import ingest
 
 app = FastAPI(
