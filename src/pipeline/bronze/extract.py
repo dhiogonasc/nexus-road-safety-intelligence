@@ -1,3 +1,5 @@
+"""src/pipeline/bronze/extract.py"""
+
 import duckdb
 
 from src.shared.db.operation import execute_query

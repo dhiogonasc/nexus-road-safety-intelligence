@@ -1,3 +1,5 @@
+"""pipeline/stage/gold.py"""
+
 from functools import partial
 from typing import Callable
 from prefect import flow, task

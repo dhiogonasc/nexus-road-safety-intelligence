@@ -1,3 +1,5 @@
+"""src/pipeline/gold/merge.py"""
+
 import duckdb
 
 from src.shared.db.operation import execute_query
@@ -113,6 +115,7 @@ def export_aggregation(
     target_table: str,
     primary_keys: list[str],
 ) -> None:
+    """Consolida a exportacao das tabelas de agragacao por upsert"""
     full_source = f'"{source_schema}"."{source_table}"'
     full_target = f"{target_catalog}.{target_schema}.{target_table}"
 

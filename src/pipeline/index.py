@@ -1,3 +1,5 @@
+"""src/pipeline/index.py"""
+
 from constants import AC_OCORRENCIA_DIR
 from src.pipeline.gold.acidentes.load import (
     create_acidentes_agg_localidade,

@@ -1,5 +1,6 @@
-from functools import partial
+"""pipeline/stage/gold.py"""
 
+from functools import partial
 from prefect import flow
 
 from config import settings
