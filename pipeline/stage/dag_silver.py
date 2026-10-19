@@ -4,7 +4,7 @@ from functools import partial
 from prefect import flow
 
 from config import settings
-from src.shared.system.cmd import domain_arg
+from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
 from src.shared.pipeline.task import (
@@ -58,7 +58,7 @@ def flow_silver(
 
 
 if __name__ == "__main__":
-    args = domain_arg()
+    args = declare_domain()
 
     DOMAIN = args.domain
     DATABASE = settings.domain_db_path(domain=DOMAIN)

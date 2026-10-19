@@ -18,4 +18,4 @@ def declare_arg(flag: str):
 
 def declare_domain():
     """Declara flag --domain para prompt de comando"""
-    declare_arg(flag="domain")
+    return declare_arg(flag="domain")

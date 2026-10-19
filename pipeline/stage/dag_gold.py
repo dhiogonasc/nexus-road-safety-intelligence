@@ -5,7 +5,7 @@ from typing import Callable
 from prefect import flow, task
 
 from config import settings
-from src.shared.system.cmd import domain_arg
+from src.shared.system.cmd import declare_domain
 from src.pipeline.index import PIPELINE_CONFIG
 from src.pipeline.gold.merge import export_aggregation
 from src.shared.pipeline.task import (
@@ -74,7 +74,7 @@ def flow_gold(database: str, domain: str) -> None:
         create_futures[table] = future
 
     for table, table_config in gold_tables.items():
-        catalog = f"pg_rsi_pei6_{table}"
+        catalog = f"{settings.DB_NAME}_{table}"
         load_postgres_extension = partial(
             load_extensions,
             extensions=["postgres"],
@@ -109,7 +109,7 @@ def flow_gold(database: str, domain: str) -> None:
 
 
 if __name__ == "__main__":
-    args = domain_arg()
+    args = declare_domain()
 
     DOMAIN = args.domain
     DATABASE = settings.domain_db_path(domain=DOMAIN)

@@ -5,7 +5,7 @@ from typing import Callable
 from prefect import flow, task
 
 from config import settings
-from src.shared.system.cmd import domain_arg
+from src.shared.system.cmd import declare_domain
 from src.shared.pipeline.task import task_create_schema
 from src.shared.db.connection import create_connection
 from src.shared.db.operation import (
@@ -39,6 +39,7 @@ def task_install_extension(
 def flow_setup(database: str):
     """Orquestra a configuracao inicial das entidades de persistencia"""
 
+    catalog = settings.DB_NAME
     load_postgres_extension = partial(
         load_extensions,
         extensions=["postgres"],
@@ -48,7 +49,7 @@ def flow_setup(database: str):
         connections=[
             {
                 "conn_string": settings.postgres_conn_string,
-                "conn_alias": "pg_rsi_pei6",
+                "conn_alias": catalog,
                 "conn_option": "(TYPE POSTGRES)",
             }
         ],
@@ -67,14 +68,14 @@ def flow_setup(database: str):
         )
 
     task_create_schema(
-        catalog="pg_rsi_pei6",
+        catalog=catalog,
         schema="analytics",
         conn_fn=conn_fn,
     )
 
 
 if __name__ == "__main__":
-    args = domain_arg()
+    args = declare_domain()
 
     DOMAIN = args.domain
     DATABASE = settings.domain_db_path(domain=DOMAIN)
