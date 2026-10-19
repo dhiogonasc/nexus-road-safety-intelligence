@@ -5,7 +5,7 @@ from src.pipeline.gold.acidentes.load import (
     create_acidentes_agg_localidade,
     create_acidentes_agg_condicoes_via,
     create_acidentes_agg_sazonalidade,
-    create_acidentes_agg_trechos_criticos
+    create_acidentes_agg_trechos_criticos,
 )
 from src.pipeline.silver.acidentes.transform import (
     create_acidentes_dim_causa,
