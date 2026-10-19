@@ -1,15 +1,21 @@
+"""src/shared/system/cmd.py"""
+
 import argparse
-from config import settings
 
 
-def domain_arg():
-    """Define dominio como argumento de execução"""
+def declare_arg(flag: str):
+    """Declara argumento para prompt de comando"""
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--domain",
+        f"--{flag}",
         type=str,
         required=True,
     )
 
     return parser.parse_args()
+
+
+def declare_domain():
+    """Declara flag --domain para prompt de comando"""
+    declare_arg(flag="domain")
