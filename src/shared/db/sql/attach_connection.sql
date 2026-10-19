@@ -1,0 +1,1 @@
+ATTACH '{conn_string}' AS {conn_alias} {conn_option};
