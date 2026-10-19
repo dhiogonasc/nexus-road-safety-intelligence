@@ -24,6 +24,7 @@ def task_install_extension(
     conn_fn: Callable,
 ) -> None:
     """Consolida a instalação de extensões em uma base de dados"""
+
     with conn_fn() as conn:
         install_extension(
             conn=conn,
@@ -31,7 +32,10 @@ def task_install_extension(
         )
 
 
-@flow(name="Setup", flow_run_name="flow_setup")
+@flow(
+    name="Setup",
+    flow_run_name="flow_setup",
+)
 def flow_setup(database: str):
     """Orquestra a configuracao inicial das entidades de persistencia"""
 
@@ -75,7 +79,8 @@ def flow_setup(database: str):
 
 if __name__ == "__main__":
     args = domain_arg()
-    domain = args.domain
-    DATABASE = settings.domain_db_path(domain=domain)
+
+    DOMAIN = args.domain
+    DATABASE = settings.domain_db_path(domain=DOMAIN)
 
     flow_setup(database=DATABASE)

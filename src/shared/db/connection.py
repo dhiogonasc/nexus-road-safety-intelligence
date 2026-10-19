@@ -9,6 +9,7 @@ def create_connection(
     load_extensions_fn: Optional[Callable[[duckdb.DuckDBPyConnection], None]] = None,
     attach_connections_fn: Optional[Callable[[duckdb.DuckDBPyConnection], None]] = None,
 ) -> Generator[duckdb.DuckDBPyConnection, None, None]:
+    """Gerencia a criacao de conexoes com entidades de persistencia"""
     conn = duckdb.connect(database)
     try:
         if load_extensions_fn:
