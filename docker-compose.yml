@@ -29,18 +29,6 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 
-  api:
-    build: .
-    container_name: api_rsi_pei6
-    restart: always
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-    depends_on:
-      postgres:
-        condition: service_healthy
-
 volumes:
   postgres_data:
     driver: local
