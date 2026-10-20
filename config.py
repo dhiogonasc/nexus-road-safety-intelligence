@@ -24,8 +24,15 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_HOST: str
     DB_PORT: int
+
     DUCKDB_PATH: str = str(DATABASE_DIR)
-    DUCKDB_EXTENSIONS: list[str] = ["postgres"]
+    DUCKDB_EXTENSIONS: list[str] = ["postgres", "httpfs", "parquet"]
+
+    STORAGE_BUCKET: str
+    STORAGE_ENDPOINT: str
+    STORAGE_ACCESS_KEY_ID: str
+    STORAGE_SECRET_ACCESS_KEY: str
+    STORAGE_REGION: str
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
