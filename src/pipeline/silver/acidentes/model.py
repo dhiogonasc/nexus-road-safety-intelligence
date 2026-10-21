@@ -89,5 +89,33 @@ dim_condicao_metereologica = Table(
             attribute="NOT NULL",
         ),
     ],
-    unique_constraint=["condicao_metereologica"],
+    unique_constraint=["condicao"],
+)
+
+dim_coordenada = Table(
+    schema="silver",
+    name="dim_coordenada",
+    columns=[
+        Column(
+            name="id",
+            data_type="INTEGER",
+            identity=True,
+        ),
+        Column(
+            name="id_carga",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="latitude",
+            data_type="DOUBLE",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="longitude",
+            data_type="DOUBLE",
+            attribute="NOT NULL",
+        ),
+    ],
+    unique_constraint=["latitude", "longitude"],
 )

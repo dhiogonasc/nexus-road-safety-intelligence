@@ -52,10 +52,22 @@ def upsert_acidentes_dim_condicao_metereologica(
     conn: duckdb.DuckDBPyConnection,
     settings: BucketSettings,
 ) -> None:
-    """Delega a execucao do script upsert_acidentes_dim_condicao_meteorologica"""
+    """Delega a execucao do script upsert_acidentes_dim_condicao_metereologica"""
     execute_query(
         conn=conn,
-        query_key="upsert_acidentes_dim_condicao_meteorologica",
+        query_key="upsert_acidentes_dim_condicao_metereologica",
+        query_dict=QUERIES,
+        settings=settings,
+    )
+
+def upsert_acidentes_dim_coordenada(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+) -> None:
+    """Delega a execucao do script upsert_acidentes_dim_coordenada"""
+    execute_query(
+        conn=conn,
+        query_key="upsert_acidentes_dim_coordenada",
         query_dict=QUERIES,
         settings=settings,
     )
