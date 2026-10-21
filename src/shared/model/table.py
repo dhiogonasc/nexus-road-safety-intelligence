@@ -23,7 +23,7 @@ class Table(BaseModel):
         """Retorna uma lista com apenas os nomes das colunas."""
         return [col.name for col in self.columns]
 
-    def get_definitions(self) -> List[str]:
+    def get_definitions(self) -> str:
         """Retorna a lista de strings com as definições DDL das colunas e constraints."""
         definitions = []
         
@@ -32,6 +32,6 @@ class Table(BaseModel):
             
         for constraint in self.unique_constraints:
             cols_str = ", ".join([f'"{c}"' for c in constraint])
-            definitions.append(f"UNIQUE ({cols_str})")
+            definitions.append(f"CONSTRAINT uk_{self.name} UNIQUE ({cols_str})")
             
-        return definitions
+        return ",\n ".join(definition for definition in definitions)

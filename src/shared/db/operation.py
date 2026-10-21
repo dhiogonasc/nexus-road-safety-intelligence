@@ -4,6 +4,7 @@ from typing import List, Optional
 import duckdb
 
 from config import BucketSettings
+from src.shared.model.table import Table
 from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
@@ -74,18 +75,14 @@ def create_schema(
     
 def create_table(
     conn: duckdb.DuckDBPyConnection,
-    stage_schema:str,
-    table_name: str,
-    columns_definition: List[str],
+    table: Table
 ) -> None:
     """Abstrai a criação de tabelas"""
     execute_query(
         conn=conn,
         query_key="create_table",
         query_dict=QUERIES,
-        stage_schema=stage_schema,
-        table_name=table_name,
-        columns_definition=columns_definition,
+        table=table
     )
 
 def bootstrap_table(
