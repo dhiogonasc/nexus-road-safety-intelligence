@@ -20,6 +20,9 @@ def create_connection(
         if attach_connections_fn:
             attach_connections_fn(conn=conn)
 
+        conn.execute("SET preserve_insertion_order = false;")
+        conn.execute("SET threads = 2;")
+
         yield conn
     finally:
         conn.close()
