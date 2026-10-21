@@ -181,3 +181,47 @@ dim_tempo = Table(
         "data_hora",
     ],
 )
+
+dim_pista = Table(
+    schema="silver",
+    name="dim_pista",
+    columns=[
+        Column(
+            name="id",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+            identity=True,
+        ),
+        Column(
+            name="id_carga",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sentido",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="tracado",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="tipo",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="uso_solo",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+    ],
+    unique_constraint=[
+        "sentido",
+        "tracado",
+        "tipo",
+        "uso_solo",
+    ],
+)

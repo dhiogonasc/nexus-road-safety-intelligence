@@ -83,3 +83,15 @@ def upsert_acidentes_dim_tempo(
         query_dict=QUERIES,
         settings=settings,
     )
+
+def upsert_acidentes_dim_pista(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+) -> None:
+    """Delega a execucao do script upsert_acidentes_dim_pista"""
+    execute_query(
+        conn=conn,
+        query_key="upsert_acidentes_dim_pista",
+        query_dict=QUERIES,
+        settings=settings,
+    )
