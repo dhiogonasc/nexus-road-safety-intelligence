@@ -1,6 +1,6 @@
 """src/shared/db/operation.py"""
 
-from typing import List, Optional
+from typing import Optional
 import duckdb
 
 from config import BucketSettings
@@ -72,18 +72,33 @@ def create_schema(
         query_dict=QUERIES,
         schema=sch,
     )
-    
+
+
 def create_table(
     conn: duckdb.DuckDBPyConnection,
-    table: Table
+    table: Table,
 ) -> None:
     """Abstrai a criação de tabelas"""
     execute_query(
         conn=conn,
         query_key="create_table",
         query_dict=QUERIES,
-        table=table
+        table=table,
     )
+
+
+def create_bucket_secret(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+) -> None:
+    """Abstrai a atualização de tabelas por logs parquet"""
+    execute_query(
+        conn=conn,
+        query_key="create_bucket_secret",
+        query_dict=QUERIES,
+        settings=settings,
+    )
+
 
 def bootstrap_table(
     conn: duckdb.DuckDBPyConnection,
@@ -100,7 +115,8 @@ def bootstrap_table(
         domain=domain,
         table=table,
     )
-    
+
+
 def copy_table_to_parquet(
     conn: duckdb.DuckDBPyConnection,
     settings: BucketSettings,

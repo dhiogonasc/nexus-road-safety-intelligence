@@ -8,29 +8,11 @@ from src.shared.db.operation import load_extensions
 from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
-from src.pipeline.bronze.extract import create_bronze_table_from_csv
+from src.pipeline.bronze.extract import copy_raw_to_parquet
 from src.shared.pipeline.task import (
     task_create_schema,
-    task_create_table,
+    task_open_bucket_operation,
 )
-
-
-def create_stage_table(
-    domain: str,
-    table: str,
-    data_path,
-):
-    """Cria uma função parcialmente aplicada para a extração da tabela."""
-
-    fn = partial(
-        create_bronze_table_from_csv,
-        settings=bucket_settings,
-        domain=domain,
-        table=table,
-        csv_path=data_path,
-    )
-    fn.__name__ = f"create_stage_{table}"
-    return fn
 
 
 @flow(
@@ -64,21 +46,22 @@ def flow_bronze(
         conn_fn=conn_fn,
     )
 
-    table_futures = []
-    for table, data_path in bronze_tables.items():
-        create_table_fn = create_stage_table(
-            domain=domain,
-            table=table,
-            data_path=data_path,
-        )
-        future = task_create_table.submit(
+    futures = []
+    for table_name, data_path in bronze_tables.items():
+        future = task_open_bucket_operation.submit(
             conn_fn=conn_fn,
-            create_table_fn=create_table_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=partial(
+                copy_raw_to_parquet,
+                domain=domain,
+                table_name=table_name,
+                csv_path=data_path,
+            ),
             wait_for=[schema_future],
         )
-        table_futures.append(future)
+        futures.append(future)
 
-    for future in table_futures:
+    for future in futures:
         future.result()
 
 

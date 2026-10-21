@@ -1,0 +1,10 @@
+CREATE
+OR REPLACE SECRET "{settings.STORAGE_BUCKET}" (
+    TYPE S3,
+    PROVIDER CONFIG,
+    KEY_ID '{settings.STORAGE_ACCESS_KEY_ID}',
+    SECRET '{settings.STORAGE_SECRET_ACCESS_KEY}',
+    REGION '{settings.STORAGE_REGION}',
+    ENDPOINT '{settings.STORAGE_ENDPOINT}',
+    URL_STYLE 'path'
+);

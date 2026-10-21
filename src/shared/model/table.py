@@ -26,13 +26,13 @@ class Table(BaseModel):
     schema: str
     name: str
     columns: List[Column]
-    unique_constraint: List[str] = []
+    unique_constraint: List[str]
 
     @computed_field
     @property
     def columns_name(self) -> str:
         """Retorna os nomes das colunas como um campo computado."""
-        return ",\n ".join([col.name for col in self.columns])
+        return ",\n ".join([column.name for column in self.columns])
 
     @computed_field
     @property

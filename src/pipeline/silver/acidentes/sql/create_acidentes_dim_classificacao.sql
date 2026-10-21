@@ -31,8 +31,4 @@ WHEN NOT MATCHED THEN
 INSERT (id_carga, classificacao) 
 VALUES (source.id_carga, source.classificacao);
 
-COPY "silver"."dim_classificacao" 
-TO 's3://{settings.STORAGE_BUCKET}/{domain}/silver/dim_classificacao/' 
-(FORMAT PARQUET, OVERWRITE_OR_IGNORE 1);
-
 DROP TABLE IF EXISTS temp_ocorrencias;
