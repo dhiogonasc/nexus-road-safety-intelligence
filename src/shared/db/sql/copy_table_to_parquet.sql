@@ -1,3 +1,3 @@
-COPY "{stage_schema}"."{table_name}"
-TO 's3://{settings.STORAGE_BUCKET}/{domain}/{stage_schema}/{table_name}/' 
+COPY "{table.schema}"."{table.name}"
+TO 's3://{settings.STORAGE_BUCKET}/{domain}/{table.schema}/{table.name}/' 
 (FORMAT PARQUET, OVERWRITE_OR_IGNORE 1);

@@ -1,5 +1,5 @@
 from typing import List, Literal
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, computed_field, model_validator
 
 class Column(BaseModel):
     name: str
@@ -19,19 +19,24 @@ class Table(BaseModel):
     columns: List[Column]
     unique_constraints: List[List[str]] = []
     
-    def get_columns(self) -> List[str]:
-        """Retorna uma lista com apenas os nomes das colunas."""
-        return [col.name for col in self.columns]
+    @computed_field
+    @property
+    def columns_name(self) -> str:
+        """Retorna os nomes das colunas como um campo computado."""
+        return ",\n ".join([col.name for col in self.columns])
 
-    def get_definitions(self) -> str:
-        """Retorna a lista de strings com as definições DDL das colunas e constraints."""
+    @computed_field
+    @property
+    def columns_definition(self) -> str:
+        """Gera automaticamente as definições DDL como um campo computado."""
         definitions = []
         
         for col in self.columns:
-            definitions.append(f'{col.name} {col.data_type} {col.attribute}')
+            definitions.append(f'"{col.name}" {col.data_type} {col.attribute}')
             
         for constraint in self.unique_constraints:
             cols_str = ", ".join([f'"{c}"' for c in constraint])
-            definitions.append(f"CONSTRAINT uk_{self.name} UNIQUE ({cols_str})")
+            constraint_name = f"" + "_".join(constraint)
+            definitions.append(f"CONSTRAINT {constraint_name} UNIQUE ({cols_str})")
             
-        return ",\n ".join(definition for definition in definitions)
+        return ",\n ".join(definitions)

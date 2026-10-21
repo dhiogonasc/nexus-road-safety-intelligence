@@ -89,8 +89,7 @@ def bootstrap_table(
     conn: duckdb.DuckDBPyConnection,
     settings: BucketSettings,
     domain: str,
-    stage_schema:str,
-    table_name: str,
+    table: Table,
 ) -> None:
     """Abstrai a atualização de tabelas pro logs parquet"""
     execute_query(
@@ -99,16 +98,14 @@ def bootstrap_table(
         query_dict=QUERIES,
         settings=settings,
         domain=domain,
-        stage_schema=stage_schema,
-        table_name=table_name,
+        table=table,
     )
     
 def copy_table_to_parquet(
     conn: duckdb.DuckDBPyConnection,
     settings: BucketSettings,
     domain: str,
-    stage_schema:str,
-    table_name: str,
+    table: Table,
 ) -> None:
     """Abstrai a atualização de logs parquet"""
     execute_query(
@@ -117,6 +114,5 @@ def copy_table_to_parquet(
         query_dict=QUERIES,
         settings=settings,
         domain=domain,
-        stage_schema=stage_schema,
-        table_name=table_name,
+        table=table,
     )
