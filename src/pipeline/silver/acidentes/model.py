@@ -119,3 +119,65 @@ dim_coordenada = Table(
     ],
     unique_constraint=["latitude", "longitude"],
 )
+
+dim_tempo = Table(
+    schema="silver",
+    name="dim_tempo",
+    columns=[
+        Column(
+            name="id",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+            identity=True,
+        ),
+        Column(
+            name="id_carga",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="data_hora",
+            data_type="TIMESTAMP",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="ano",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="mes",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="dia",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="hora",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="dia_semana",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="fase_dia",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+    ],
+    unique_constraint=[
+        "ano",
+        "mes",
+        "dia",
+        "hora",
+        "dia_semana",
+        "fase_dia",
+        "data_hora",
+    ],
+)
