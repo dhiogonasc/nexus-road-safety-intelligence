@@ -91,7 +91,7 @@ def bootstrap_table(
     domain: str,
     table: Table,
 ) -> None:
-    """Abstrai a atualização de tabelas pro logs parquet"""
+    """Abstrai a atualização de tabelas por logs parquet"""
     execute_query(
         conn=conn,
         query_key="bootstrap_table",
@@ -107,7 +107,7 @@ def copy_table_to_parquet(
     domain: str,
     table: Table,
 ) -> None:
-    """Abstrai a atualização de logs parquet"""
+    """Abstrai a atualização de logs parquet por tabela"""
     execute_query(
         conn=conn,
         query_key="copy_table_to_parquet",
