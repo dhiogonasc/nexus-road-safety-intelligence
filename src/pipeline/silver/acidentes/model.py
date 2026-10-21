@@ -287,3 +287,124 @@ dim_localizacao = Table(
         "uop",
     ],
 )
+
+fato_ocorrencia = Table(
+    schema="silver",
+    name="fato_ocorrencia",
+    columns=[
+        Column(
+            name="id",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+            identity=True,
+        ),
+        Column(
+            name="id_carga",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="id_ocorrencia",
+            data_type="BIGINT",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_tempo",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_localizacao",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_coordenada",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_causa",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_tipo",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_classificacao",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_pista",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="sk_condicao_metereologica",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="pessoas",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="mortos",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="feridos_leves",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="feridos_graves",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="feridos",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="ilesos",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="ignorados",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="veiculos",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+        ),
+    ],
+    unique_constraint=[
+        "sk_tempo",
+        "sk_localizacao",
+        "sk_coordenada",
+        "sk_causa",
+        "sk_tipo",
+        "sk_classificacao",
+        "sk_pista",
+        "sk_condicao_metereologica",
+        "pessoas",
+        "mortos",
+        "feridos_leves",
+        "feridos_graves",
+        "feridos",
+        "ilesos",
+        "ignorados",
+        "veiculos",
+    ],
+)

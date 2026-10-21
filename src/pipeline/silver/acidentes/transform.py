@@ -108,3 +108,15 @@ def upsert_acidentes_dim_localizacao(
         settings=settings,
     )
 
+def upsert_acidentes_fato_ocorrencia(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+) -> None:
+    """Delega a execucao do script upsert_acidentes_fato_ocorrencia"""
+    execute_query(
+        conn=conn,
+        query_key="upsert_acidentes_fato_ocorrencia",
+        query_dict=QUERIES,
+        settings=settings,
+    )
+

@@ -50,7 +50,7 @@ def task_open_bucket_operation(
     settings: BucketSettings,
     secret_label: str,
 ) -> None:
-    """Consolida a abertura e execucao operacaoes em bucket"""
+    """Consolida a abertura e execucao de operacaoes em bucket"""
     with conn_fn() as conn:
         create_bucket_secret(
             conn=conn,
