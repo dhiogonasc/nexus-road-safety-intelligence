@@ -46,3 +46,16 @@ def upsert_acidentes_dim_tipo(
         query_dict=QUERIES,
         settings=settings,
     )
+
+
+def upsert_acidentes_dim_condicao_metereologica(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+) -> None:
+    """Delega a execucao do script upsert_acidentes_dim_condicao_meteorologica"""
+    execute_query(
+        conn=conn,
+        query_key="upsert_acidentes_dim_condicao_meteorologica",
+        query_dict=QUERIES,
+        settings=settings,
+    )

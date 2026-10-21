@@ -68,3 +68,26 @@ dim_classificacao = Table(
     ],
     unique_constraint=["classificacao"],
 )
+
+dim_condicao_metereologica = Table(
+    schema="silver",
+    name="dim_condicao_metereologica",
+    columns=[
+        Column(
+            name="id",
+            data_type="INTEGER",
+            identity=True,
+        ),
+        Column(
+            name="id_carga",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="condicao",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+    ],
+    unique_constraint=["condicao_metereologica"],
+)
