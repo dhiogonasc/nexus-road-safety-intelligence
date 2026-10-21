@@ -225,3 +225,65 @@ dim_pista = Table(
         "uso_solo",
     ],
 )
+
+dim_localizacao = Table(
+    schema="silver",
+    name="dim_localizacao",
+    columns=[
+        Column(
+            name="id",
+            data_type="INTEGER",
+            attribute="NOT NULL",
+            identity=True,
+        ),
+        Column(
+            name="id_carga",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="uf",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="br",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="km",
+            data_type="DOUBLE",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="municipio",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="regional",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="delegacia",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+        Column(
+            name="uop",
+            data_type="VARCHAR",
+            attribute="NOT NULL",
+        ),
+    ],
+    unique_constraint=[
+        "uf",
+        "br",
+        "km",
+        "municipio",
+        "regional",
+        "delegacia",
+        "uop",
+    ],
+)

@@ -9,6 +9,7 @@ from src.pipeline.silver.acidentes.model import (
     dim_coordenada,
     dim_tempo,
     dim_pista,
+    dim_localizacao,
 )
 from src.pipeline.silver.acidentes.transform import (
     upsert_acidentes_dim_causa,
@@ -18,6 +19,7 @@ from src.pipeline.silver.acidentes.transform import (
     upsert_acidentes_dim_coordenada,
     upsert_acidentes_dim_tempo,
     upsert_acidentes_dim_pista,
+    upsert_acidentes_dim_localizacao,
 )
 
 PIPELINE_CONFIG = {
@@ -59,6 +61,11 @@ PIPELINE_CONFIG = {
             "dim_pista": {
                 "table": dim_pista,
                 "upsert_fn": upsert_acidentes_dim_pista,
+                "depends_on": [],
+            },
+            "dim_localizacao": {
+                "table": dim_localizacao,
+                "upsert_fn": upsert_acidentes_dim_localizacao,
                 "depends_on": [],
             },
         },
