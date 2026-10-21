@@ -1,15 +1,15 @@
-"""pipeline/stage/gold.py"""
-
 from functools import partial
 from prefect import flow
 
-from config import settings
+from config import settings, bucket_settings
+from src.shared.db.operation import bootstrap_table, copy_table_to_parquet, create_table
 from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
 from src.shared.pipeline.task import (
     task_create_schema,
     task_create_table,
+    task_open_bucket_operation,
 )
 
 
@@ -36,24 +36,64 @@ def flow_silver(
         schema=pipeline_stage,
     )
 
-    table_futures = {}
-    wait_tasks = [schema_future]
-    for table, config in silver_tables.items():
-        create_table_fn = config["fn"]
+    futures = {}
+
+    # Iterando usando .items() para pegar a chave (ex: 'dim_causa') e a config
+    for table_key, config in silver_tables.items():
+        wait_tasks = [schema_future]
         depends_on = config.get("depends_on", [])
 
-        wait_tasks = [schema_future]
         for dep in depends_on:
-            if dep in table_futures:
-                wait_tasks.append(table_futures[dep])
+            if dep in futures:
+                wait_tasks.append(futures[dep])
 
-        future = task_create_table.submit(
+        table = config["table"]
+
+        create_table_future = task_create_table.submit(
             conn_fn=conn_fn,
-            create_table_fn=create_table_fn,
+            create_table_fn=partial(
+                create_table,
+                table=table,
+            ),
             wait_for=wait_tasks,
         )
-        table_futures[table] = future
-    for future in table_futures.values():
+
+        bootstrap_future = task_open_bucket_operation.submit(
+            conn_fn=conn_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=partial(
+                bootstrap_table,
+                domain=domain,
+                table=table,
+            ),
+            secret_label=table.name,
+            wait_for=[create_table_future],
+        )
+
+        upsert_fn = config["upsert_fn"]
+        upsert_future = task_open_bucket_operation.submit(
+            conn_fn=conn_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=upsert_fn,
+            secret_label=table.name,
+            wait_for=[bootstrap_future],
+        )
+
+        copy_future = task_open_bucket_operation.submit(
+            conn_fn=conn_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=partial(
+                copy_table_to_parquet,
+                domain=domain,
+                table=table,
+            ),
+            secret_label=table.name,
+            wait_for=[upsert_future],
+        )
+
+        futures[table_key] = copy_future
+
+    for future in futures.values():
         future.result()
 
 

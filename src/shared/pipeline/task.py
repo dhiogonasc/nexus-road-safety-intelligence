@@ -29,7 +29,7 @@ def task_create_schema(
 
 @task(
     name="Create Table",
-    task_run_name="task_create_table: {create_table_fn.__name__}",
+    task_run_name="task_create_table",
 )
 def task_create_table(
     conn_fn: Callable,
@@ -48,12 +48,14 @@ def task_open_bucket_operation(
     conn_fn: Callable,
     bucket_operation_fn: Callable,
     settings: BucketSettings,
+    secret_label: str,
 ) -> None:
     """Consolida a abertura e execucao operacaoes em bucket"""
     with conn_fn() as conn:
         create_bucket_secret(
             conn=conn,
             settings=settings,
+            label=secret_label,
         )
         bucket_operation_fn(
             conn=conn,

@@ -57,6 +57,7 @@ def flow_bronze(
                 table_name=table_name,
                 csv_path=data_path,
             ),
+            secret_label=table_name,
             wait_for=[schema_future],
         )
         futures.append(future)

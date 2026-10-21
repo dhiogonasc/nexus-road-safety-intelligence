@@ -19,6 +19,7 @@ def execute_query(
     """Abstrai a execucao de scripts sql para duckdb"""
     sql = query_dict[query_key]
     query = sql.format(**kwargs)
+    print(query)
     return conn.execute(query)
 
 
@@ -90,6 +91,7 @@ def create_table(
 def create_bucket_secret(
     conn: duckdb.DuckDBPyConnection,
     settings: BucketSettings,
+    label: str,
 ) -> None:
     """Abstrai a atualização de tabelas por logs parquet"""
     execute_query(
@@ -97,6 +99,7 @@ def create_bucket_secret(
         query_key="create_bucket_secret",
         query_dict=QUERIES,
         settings=settings,
+        label=label,
     )
 
 
@@ -107,14 +110,17 @@ def bootstrap_table(
     table: Table,
 ) -> None:
     """Abstrai a atualização de tabelas por logs parquet"""
-    execute_query(
-        conn=conn,
-        query_key="bootstrap_table",
-        query_dict=QUERIES,
-        settings=settings,
-        domain=domain,
-        table=table,
-    )
+    try:
+        execute_query(
+            conn=conn,
+            query_key="bootstrap_table",
+            query_dict=QUERIES,
+            settings=settings,
+            domain=domain,
+            table=table,
+        )
+    except duckdb.IOException:
+        pass
 
 
 def copy_table_to_parquet(
