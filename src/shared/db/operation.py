@@ -1,8 +1,9 @@
 """src/shared/db/operation.py"""
 
-from typing import Optional
+from typing import List, Optional
 import duckdb
 
+from config import BucketSettings
 from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
@@ -69,4 +70,56 @@ def create_schema(
         query_key="create_schema",
         query_dict=QUERIES,
         schema=sch,
+    )
+    
+def create_table(
+    conn: duckdb.DuckDBPyConnection,
+    stage_schema:str,
+    table_name: str,
+    columns_definition: List[str],
+) -> None:
+    """Abstrai a criação de tabelas"""
+    execute_query(
+        conn=conn,
+        query_key="create_table",
+        query_dict=QUERIES,
+        stage_schema=stage_schema,
+        table_name=table_name,
+        columns_definition=columns_definition,
+    )
+
+def bootstrap_table(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+    domain: str,
+    stage_schema:str,
+    table_name: str,
+) -> None:
+    """Abstrai a atualização de tabelas pro logs parquet"""
+    execute_query(
+        conn=conn,
+        query_key="bootstrap_table",
+        query_dict=QUERIES,
+        settings=settings,
+        domain=domain,
+        stage_schema=stage_schema,
+        table_name=table_name,
+    )
+    
+def copy_table_to_parquet(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+    domain: str,
+    stage_schema:str,
+    table_name: str,
+) -> None:
+    """Abstrai a atualização de logs parquet"""
+    execute_query(
+        conn=conn,
+        query_key="copy_table_to_parquet",
+        query_dict=QUERIES,
+        settings=settings,
+        domain=domain,
+        stage_schema=stage_schema,
+        table_name=table_name,
     )
