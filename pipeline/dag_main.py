@@ -42,7 +42,10 @@ def flow_main(
         database=database,
         domain=domain,
     )
-    #flow_gold(database=database, domain=domain)
+    flow_gold(
+        database=database,
+        domain=domain,
+    )
 
 
 if __name__ == "__main__":

@@ -4,17 +4,21 @@ from functools import partial
 from typing import Callable
 from prefect import flow, task
 
-from config import settings
+from config import settings, bucket_settings
 from src.shared.system.cmd import declare_domain
 from src.pipeline.index import PIPELINE_CONFIG
 from src.pipeline.gold.export import export_table
 from src.shared.pipeline.task import (
     task_create_schema,
     task_create_table,
+    task_open_bucket_operation,
 )
 from src.shared.db.connection import create_connection
 from src.shared.db.operation import (
     attach_connections,
+    bootstrap_table,
+    copy_table_to_parquet,
+    create_table,
     load_extensions,
 )
 
@@ -45,12 +49,15 @@ def task_export_table(
     name="Gold",
     flow_run_name="flow_gold: {domain}",
 )
-def flow_gold(database: str, domain: str) -> None:
-    """Orquestra o processamento gold para um dominio e persistência dedicada"""
+def flow_gold(
+    database: str,
+    domain: str,
+) -> None:
+    """Orquestra o processamento gold para um dominio e banco duckdb dedicado"""
 
-    pipeline_domain = PIPELINE_CONFIG[domain]
     pipeline_stage = "gold"
-    gold_tables = pipeline_domain[pipeline_stage]
+    pipeline_domain = PIPELINE_CONFIG[domain]
+    gold_assets = pipeline_domain[pipeline_stage]
 
     conn_fn = partial(
         create_connection,
@@ -61,50 +68,66 @@ def flow_gold(database: str, domain: str) -> None:
         schema=pipeline_stage,
     )
 
-    create_futures = {}
-    export_futures = []
+    asset_futures = {}
 
-    for table, table_config in gold_tables.items():
-        future = task_create_table.submit(
+    for asset in gold_assets:
+        wait_tasks = [schema_future]
+
+        table = asset.table
+        upsert_fn = asset.upsert_fn
+        depends_on = asset.depends_on
+
+        for dependency in depends_on:
+            if dependency in asset_futures:
+                wait_tasks.append(asset_futures[dependency.table.name])
+
+        create_table_future = task_create_table.submit(
             conn_fn=conn_fn,
-            create_table_fn=table_config["fn"],
-            wait_for=[schema_future],
+            create_table_fn=partial(
+                create_table,
+                table=table,
+            ),
+            wait_for=wait_tasks,
         )
-        create_futures[table] = future
 
-    for table, table_config in gold_tables.items():
-        catalog = f"{settings.DB_NAME}_{table}"
-        load_postgres_extension = partial(
-            load_extensions,
-            extensions=["postgres"],
+        bootstrap_future = task_open_bucket_operation.submit(
+            conn_fn=conn_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=partial(
+                bootstrap_table,
+                domain=domain,
+                table=table,
+            ),
+            secret_label=table.name,
+            wait_for=[create_table_future],
         )
-        attach_postgres = partial(
-            attach_connections,
-            connections=[
-                {
-                    "conn_string": settings.postgres_conn_string,
-                    "conn_alias": catalog,
-                    "conn_option": "(TYPE POSTGRES)",
-                }
-            ],
-        )
-        pg_conn_fn = partial(
-            create_connection,
-            database=database,
-            load_extensions_fn=load_postgres_extension,
-            attach_connections_fn=attach_postgres,
-        )
-        future = task_export_table.submit(
-            conn_fn=pg_conn_fn,
-            catalog=catalog,
-            table=table,
-            table_config=table_config,
-            wait_for=[create_futures[table]],
-        )
-        export_futures.append(future)
 
-    for export_future in export_futures:
-        export_future.result()
+        upsert_future = task_open_bucket_operation.submit(
+            conn_fn=conn_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=upsert_fn,
+            secret_label=table.name,
+            wait_for=[bootstrap_future],
+        )
+
+        copy_future = task_open_bucket_operation.submit(
+            conn_fn=conn_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=partial(
+                copy_table_to_parquet,
+                domain=domain,
+                table=table,
+            ),
+            secret_label=table.name,
+            wait_for=[upsert_future],
+        )
+
+        export_future = None
+
+        asset_futures[table.name] = copy_future
+
+    for future in asset_futures.values():
+        future.result()
 
 
 if __name__ == "__main__":

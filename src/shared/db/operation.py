@@ -4,7 +4,7 @@ from typing import Optional
 import duckdb
 
 from config import BucketSettings
-from src.shared.model.table import Table
+from src.shared.model.entity import Table
 from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)

@@ -1,4 +1,4 @@
-from src.shared.model.table import Table, Column
+from src.shared.model.entity import Table, Column
 
 dim_causa = Table(
     schema="silver",

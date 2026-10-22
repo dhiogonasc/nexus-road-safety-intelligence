@@ -23,9 +23,9 @@ def flow_silver(
 ) -> None:
     """Orquestra o processamento silver para um dominio e banco duckdb dedicado"""
 
-    pipeline_domain = PIPELINE_CONFIG[domain]
     pipeline_stage = "silver"
-    silver_tables = pipeline_domain[pipeline_stage]
+    pipeline_domain = PIPELINE_CONFIG[domain]
+    silver_assets = pipeline_domain[pipeline_stage]
 
     conn_fn = partial(
         create_connection,
@@ -36,18 +36,18 @@ def flow_silver(
         schema=pipeline_stage,
     )
 
-    futures = {}
+    asset_futures = {}
 
-    # Iterando usando .items() para pegar a chave (ex: 'dim_causa') e a config
-    for table_key, config in silver_tables.items():
+    for asset in silver_assets:
         wait_tasks = [schema_future]
-        depends_on = config.get("depends_on", [])
 
-        for dep in depends_on:
-            if dep in futures:
-                wait_tasks.append(futures[dep])
+        table = asset.table
+        upsert_fn = asset.upsert_fn
+        depends_on = asset.depends_on
 
-        table = config["table"]
+        for dependency in depends_on:
+            if dependency.table.name in asset_futures:
+                wait_tasks.append(asset_futures[dependency.table.name])
 
         create_table_future = task_create_table.submit(
             conn_fn=conn_fn,
@@ -70,7 +70,6 @@ def flow_silver(
             wait_for=[create_table_future],
         )
 
-        upsert_fn = config["upsert_fn"]
         upsert_future = task_open_bucket_operation.submit(
             conn_fn=conn_fn,
             settings=bucket_settings,
@@ -91,9 +90,9 @@ def flow_silver(
             wait_for=[upsert_future],
         )
 
-        futures[table_key] = copy_future
+        asset_futures[table.name] = copy_future
 
-    for future in futures.values():
+    for future in asset_futures.values():
         future.result()
 
 
