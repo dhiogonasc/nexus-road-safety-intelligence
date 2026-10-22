@@ -29,7 +29,7 @@ def task_create_schema(
 
 @task(
     name="Create Table",
-    task_run_name="task_create_table",
+    task_run_name="task_create_table: {create_table_fn.__name__}",
 )
 def task_create_table(
     conn_fn: Callable,
@@ -42,7 +42,7 @@ def task_create_table(
 
 @task(
     name="Open Bucket Operation",
-    task_run_name="task_open_bucket_operation",
+    task_run_name="task_open_bucket_operation: {bucket_operation_fn.__name__}",
 )
 def task_open_bucket_operation(
     conn_fn: Callable,

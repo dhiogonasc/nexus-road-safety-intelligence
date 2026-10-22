@@ -4,6 +4,7 @@ from functools import partial
 from prefect import flow
 
 from config import settings, bucket_settings
+from src.shared.utils.fn import named_partial
 from src.shared.db.operation import load_extensions
 from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
@@ -51,8 +52,9 @@ def flow_bronze(
         future = task_open_bucket_operation.submit(
             conn_fn=conn_fn,
             settings=bucket_settings,
-            bucket_operation_fn=partial(
-                copy_raw_to_parquet,
+            bucket_operation_fn=named_partial(
+                name=f"copy_{table_name}_to_parquet",
+                fn=copy_raw_to_parquet,
                 domain=domain,
                 table_name=table_name,
                 csv_path=data_path,
