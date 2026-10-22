@@ -10,10 +10,7 @@ from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
 from src.pipeline.bronze.extract import copy_raw_to_parquet
-from src.shared.pipeline.task import (
-    task_create_schema,
-    task_open_bucket_operation,
-)
+from src.shared.pipeline.task import task_open_bucket_operation
 
 
 @flow(
@@ -42,10 +39,6 @@ def flow_bronze(
         load_extensions_fn=load_extension,
         database=database,
     )
-    schema_future = task_create_schema(
-        schema=pipeline_stage,
-        conn_fn=conn_fn,
-    )
 
     futures = []
     for table_name, data_path in bronze_tables.items():
@@ -60,7 +53,6 @@ def flow_bronze(
                 csv_path=data_path,
             ),
             secret_label=table_name,
-            wait_for=[schema_future],
         )
         futures.append(future)
 
