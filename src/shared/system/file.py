@@ -32,3 +32,20 @@ def load_module_queries(current_file: str | Path) -> dict[str, str]:
         raise NotADirectoryError(f"O caminho '{path}' não é um diretório válido.")
 
     return load_dir_files(dir_path=path)
+
+
+def delete_file(dir_path: str | Path, filename: str) -> bool:
+    """
+    Deleta um arquivo dado o diretório e o nome do arquivo.
+    Retorna True se for deletado com sucesso, ou False caso contrário.
+    """
+    file_path = Path(dir_path) / filename
+    
+    try:
+        if file_path.is_file():
+            file_path.unlink()
+            return True
+            
+    except Exception:
+        return False
+    
