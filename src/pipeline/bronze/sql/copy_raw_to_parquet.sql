@@ -1,8 +1,7 @@
 COPY (
     SELECT
-        md5(concat_ws('|', COLUMNS(* EXCLUDE (filename)))) AS id_carga,
+        strftime(CURRENT_TIMESTAMP, '%Y-%m-%d_%H-%M-%S') AS data_carga,
         regexp_extract(filename, '([^/]+)\.[^./]+$', 1) AS arquivo_fonte,
-        CAST(CURRENT_TIMESTAMP AS DATE) AS data_carga,
         *
     FROM
         read_csv_auto(
@@ -17,6 +16,6 @@ COPY (
         )
 ) TO 's3://{settings.STORAGE_BUCKET}/{domain}/bronze/{table_name}/' (
     FORMAT PARQUET,
-    PARTITION_BY (arquivo_fonte, data_carga),
+    PARTITION_BY (data_carga, arquivo_fonte),
     OVERWRITE_OR_IGNORE 1
 );

@@ -1,7 +1,6 @@
 CREATE TEMP TABLE temp_fato_ocorrencias AS 
 SELECT 
     COALESCE((SELECT MAX(id) FROM "silver"."fato_ocorrencia"), 0) + ROW_NUMBER() OVER () AS id,
-    source_data.id_carga,
     source_data.id_ocorrencia,
     COALESCE(t.id, 0) AS sk_tempo,
     COALESCE(l.id, 0) AS sk_localizacao,
@@ -21,7 +20,6 @@ SELECT
     source_data.veiculos
 FROM (
     SELECT 
-        max(id_carga) AS id_carga, 
         COALESCE(id :: VARCHAR, 'nao_informado') AS id_ocorrencia,
         (TRY_CAST(data_inversa AS DATE) + TRY_CAST(horario AS TIME)) AS data_hora,
         TRIM(COALESCE(uf :: VARCHAR, 'nao_informado')) AS uf,
@@ -50,7 +48,10 @@ FROM (
         COALESCE(ignorados, 0) AS ignorados,
         COALESCE(veiculos, 0) AS veiculos
     FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet')
-    GROUP BY 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
+    QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY COALESCE(id :: VARCHAR, 'nao_informado') 
+        ORDER BY data_carga DESC
+    ) = 1
 ) AS source_data
 LEFT JOIN "silver"."dim_tempo" AS t 
     ON source_data.data_hora = t.data_hora
@@ -85,8 +86,6 @@ ON target.id_ocorrencia = source.id_ocorrencia
 
 WHEN MATCHED THEN 
 UPDATE SET 
-    id = source.id,
-    id_carga = source.id_carga,
     sk_tempo = source.sk_tempo,
     sk_localizacao = source.sk_localizacao,
     sk_coordenada = source.sk_coordenada,
@@ -107,7 +106,6 @@ UPDATE SET
 WHEN NOT MATCHED THEN 
 INSERT (
     id, 
-    id_carga,
     id_ocorrencia, 
     sk_tempo, 
     sk_localizacao, 
@@ -128,7 +126,6 @@ INSERT (
 ) 
 VALUES (
     source.id, 
-    source.id_carga,
     source.id_ocorrencia, 
     source.sk_tempo, 
     source.sk_localizacao, 

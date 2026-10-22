@@ -1,27 +1,22 @@
-CREATE TEMP TABLE temp_ocorrencias_classificacao AS 
+CREATE TEMP TABLE temp_dim_classificacao AS 
 SELECT 
     COALESCE((SELECT MAX(id) FROM "silver"."dim_classificacao"), 0) + ROW_NUMBER() OVER () AS id,
-    source_data.id_carga,
     source_data.classificacao
 FROM (
-    SELECT 
-        max(id_carga) AS id_carga, 
-        COALESCE(classificacao_acidente :: VARCHAR, 'nao_informado') AS classificacao
+    SELECT COALESCE(classificacao_acidente :: VARCHAR, 'nao_informado') AS classificacao
     FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet')
-    GROUP BY COALESCE(classificacao_acidente :: VARCHAR, 'nao_informado')
+    QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY COALESCE(classificacao_acidente :: VARCHAR, 'nao_informado') 
+        ORDER BY data_carga DESC
+    ) = 1
 ) AS source_data;
 
 MERGE INTO "silver"."dim_classificacao" AS target 
-USING temp_ocorrencias_classificacao AS source 
+USING temp_dim_classificacao AS source 
 ON target.classificacao = source.classificacao
 
-WHEN MATCHED AND target.id_carga <> source.id_carga THEN 
-UPDATE SET 
-    id_carga = source.id_carga,
-    classificacao = source.classificacao
-
 WHEN NOT MATCHED THEN 
-INSERT (id, id_carga, classificacao) 
-VALUES (source.id, source.id_carga, source.classificacao);
+INSERT (id, classificacao) 
+VALUES (source.id, source.classificacao);
 
-DROP TABLE IF EXISTS temp_ocorrencias_classificacao;
+DROP TABLE IF EXISTS temp_dim_classificacao;

@@ -10,11 +10,6 @@ dim_causa = Table(
             identity=True,
         ),
         Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
-        ),
-        Column(
             name="causa",
             data_type="VARCHAR",
             attribute="NOT NULL",
@@ -31,11 +26,6 @@ dim_tipo = Table(
             name="id",
             data_type="INTEGER",
             identity=True,
-        ),
-        Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
         ),
         Column(
             name="tipo",
@@ -56,11 +46,6 @@ dim_classificacao = Table(
             identity=True,
         ),
         Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
-        ),
-        Column(
             name="classificacao",
             data_type="VARCHAR",
             attribute="NOT NULL",
@@ -79,11 +64,6 @@ dim_condicao_metereologica = Table(
             identity=True,
         ),
         Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
-        ),
-        Column(
             name="condicao",
             data_type="VARCHAR",
             attribute="NOT NULL",
@@ -100,11 +80,6 @@ dim_coordenada = Table(
             name="id",
             data_type="INTEGER",
             identity=True,
-        ),
-        Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
         ),
         Column(
             name="latitude",
@@ -129,11 +104,6 @@ dim_tempo = Table(
             data_type="INTEGER",
             attribute="NOT NULL",
             identity=True,
-        ),
-        Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
         ),
         Column(
             name="data_hora",
@@ -193,11 +163,6 @@ dim_pista = Table(
             identity=True,
         ),
         Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
-        ),
-        Column(
             name="sentido",
             data_type="VARCHAR",
             attribute="NOT NULL",
@@ -235,11 +200,6 @@ dim_localizacao = Table(
             data_type="INTEGER",
             attribute="NOT NULL",
             identity=True,
-        ),
-        Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
         ),
         Column(
             name="uf",
@@ -297,11 +257,6 @@ fato_ocorrencia = Table(
             data_type="INTEGER",
             attribute="NOT NULL",
             identity=True,
-        ),
-        Column(
-            name="id_carga",
-            data_type="VARCHAR",
-            attribute="NOT NULL",
         ),
         Column(
             name="id_ocorrencia",
