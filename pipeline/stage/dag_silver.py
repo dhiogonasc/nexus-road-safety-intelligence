@@ -4,8 +4,8 @@ from prefect import flow
 from config import settings, bucket_settings
 from src.shared.utils.fn import named_partial
 from src.shared.db.operation import (
-    bootstrap_table, 
-    copy_table_to_parquet, 
+    bootstrap_table,
+    copy_table_to_parquet,
     create_table,
 )
 from src.shared.system.cmd import declare_domain
@@ -28,9 +28,8 @@ def flow_silver(
 ) -> None:
     """Orquestra o processamento silver para um dominio e banco duckdb dedicado"""
 
-    pipeline_stage = "silver"
-    pipeline_domain = PIPELINE_CONFIG[domain]
-    silver_assets = pipeline_domain[pipeline_stage]
+    domain_pipeline_config = PIPELINE_CONFIG.get_domain_pipeline_config(domain=domain)
+    assets = domain_pipeline_config.silver
 
     conn_fn = partial(
         create_connection,
@@ -38,12 +37,12 @@ def flow_silver(
     )
     schema_future = task_create_schema.submit(
         conn_fn=conn_fn,
-        schema=pipeline_stage,
+        schema="silver",
     )
 
     asset_futures = {}
 
-    for asset in silver_assets:
+    for asset in assets:
         wait_tasks = [schema_future]
 
         table = asset.table

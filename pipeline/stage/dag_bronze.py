@@ -9,7 +9,7 @@ from src.shared.db.operation import load_extensions
 from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
-from src.pipeline.bronze.extract import copy_raw_to_parquet
+from src.pipeline.acidentes.bronze.operation import copy_raw_to_parquet
 from src.shared.pipeline.task import task_open_bucket_operation
 
 
@@ -23,9 +23,8 @@ def flow_bronze(
 ) -> None:
     """Orquestra o processamento bronze para um dominio e banco duckdb dedicado"""
 
-    pipeline_domain = PIPELINE_CONFIG[domain]
-    pipeline_stage = "bronze"
-    bronze_tables = pipeline_domain[pipeline_stage]
+    domain_pipeline_config = PIPELINE_CONFIG.get_domain_pipeline_config(domain=domain)
+    bronze_tables = domain_pipeline_config.bronze
 
     load_extension = partial(
         load_extensions,

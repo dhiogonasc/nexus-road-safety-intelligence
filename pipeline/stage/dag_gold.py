@@ -1,14 +1,12 @@
 """pipeline/stage/gold.py"""
 
 from functools import partial
-from typing import Callable
-from prefect import flow, task
+from prefect import flow
 
 from config import settings, bucket_settings
 from src.shared.utils.fn import named_partial
 from src.shared.system.cmd import declare_domain
 from src.pipeline.index import PIPELINE_CONFIG
-from src.pipeline.gold.export import export_table
 from src.shared.pipeline.task import (
     task_create_schema,
     task_create_table,
@@ -16,34 +14,10 @@ from src.shared.pipeline.task import (
 )
 from src.shared.db.connection import create_connection
 from src.shared.db.operation import (
-    attach_connections,
     bootstrap_table,
     copy_table_to_parquet,
     create_table,
-    load_extensions,
 )
-
-
-@task(
-    name="Sync Gold",
-    task_run_name="task_export_table: {table_config[target]}",
-)
-def task_export_table(
-    conn_fn: Callable,
-    catalog: str,
-    table: str,
-    table_config: dict,
-) -> None:
-    """Consolida a criação de tabelas na entidade de persistencia dedicada"""
-    with conn_fn() as conn:
-        export_table(
-            source_schema="gold",
-            source_table=table,
-            target_catalog=catalog,
-            target_schema="analytics",
-            target_table=table_config["target"],
-            conn=conn,
-        )
 
 
 @flow(
@@ -56,9 +30,8 @@ def flow_gold(
 ) -> None:
     """Orquestra o processamento gold para um dominio e banco duckdb dedicado"""
 
-    pipeline_stage = "gold"
-    pipeline_domain = PIPELINE_CONFIG[domain]
-    gold_assets = pipeline_domain[pipeline_stage]
+    domain_pipeline_config = PIPELINE_CONFIG.get_domain_pipeline_config(domain=domain)
+    assets = domain_pipeline_config.gold
 
     conn_fn = partial(
         create_connection,
@@ -66,12 +39,12 @@ def flow_gold(
     )
     schema_future = task_create_schema.submit(
         conn_fn=conn_fn,
-        schema=pipeline_stage,
+        schema="gold",
     )
 
     asset_futures = {}
 
-    for asset in gold_assets:
+    for asset in assets:
         wait_tasks = [schema_future]
 
         table = asset.table
@@ -125,8 +98,6 @@ def flow_gold(
             secret_label=table.name,
             wait_for=[upsert_future],
         )
-
-        export_future = None
 
         asset_futures[table.name] = copy_future
 
