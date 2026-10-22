@@ -15,6 +15,8 @@ from src.pipeline.silver.acidentes.model import (
 )
 from src.pipeline.gold.acidentes.model import (
     agg_condicoes_via,
+    agg_sazonalidade,
+    agg_trechos_criticos,
 )
 from src.pipeline.silver.acidentes.transform import (
     upsert_acidentes_dim_causa,
@@ -29,6 +31,8 @@ from src.pipeline.silver.acidentes.transform import (
 )
 from src.pipeline.gold.acidentes.load import (
     upsert_acidentes_agg_condicoes_via,
+    upsert_acidentes_agg_sazonalidade,
+    upsert_acidentes_agg_trechos_criticos,
 )
 
 asset_dim_causa = Asset(
@@ -82,6 +86,15 @@ asset_agg_condicoes_via = Asset(
     table=agg_condicoes_via,
     upsert_fn=upsert_acidentes_agg_condicoes_via,
 )
+asset_agg_sazonalidade = Asset(
+    table=agg_sazonalidade,
+    upsert_fn=upsert_acidentes_agg_sazonalidade,
+)
+asset_agg_trechos_criticos = Asset(
+    table=agg_trechos_criticos,
+    upsert_fn=upsert_acidentes_agg_trechos_criticos,
+)
+
 PIPELINE_CONFIG = {
     "acidentes": {
         "bronze": {
@@ -100,6 +113,8 @@ PIPELINE_CONFIG = {
         ],
         "gold": [
             asset_agg_condicoes_via,
+            asset_agg_sazonalidade,
+            asset_agg_trechos_criticos,
         ],
     }
 }

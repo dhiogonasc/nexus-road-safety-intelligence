@@ -53,16 +53,16 @@ FROM (
 
 MERGE INTO "gold"."agg_condicoes_via" AS target 
 USING temp_agg_condicoes_via AS source 
-ON target.ano = source.ano 
-   AND target.mes = source.mes 
-   AND target.dia = source.dia 
-   AND target.dia_semana = source.dia_semana 
-   AND target.fase_dia = source.fase_dia 
-   AND target.condicao_metereologica = source.condicao_metereologica 
-   AND target.sentido_via = source.sentido_via 
-   AND target.tracado_via = source.tracado_via 
-   AND target.tipo_via = source.tipo_via 
-   AND target.solo_via = source.solo_via
+    ON target.ano = source.ano 
+    AND target.mes = source.mes 
+    AND target.dia = source.dia 
+    AND target.dia_semana = source.dia_semana 
+    AND target.fase_dia = source.fase_dia 
+    AND target.condicao_metereologica = source.condicao_metereologica 
+    AND target.sentido_via = source.sentido_via 
+    AND target.tracado_via = source.tracado_via 
+    AND target.tipo_via = source.tipo_via 
+    AND target.solo_via = source.solo_via
 
 WHEN MATCHED THEN
 UPDATE SET
