@@ -3,7 +3,7 @@
 from typing import Optional
 import duckdb
 
-from config import BucketSettings
+from settings import BucketSettings
 from src.shared.model.entity import Table
 from src.shared.system.file import load_module_queries
 

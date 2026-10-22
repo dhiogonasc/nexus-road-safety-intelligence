@@ -1,14 +1,13 @@
 from functools import partial
 from prefect import flow
 
-from config import settings, bucket_settings
+from settings import bucket_settings
 from src.shared.utils.fn import named_partial
 from src.shared.db.operation import (
     bootstrap_table,
     copy_table_to_parquet,
     create_table,
 )
-from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
 from src.shared.pipeline.task import (
@@ -101,15 +100,3 @@ def flow_silver(
 
     for future in asset_futures.values():
         future.result()
-
-
-if __name__ == "__main__":
-    args = declare_domain()
-
-    DOMAIN = args.domain
-    DATABASE = settings.domain_db_path(domain=DOMAIN)
-
-    flow_silver(
-        database=DATABASE,
-        domain=DOMAIN,
-    )

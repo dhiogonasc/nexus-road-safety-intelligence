@@ -2,7 +2,7 @@
 
 from typing import Callable, Optional
 from prefect import task
-from config import BucketSettings
+from settings import BucketSettings
 from src.shared.db.operation import (
     create_bucket_secret,
     create_schema,

@@ -3,7 +3,10 @@
 from functools import partial
 from prefect import flow
 
-from config import settings
+from settings import (
+    duckdb_settings,
+    postgres_settings,
+)
 from src.shared.system.cmd import declare_domain
 from src.shared.pipeline.task import task_create_schema
 from src.shared.db.connection import create_connection
@@ -22,14 +25,14 @@ def flow_create_pg_schemas(database: str):
 
     load_postgres_extension = partial(
         load_extensions,
-        extensions=settings.DUCKDB_EXTENSIONS,
+        extensions=duckdb_settings.EXTENSIONS,
     )
     attach_postgres = partial(
         attach_connections,
         connections=[
             {
-                "conn_string": settings.postgres_conn_string,
-                "conn_alias": settings.DB_NAME,
+                "conn_string": postgres_settings.postgres_conn_string,
+                "conn_alias": postgres_settings.DB_NAME,
                 "conn_option": "(TYPE POSTGRES)",
             }
         ],
@@ -41,7 +44,7 @@ def flow_create_pg_schemas(database: str):
         attach_connections_fn=attach_postgres,
     )
     task_create_schema(
-        catalog=settings.DB_NAME,
+        catalog=postgres_settings.DB_NAME,
         schema="analytics",
         conn_fn=pg_conn_fn,
     )
@@ -51,6 +54,6 @@ if __name__ == "__main__":
     args = declare_domain()
 
     DOMAIN = args.domain
-    DATABASE = settings.domain_db_path(domain=DOMAIN)
+    DATABASE = duckdb_settings.get_database_path(domain=DOMAIN)
 
     flow_create_pg_schemas(database=DATABASE)

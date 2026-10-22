@@ -4,7 +4,7 @@ from functools import partial
 from typing import Callable
 from prefect import flow, task
 
-from config import settings
+from settings import settings
 from src.shared.system.cmd import declare_domain
 from src.shared.db.connection import create_connection
 from src.pipeline.setup.extension import install_extension
