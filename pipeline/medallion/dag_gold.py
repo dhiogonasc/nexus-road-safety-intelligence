@@ -29,7 +29,7 @@ def flow_gold(
 ) -> None:
     """Orquestra o processamento gold para um dominio e banco duckdb dedicado"""
 
-    domain_pipeline_config = PIPELINE_CONFIG.get_domain_pipeline_config(domain=domain)
+    domain_pipeline_config = PIPELINE_CONFIG.get_domain_config(domain=domain)
     assets = domain_pipeline_config.gold
 
     conn_fn = partial(

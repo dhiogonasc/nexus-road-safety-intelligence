@@ -1,6 +1,6 @@
 """src/shared/model/table.py"""
 
-from typing import List, Literal
+from typing import List, Literal, Optional
 from pydantic import BaseModel, computed_field, model_validator
 
 
@@ -14,7 +14,7 @@ class Column(BaseModel):
 
     @model_validator(mode="after")
     def ensure_rules(self) -> "Column":
-        """Verifica atributo associdado a identidade"""
+        """Verifica atributo associado a identidade"""
         if self.identity:
             self.attribute = "NOT NULL"
         return self
@@ -22,12 +22,20 @@ class Column(BaseModel):
 
 class Table(BaseModel):
     """Define estrutura de tabelas"""
-
+    database: Optional[str] = None
     schema: str
     name: str
     columns: List[Column]
-    unique_constraint: List[str]
-
+    unique_constraint: List[str] = []
+    
+    @computed_field
+    @property
+    def fqn(self) -> str:
+        """Retorna o nome totalmente qualificado da tabela (FQN)."""
+        if self.database:
+            return f"{self.database}.{self.schema}.{self.name}"
+        return f"{self.schema}.{self.name}"
+    
     @computed_field
     @property
     def columns_name(self) -> str:

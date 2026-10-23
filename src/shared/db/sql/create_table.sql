@@ -1,1 +1,1 @@
-CREATE TABLE IF NOT EXISTS "{table.schema}"."{table.name}" ({table.columns_definition});
+CREATE TABLE IF NOT EXISTS "{table.fqn}" ({table.columns_definition});

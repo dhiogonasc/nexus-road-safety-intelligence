@@ -22,7 +22,7 @@ def flow_bronze(
 ) -> None:
     """Orquestra o processamento bronze para um dominio e banco duckdb dedicado"""
 
-    domain_pipeline_config = PIPELINE_CONFIG.get_domain_pipeline_config(domain=domain)
+    domain_pipeline_config = PIPELINE_CONFIG.get_domain_config(domain=domain)
     bronze_tables = domain_pipeline_config.bronze
 
     load_extension = partial(

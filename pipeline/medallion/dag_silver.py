@@ -7,6 +7,7 @@ from src.shared.db.operation import (
     bootstrap_table,
     copy_table_to_parquet,
     create_table,
+    load_extensions,
 )
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
@@ -26,14 +27,23 @@ def flow_silver(
     domain: str,
 ) -> None:
     """Orquestra o processamento silver para um dominio e banco duckdb dedicado"""
-
-    domain_pipeline_config = PIPELINE_CONFIG.get_domain_pipeline_config(domain=domain)
+    
+    domain_pipeline_config = PIPELINE_CONFIG.get_domain_config(domain=domain)
     assets = domain_pipeline_config.silver
 
+    load_extensions_fn = partial(
+        load_extensions,
+        extensions=[
+            "httpfs",
+            "parquet",
+        ],
+    )
     conn_fn = partial(
         create_connection,
+        load_extensions_fn=load_extensions_fn,
         database=database,
     )
+    
     schema_future = task_create_schema.submit(
         conn_fn=conn_fn,
         schema="silver",

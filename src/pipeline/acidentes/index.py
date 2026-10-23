@@ -37,6 +37,11 @@ from src.pipeline.acidentes.gold.operation import (
     upsert_acidentes_agg_sazonalidade,
     upsert_acidentes_agg_trechos_criticos,
 )
+from src.pipeline.acidentes.gold.exportation.operation import (
+    upsert_exportation_acidentes_agg_condicoes_via,
+    upsert_exportation_acidentes_agg_sazonalidade,
+    upsert_exportation_acidentes_agg_trechos_criticos,
+)
 
 asset_dim_causa = PipelineAsset(
     table=dim_causa,
@@ -98,6 +103,19 @@ asset_agg_trechos_criticos = PipelineAsset(
     upsert_fn=upsert_acidentes_agg_trechos_criticos,
 )
 
+asset_exportation_agg_condicoes_via = PipelineAsset(
+    table=agg_condicoes_via,
+    upsert_fn=upsert_exportation_acidentes_agg_condicoes_via,
+)
+asset_exportation_agg_sazonalidade = PipelineAsset(
+    table=agg_sazonalidade,
+    upsert_fn=upsert_exportation_acidentes_agg_sazonalidade,
+)
+asset_exportation_agg_trechos_criticos = PipelineAsset(
+    table=agg_trechos_criticos,
+    upsert_fn=upsert_exportation_acidentes_agg_trechos_criticos,
+)
+
 PIPELINE_CONFIG = DomainPipelineConfig(
     bronze={
         "ocorrencias": str(AC_OCORRENCIA_DIR / "*.csv"),
@@ -117,5 +135,10 @@ PIPELINE_CONFIG = DomainPipelineConfig(
         asset_agg_condicoes_via,
         asset_agg_sazonalidade,
         asset_agg_trechos_criticos,
+    ],
+    exportation=[
+        asset_exportation_agg_condicoes_via,
+        asset_exportation_agg_sazonalidade,
+        asset_exportation_agg_trechos_criticos,
     ],
 )
