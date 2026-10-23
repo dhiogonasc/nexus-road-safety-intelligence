@@ -4,8 +4,7 @@ from functools import partial
 from typing import Callable
 from prefect import flow, task
 
-from settings import settings
-from src.shared.system.cmd import declare_domain
+from settings import duckdb_settings
 from src.shared.db.connection import create_connection
 from src.pipeline.setup.extension import install_extension
 
@@ -40,7 +39,7 @@ def flow_install_extensions(database: str):
     )
 
     install_extension_futures = []
-    for extension in settings.DUCKDB_EXTENSIONS:
+    for extension in duckdb_settings.EXTENSIONS:
         future = task_install_extension.submit(
             extension=extension,
             conn_fn=duckdb_conn_fn,
@@ -49,12 +48,3 @@ def flow_install_extensions(database: str):
 
     for future in install_extension_futures:
         future.result()
-
-
-if __name__ == "__main__":
-    args = declare_domain()
-
-    DOMAIN = args.domain
-    DATABASE = settings.domain_db_path(domain=DOMAIN)
-
-    flow_install_extensions(database=DATABASE)
