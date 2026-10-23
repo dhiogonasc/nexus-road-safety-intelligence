@@ -1,0 +1,22 @@
+"""src/pipeline/gold/acidentes/load.py"""
+
+import duckdb
+
+from settings import BucketSettings
+from src.shared.db.operation import execute_query
+from src.shared.system.file import load_module_queries
+
+QUERIES = load_module_queries(current_file=__file__)
+
+
+def upsert(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+) -> None:
+    """Delega a execucao do script upsert.sql"""
+    execute_query(
+        conn=conn,
+        query_key="upsert",
+        query_dict=QUERIES,
+        settings=settings,
+    )
