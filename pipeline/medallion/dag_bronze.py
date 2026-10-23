@@ -8,7 +8,10 @@ from src.shared.utils.fn import named_partial
 from src.shared.db.operation import load_extensions
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
-from src.pipeline.acidentes.bronze.operation import copy_raw_to_parquet
+from src.pipeline.acidentes.bronze.operation import (
+    copy_raw_to_parquet,
+    register_charge_logs,
+)
 from src.shared.pipeline.task import task_open_bucket_operation
 
 
@@ -40,7 +43,7 @@ def flow_bronze(
 
     futures = []
     for table_name, data_path in bronze_tables.items():
-        future = task_open_bucket_operation.submit(
+        copy_future = task_open_bucket_operation.submit(
             conn_fn=conn_fn,
             settings=bucket_settings,
             bucket_operation_fn=named_partial(
@@ -52,7 +55,20 @@ def flow_bronze(
             ),
             secret_label=table_name,
         )
-        futures.append(future)
+
+        register_future = task_open_bucket_operation.submit(
+            conn_fn=conn_fn,
+            settings=bucket_settings,
+            bucket_operation_fn=named_partial(
+                name=f"register_{table_name}_charge_logs",
+                fn=register_charge_logs,
+                domain=domain,
+                table_name=table_name,
+            ),
+            secret_label=table_name,
+            wait_for=[copy_future],
+        )
+        futures.append(register_future)
 
     for future in futures:
         future.result()

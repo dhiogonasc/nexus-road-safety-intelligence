@@ -17,18 +17,15 @@ FROM (
         TRIM(COALESCE(delegacia :: VARCHAR, 'nao_informado')) AS delegacia,
         TRIM(COALESCE(uop :: VARCHAR, 'nao_informado')) AS uop,
         TRY_CAST(REPLACE(km :: VARCHAR, ',', '.') AS DOUBLE) AS km
-    FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet')
-    QUALIFY ROW_NUMBER() OVER (
-        PARTITION BY 
-            COALESCE(uf :: VARCHAR, 'nao_informado'), 
-            COALESCE(br :: VARCHAR, 'nao_informado'),
-            COALESCE(municipio :: VARCHAR, 'nao_informado'),
-            COALESCE(regional :: VARCHAR, 'nao_informado'),
-            COALESCE(delegacia :: VARCHAR, 'nao_informado'),
-            COALESCE(uop :: VARCHAR, 'nao_informado'),
-            km
-        ORDER BY data_carga DESC
-    ) = 1
+    FROM 
+        read_parquet(
+            's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
+            hive_partitioning = true
+        )
+    WHERE data_carga = (
+        SELECT MAX(data_carga) 
+        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
+    )
 ) AS source_data;
 
 MERGE INTO "silver"."dim_localizacao" AS target 

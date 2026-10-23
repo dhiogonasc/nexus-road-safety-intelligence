@@ -30,3 +30,20 @@ def copy_raw_to_parquet(
         delim=delim,
         encoding=encoding,
     )
+
+
+def register_charge_logs(
+    conn: duckdb.DuckDBPyConnection,
+    settings: BucketSettings,
+    domain: str,
+    table_name: str,
+) -> None:
+    """Consolida o registro de logs"""
+    execute_query(
+        conn=conn,
+        query_key="register_charge_logs",
+        query_dict=QUERIES,
+        settings=settings,
+        domain=domain,
+        table_name=table_name,
+    )

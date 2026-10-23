@@ -15,16 +15,17 @@ FROM (
             COALESCE(fase_dia :: VARCHAR, 'nao_informado') AS fase_dia,
             TRY_CAST(data_inversa AS DATE) AS base_data,
             TRY_CAST(horario AS TIME) AS base_hora
-        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet')
+        FROM 
+            read_parquet(
+                's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
+                hive_partitioning = true
+            )
         WHERE data_inversa IS NOT NULL 
             AND horario IS NOT NULL
-        QUALIFY ROW_NUMBER() OVER (
-            PARTITION BY 
-                COALESCE(dia_semana :: VARCHAR, 'nao_informado'),
-                COALESCE(fase_dia :: VARCHAR, 'nao_informado'),
-                data_inversa, horario
-            ORDER BY data_carga DESC
-        ) = 1
+            AND data_carga = (
+                SELECT MAX(data_carga) 
+                FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
+            )
     ),
     formatted_tempo AS (
         SELECT

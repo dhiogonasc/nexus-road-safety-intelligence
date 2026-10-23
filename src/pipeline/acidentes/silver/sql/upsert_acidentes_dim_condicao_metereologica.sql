@@ -4,11 +4,15 @@ SELECT
     source_data.condicao
 FROM (
     SELECT COALESCE(condicao_metereologica :: VARCHAR, 'nao_informado') AS condicao
-    FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet')
-    QUALIFY ROW_NUMBER() OVER (
-        PARTITION BY COALESCE(condicao_metereologica :: VARCHAR, 'nao_informado') 
-        ORDER BY data_carga DESC
-    ) = 1
+    FROM 
+        read_parquet(
+            's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
+            hive_partitioning = true
+        )
+    WHERE data_carga = (
+        SELECT MAX(data_carga) 
+        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
+    )
 ) AS source_data;
 
 MERGE INTO "silver"."dim_condicao_metereologica" AS target 

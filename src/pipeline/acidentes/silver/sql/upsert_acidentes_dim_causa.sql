@@ -4,11 +4,15 @@ SELECT
     source_data.causa
 FROM (
     SELECT COALESCE(causa_acidente :: VARCHAR, 'nao_informado') AS causa
-    FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet')
-    QUALIFY ROW_NUMBER() OVER (
-        PARTITION BY COALESCE(causa_acidente :: VARCHAR, 'nao_informado') 
-        ORDER BY data_carga DESC
-    ) = 1
+    FROM 
+        read_parquet(
+            's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
+            hive_partitioning = true
+        )
+    WHERE data_carga = (
+        SELECT MAX(data_carga) 
+        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
+    )
 ) AS source_data;
 
 MERGE INTO "silver"."dim_causa" AS target 

@@ -3,7 +3,7 @@
 from pathlib import Path
 from prefect import flow, task
 
-from pipeline.exportion.dag_exportation import flow_exportation
+from pipeline.exportation.dag_exportation import flow_exportation
 from settings import duckdb_settings
 from pipeline.setup.dag_install_extensions import flow_install_extensions
 from pipeline.medallion.dag_bronze import flow_bronze
