@@ -21,6 +21,11 @@ from src.pipeline.acidentes.gold.table import (
     agg_sazonalidade,
     agg_trechos_criticos,
 )
+from src.pipeline.acidentes.gold.exportation.table import (
+    agg_condicoes_via as exportation_agg_condicoes_via,
+    agg_sazonalidade as exportation_agg_sazonalidade,
+    agg_trechos_criticos as exportation_agg_trechos_criticos,
+)
 from src.pipeline.acidentes.silver.operation import (
     upsert_acidentes_dim_causa,
     upsert_acidentes_dim_classificacao,
@@ -104,15 +109,15 @@ asset_agg_trechos_criticos = PipelineAsset(
 )
 
 asset_exportation_agg_condicoes_via = PipelineAsset(
-    table=agg_condicoes_via,
+    table=exportation_agg_condicoes_via,
     upsert_fn=upsert_exportation_acidentes_agg_condicoes_via,
 )
 asset_exportation_agg_sazonalidade = PipelineAsset(
-    table=agg_sazonalidade,
+    table=exportation_agg_sazonalidade,
     upsert_fn=upsert_exportation_acidentes_agg_sazonalidade,
 )
 asset_exportation_agg_trechos_criticos = PipelineAsset(
-    table=agg_trechos_criticos,
+    table=exportation_agg_trechos_criticos,
     upsert_fn=upsert_exportation_acidentes_agg_trechos_criticos,
 )
 

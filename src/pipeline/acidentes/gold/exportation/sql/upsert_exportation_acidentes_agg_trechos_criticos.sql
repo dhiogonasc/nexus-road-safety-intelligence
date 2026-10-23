@@ -1,5 +1,5 @@
 CREATE TEMP TABLE temp_agg_trechos_criticos AS SELECT *
-FROM read_parquet('s3://{bucket_settings.STORAGE_BUCKET}/acidentes/gold/agg_trechos_criticos/agg_trechos_criticos.parquet') ;
+FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/gold/agg_trechos_criticos/agg_trechos_criticos.parquet') ;
 
 MERGE INTO "{catalog}"."analytics"."agg_trechos_criticos" AS target 
 USING temp_agg_trechos_criticos AS source 

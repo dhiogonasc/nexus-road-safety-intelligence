@@ -1,5 +1,5 @@
 CREATE TEMP TABLE temp_agg_condicoes_via AS SELECT *
-FROM read_parquet('s3://{bucket_settings.STORAGE_BUCKET}/acidentes/gold/agg_condicoes_via/agg_condicoes_via.parquet') ;
+FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/gold/agg_condicoes_via/agg_condicoes_via.parquet') ;
 
 MERGE INTO "{catalog}"."analytics"."agg_condicoes_via" AS target 
 USING temp_agg_condicoes_via AS source 

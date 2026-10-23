@@ -44,19 +44,23 @@ def attach_connections(
     connections: list[dict[str, str]],
 ) -> None:
     """Abstrai a conexao de bases para duckdb"""
+
     for config in connections:
         conn_string = config["conn_string"]
         conn_alias = config["conn_alias"]
         conn_option = config.get("conn_option", "")
 
-        execute_query(
-            conn=conn,
-            query_key="attach_connection",
-            query_dict=QUERIES,
-            conn_string=conn_string,
-            conn_alias=conn_alias,
-            conn_option=conn_option,
-        )
+        try:
+            execute_query(
+                conn=conn,
+                query_key="attach_connection",
+                query_dict=QUERIES,
+                conn_string=conn_string,
+                conn_alias=conn_alias,
+                conn_option=conn_option,
+            )
+        except (duckdb.ResourceInUseException, duckdb.BinderException):
+            continue
 
 
 def create_schema(

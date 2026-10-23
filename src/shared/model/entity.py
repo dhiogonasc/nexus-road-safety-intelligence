@@ -22,20 +22,21 @@ class Column(BaseModel):
 
 class Table(BaseModel):
     """Define estrutura de tabelas"""
-    database: Optional[str] = None
+
+    catalog: Optional[str] = None
     schema: str
     name: str
     columns: List[Column]
     unique_constraint: List[str] = []
-    
+
     @computed_field
     @property
     def fqn(self) -> str:
         """Retorna o nome totalmente qualificado da tabela (FQN)."""
-        if self.database:
-            return f"{self.database}.{self.schema}.{self.name}"
-        return f"{self.schema}.{self.name}"
-    
+        if self.catalog:
+            return f'"{self.catalog}"."{self.schema}"."{self.name}"'
+        return f'"{self.schema}"."{self.name}"'
+
     @computed_field
     @property
     def columns_name(self) -> str:

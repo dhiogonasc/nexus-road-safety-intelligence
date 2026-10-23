@@ -51,7 +51,7 @@ def flow_gold(
         depends_on = asset.depends_on
 
         for dependency in depends_on:
-            if dependency in asset_futures:
+            if dependency.table.name in asset_futures:
                 wait_tasks.append(asset_futures[dependency.table.name])
 
         create_table_future = task_create_table.submit(

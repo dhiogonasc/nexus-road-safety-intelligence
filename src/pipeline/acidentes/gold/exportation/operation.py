@@ -11,7 +11,7 @@ QUERIES = load_module_queries(current_file=__file__)
 
 def upsert_exportation_acidentes_agg_condicoes_via(
     conn: duckdb.DuckDBPyConnection,
-    bucket_settings: BucketSettings,
+    settings: BucketSettings,
     catalog: str,
 ) -> None:
     """Delega a execucao do script upsert_exportation_acidentes_agg_condicoes_via.sql"""
@@ -19,14 +19,14 @@ def upsert_exportation_acidentes_agg_condicoes_via(
         conn=conn,
         query_key="upsert_exportation_acidentes_agg_condicoes_via",
         query_dict=QUERIES,
-        bucket_settings=bucket_settings,
+        settings=settings,
         catalog=catalog,
     )
 
 
 def upsert_exportation_acidentes_agg_sazonalidade(
     conn: duckdb.DuckDBPyConnection,
-    bucket_settings: BucketSettings,
+    settings: BucketSettings,
     catalog: str,
 ) -> None:
     """Delega a execucao do script upsert_exportation_acidentes_agg_sazonalidade.sql"""
@@ -34,14 +34,14 @@ def upsert_exportation_acidentes_agg_sazonalidade(
         conn=conn,
         query_key="upsert_exportation_acidentes_agg_sazonalidade",
         query_dict=QUERIES,
-        bucket_settings=bucket_settings,
+        settings=settings,
         catalog=catalog,
     )
     
     
 def upsert_exportation_acidentes_agg_trechos_criticos(
     conn: duckdb.DuckDBPyConnection,
-    bucket_settings: BucketSettings,
+    settings: BucketSettings,
     catalog: str,
 ) -> None:
     """Delega a execucao do script upsert_exportation_acidentes_agg_trechos_criticos.sql"""
@@ -49,6 +49,6 @@ def upsert_exportation_acidentes_agg_trechos_criticos(
         conn=conn,
         query_key="upsert_exportation_acidentes_agg_trechos_criticos",
         query_dict=QUERIES,
-        bucket_settings=bucket_settings,
+        settings=settings,
         catalog=catalog,
     ) 

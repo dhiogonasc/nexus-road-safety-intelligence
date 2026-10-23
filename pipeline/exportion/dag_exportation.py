@@ -1,4 +1,4 @@
-"""pipeline/stage/gold.py"""
+"""pipeline/exportation/dag_exportation.py"""
 
 from functools import partial
 from prefect import flow
@@ -22,14 +22,14 @@ from src.shared.db.operation import (
 
 @flow(
     name="Exportation",
-    flow_run_name="flow_gold: {domain}",
+    flow_run_name="flow_exportation: {domain}",
 )
 def flow_exportation(
     database: str,
     domain: str,
 ) -> None:
     """Orquestra a exportacao de um dominio para postgres"""
-    
+
     domain_pipeline_config = PIPELINE_CONFIG.get_domain_config(domain=domain)
     assets = domain_pipeline_config.exportation
 
@@ -44,13 +44,13 @@ def flow_exportation(
     catalog = postgres_settings.DB_NAME
     attach_connections_fn = partial(
         attach_connections,
-        connections = [
+        connections=[
             {
                 "conn_string": postgres_settings.postgres_conn_string,
                 "conn_alias": catalog,
-                "conn_option": "(TYPE POSTGRES)"
+                "conn_option": "(TYPE POSTGRES)",
             }
-        ]
+        ],
     )
     conn_fn = partial(
         create_connection,
@@ -60,7 +60,8 @@ def flow_exportation(
     )
     schema_future = task_create_schema.submit(
         conn_fn=conn_fn,
-        schema="gold",
+        schema="analytics",
+        catalog=catalog,
     )
 
     asset_futures = {}
@@ -73,14 +74,14 @@ def flow_exportation(
         depends_on = asset.depends_on
 
         for dependency in depends_on:
-            if dependency in asset_futures:
+            if dependency.table.name in asset_futures:
                 wait_tasks.append(asset_futures[dependency.table.name])
 
         create_table_future = task_create_table.submit(
             conn_fn=conn_fn,
             create_table_fn=named_partial(
                 fn=create_table,
-                name=f"create_{table.name}",
+                name=f"exportation_create_{table.name}",
                 table=table,
             ),
             wait_for=wait_tasks,
@@ -91,7 +92,7 @@ def flow_exportation(
             settings=bucket_settings,
             bucket_operation_fn=named_partial(
                 fn=bootstrap_table,
-                name=f"bootstrap_{table.name}",
+                name=f"exportation_bootstrap_{table.name}",
                 domain=domain,
                 table=table,
             ),
@@ -104,6 +105,7 @@ def flow_exportation(
             settings=bucket_settings,
             bucket_operation_fn=named_partial(
                 fn=upsert_fn,
+                name=f"exportation_upsert_{table.name}",
                 catalog=catalog,
             ),
             secret_label=table.name,

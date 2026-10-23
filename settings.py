@@ -12,7 +12,7 @@ from pydantic_settings import (
 class DuckDBSettings(BaseSettings):
     """Configura DuckDB"""
 
-    PATH: str = str(Path().resolve(__file__) / "db")
+    DB_DIR: str = str(Path(__file__).resolve().parent / "db")
     EXTENSIONS: list[str] = [
         "postgres",
         "httpfs",
@@ -26,7 +26,7 @@ class DuckDBSettings(BaseSettings):
 
     def get_database_path(self, domain: str) -> str:
         """Define a chave de conexão duckdb"""
-        return str(Path(self.PATH) / f"{domain}.db")
+        return str(Path(self.DB_DIR) / f"{domain}.db")
 
 
 class PostgresSettings(BaseSettings):

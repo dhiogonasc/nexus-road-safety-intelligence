@@ -1,5 +1,5 @@
 CREATE TEMP TABLE temp_agg_sazonalidade AS SELECT *
-FROM read_parquet('s3://{bucket_settings.STORAGE_BUCKET}/acidentes/gold/agg_sazonalidade/agg_sazonalidade.parquet') ;
+FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/gold/agg_sazonalidade/agg_sazonalidade.parquet') ;
 
 MERGE INTO "{catalog}"."analytics"."agg_sazonalidade" AS target 
 USING temp_agg_sazonalidade AS source 
