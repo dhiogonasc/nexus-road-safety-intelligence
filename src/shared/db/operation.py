@@ -142,3 +142,25 @@ def copy_table_to_parquet(
         domain=domain,
         table=table,
     )
+
+
+def upsert_table(
+    conn: duckdb.DuckDBPyConnection,
+    table: Table,
+) -> None:
+    """Delega a execução do script upsert_table.sql"""
+
+    mrg_ref = [f"target.{col} = source.{col}\n" for col in table.unique_columns_constraint]
+    merge_reference = "AND ".join(mrg_ref)
+
+    src_cols = [f"source.{col}" for col in table.columns]
+    source_columns = ",\n".join(src_cols)
+        
+    execute_query(
+        conn=conn,
+        query_key="upsert_table",
+        query_dict=QUERIES,
+        table=table,
+        merge_reference=merge_reference,
+        source_columns=source_columns,
+    )
