@@ -41,6 +41,19 @@ def task_create_table(
 
 
 @task(
+    name="Upsert Table",
+    task_run_name="task_upsert_table: {upsert_table_fn.__name__}",
+)
+def task_upsert_table(
+    conn_fn: Callable,
+    upsert_table_fn: Callable,
+) -> None:
+    """Consolida a atualização incremental de tabelas na entidade de persistencia dedicada"""
+    with conn_fn() as conn:
+        upsert_table_fn(conn=conn)
+
+
+@task(
     name="Open Bucket Operation",
     task_run_name="task_open_bucket_operation: {bucket_operation_fn.__name__}",
 )

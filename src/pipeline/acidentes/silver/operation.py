@@ -8,6 +8,7 @@ from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
 
+
 def fetch_last_charged(
     conn: duckdb.DuckDBPyConnection,
     settings: BucketSettings,
@@ -21,104 +22,79 @@ def fetch_last_charged(
     )
 
 
-def upsert_acidentes_dim_causa(
-    conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
-) -> None:
+def upsert_acidentes_dim_causa(conn: duckdb.DuckDBPyConnection) -> None:
     """Delega a execucao do script upsert_acidentes_dim_causa"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_causa",
         query_dict=QUERIES,
-        settings=settings,
     )
 
 
-def upsert_acidentes_dim_classificacao(
-    conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
-) -> None:
+def upsert_acidentes_dim_classificacao(conn: duckdb.DuckDBPyConnection) -> None:
     """Delega a execucao do script upsert_acidentes_dim_classificacao"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_classificacao",
         query_dict=QUERIES,
-        settings=settings,
     )
 
 
-def upsert_acidentes_dim_tipo(
-    conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
-) -> None:
+def upsert_acidentes_dim_tipo(conn: duckdb.DuckDBPyConnection) -> None:
     """Delega a execucao do script upsert_acidentes_dim_tipo"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_tipo",
         query_dict=QUERIES,
-        settings=settings,
     )
 
 
 def upsert_acidentes_dim_condicao_metereologica(
     conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
 ) -> None:
     """Delega a execucao do script upsert_acidentes_dim_condicao_metereologica"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_condicao_metereologica",
         query_dict=QUERIES,
-        settings=settings,
     )
 
-def upsert_acidentes_dim_coordenada(
-    conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
-) -> None:
+
+def upsert_acidentes_dim_coordenada(conn: duckdb.DuckDBPyConnection) -> None:
     """Delega a execucao do script upsert_acidentes_dim_coordenada"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_coordenada",
         query_dict=QUERIES,
-        settings=settings,
     )
 
-def upsert_acidentes_dim_tempo(
-    conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
-) -> None:
+
+def upsert_acidentes_dim_tempo(conn: duckdb.DuckDBPyConnection) -> None:
     """Delega a execucao do script upsert_acidentes_dim_tempo"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_tempo",
         query_dict=QUERIES,
-        settings=settings,
     )
 
-def upsert_acidentes_dim_pista(
-    conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
-) -> None:
+
+def upsert_acidentes_dim_pista(conn: duckdb.DuckDBPyConnection) -> None:
     """Delega a execucao do script upsert_acidentes_dim_pista"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_pista",
         query_dict=QUERIES,
-        settings=settings,
     )
 
-def upsert_acidentes_dim_localizacao(
-    conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
-) -> None:
+
+def upsert_acidentes_dim_localizacao(conn: duckdb.DuckDBPyConnection) -> None:
     """Delega a execucao do script upsert_acidentes_dim_localizacao"""
     execute_query(
         conn=conn,
         query_key="upsert_acidentes_dim_localizacao",
         query_dict=QUERIES,
-        settings=settings,
     )
+
 
 def _fetch_last_charged_ufs(
     conn: duckdb.DuckDBPyConnection,
@@ -130,9 +106,9 @@ def _fetch_last_charged_ufs(
         query_dict=QUERIES,
     )
 
+
 def upsert_acidentes_fato_ocorrencia_per_uf(
     conn: duckdb.DuckDBPyConnection,
-    settings: BucketSettings,
 ) -> None:
     """Delega a execucao do script upsert_acidentes_fato_ocorrencia_per_uf"""
 
@@ -143,7 +119,5 @@ def upsert_acidentes_fato_ocorrencia_per_uf(
             conn=conn,
             query_key="upsert_acidentes_fato_ocorrencia_per_uf",
             query_dict=QUERIES,
-            settings=settings,
             uf=uf,
         )
-

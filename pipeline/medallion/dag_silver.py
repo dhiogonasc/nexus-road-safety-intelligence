@@ -29,7 +29,7 @@ def flow_silver(
     domain: str,
 ) -> None:
     """Orquestra o processamento silver para um dominio e banco duckdb dedicado"""
-    
+
     domain_pipeline_config = PIPELINE_CONFIG.get_domain_config(domain=domain)
     assets = domain_pipeline_config.silver
 
@@ -45,26 +45,23 @@ def flow_silver(
         load_extensions_fn=load_extensions_fn,
         database=database,
     )
-    
+
     schema_future = task_create_schema.submit(
         conn_fn=conn_fn,
         schema="silver",
     )
-    last_charged_future = task_open_bucket_operation.submit(
+    last_charge_future = task_open_bucket_operation.submit(
         conn_fn=conn_fn,
         settings=bucket_settings,
-        bucket_operation_fn=named_partial(
-            fn=fetch_last_charged,
-            name=f"fetch_last_charged",
-        ),
-        secret_label="fetch_last_charged",
-        wait_for=[schema_future],
+        bucket_operation_fn=load_last_charge_fn,
+        secret_label=table.name,
+        wait_for=[bootstrap_future],
     )
 
     asset_futures = {}
 
     for asset in assets:
-        wait_tasks = [last_charged_future]
+        wait_tasks = [last_charge_future]
 
         table = asset.table
         upsert_fn = asset.upsert_fn

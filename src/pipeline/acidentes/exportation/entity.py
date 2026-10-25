@@ -1,7 +1,7 @@
+from settings import postgres_settings
 from src.shared.model.entity import Table, Column
 
 agg_condicoes_via = Table(
-    schema="gold",
     name="agg_condicoes_via",
     columns=[
         Column(
@@ -110,7 +110,8 @@ agg_condicoes_via = Table(
 )
 
 agg_sazonalidade = Table(
-    schema="gold",
+    catalog=postgres_settings.DB_NAME,
+    schema="analytics",
     name="agg_sazonalidade",
     columns=[
         Column(
@@ -209,7 +210,8 @@ agg_sazonalidade = Table(
 )
 
 agg_trechos_criticos = Table(
-    schema="gold",
+    catalog=postgres_settings.DB_NAME,
+    schema="analytics",
     name="agg_trechos_criticos",
     columns=[
         Column(

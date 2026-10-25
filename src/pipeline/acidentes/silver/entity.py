@@ -1,7 +1,10 @@
-from src.shared.model.entity import Table, Column
+from src.shared.model.entity import (
+    Schema,
+    Table,
+    Column,
+)
 
 dim_causa = Table(
-    schema="silver",
     name="dim_causa",
     columns=[
         Column(
@@ -19,7 +22,6 @@ dim_causa = Table(
 )
 
 dim_tipo = Table(
-    schema="silver",
     name="dim_tipo",
     columns=[
         Column(
@@ -37,7 +39,6 @@ dim_tipo = Table(
 )
 
 dim_classificacao = Table(
-    schema="silver",
     name="dim_classificacao",
     columns=[
         Column(
@@ -55,7 +56,6 @@ dim_classificacao = Table(
 )
 
 dim_condicao_metereologica = Table(
-    schema="silver",
     name="dim_condicao_metereologica",
     columns=[
         Column(
@@ -73,7 +73,6 @@ dim_condicao_metereologica = Table(
 )
 
 dim_coordenada = Table(
-    schema="silver",
     name="dim_coordenada",
     columns=[
         Column(
@@ -96,7 +95,6 @@ dim_coordenada = Table(
 )
 
 dim_tempo = Table(
-    schema="silver",
     name="dim_tempo",
     columns=[
         Column(
@@ -153,7 +151,6 @@ dim_tempo = Table(
 )
 
 dim_pista = Table(
-    schema="silver",
     name="dim_pista",
     columns=[
         Column(
@@ -192,7 +189,6 @@ dim_pista = Table(
 )
 
 dim_localizacao = Table(
-    schema="silver",
     name="dim_localizacao",
     columns=[
         Column(
@@ -249,7 +245,6 @@ dim_localizacao = Table(
 )
 
 fato_ocorrencia = Table(
-    schema="silver",
     name="fato_ocorrencia",
     columns=[
         Column(

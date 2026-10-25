@@ -17,7 +17,7 @@ def create_connection(
     Path(database).parent.mkdir(parents=True, exist_ok=True)
     conn = duckdb.connect(
         database, 
-        #config={"max_memory": "4GB"}
+        config={"max_memory": "4GB"}
     )
     try:
         if load_extensions_fn:
