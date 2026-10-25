@@ -19,6 +19,7 @@ def execute_query(
     """Abstrai a execucao de scripts sql para duckdb"""
     sql = query_dict[query_key]
     query = sql.format(**kwargs)
+    print(query)
     return conn.execute(query)
 
 

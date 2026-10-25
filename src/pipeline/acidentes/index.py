@@ -35,7 +35,7 @@ from src.pipeline.acidentes.silver.operation import (
     upsert_acidentes_dim_tempo,
     upsert_acidentes_dim_pista,
     upsert_acidentes_dim_localizacao,
-    upsert_acidentes_fato_ocorrencia,
+    upsert_acidentes_fato_ocorrencia_per_uf,
 )
 from src.pipeline.acidentes.gold.operation import (
     upsert_acidentes_agg_condicoes_via,
@@ -82,7 +82,7 @@ asset_dim_localizacao = PipelineAsset(
 )
 asset_fato_ocorrencia = PipelineAsset(
     table=fato_ocorrencia,
-    upsert_fn=upsert_acidentes_fato_ocorrencia,
+    upsert_fn=upsert_acidentes_fato_ocorrencia_per_uf,
     depends_on=[
         asset_dim_causa,
         asset_dim_tipo,

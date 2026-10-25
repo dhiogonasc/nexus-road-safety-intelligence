@@ -1,6 +1,11 @@
+SELECT setval(
+    'seq_dim_localizacao', 
+    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_localizacao"), 0), 1)
+);
+
 CREATE TEMP TABLE temp_dim_localizacao AS 
 SELECT 
-    COALESCE((SELECT MAX(id) FROM "silver"."dim_localizacao"), 0) + ROW_NUMBER() OVER () AS id,
+    nextval('seq_dim_localizacao') AS id,
     source_data.uf,
     source_data.br,
     source_data.municipio,
@@ -9,23 +14,8 @@ SELECT
     source_data.uop,
     source_data.km
 FROM (
-    SELECT 
-        TRIM(COALESCE(uf :: VARCHAR, 'nao_informado')) AS uf,
-        TRIM(COALESCE(br :: VARCHAR, 'nao_informado')) AS br,
-        TRIM(COALESCE(municipio :: VARCHAR, 'nao_informado')) AS municipio,
-        TRIM(COALESCE(regional :: VARCHAR, 'nao_informado')) AS regional,
-        TRIM(COALESCE(delegacia :: VARCHAR, 'nao_informado')) AS delegacia,
-        TRIM(COALESCE(uop :: VARCHAR, 'nao_informado')) AS uop,
-        TRY_CAST(REPLACE(km :: VARCHAR, ',', '.') AS DOUBLE) AS km
-    FROM 
-        read_parquet(
-            's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
-            hive_partitioning = true
-        )
-    WHERE data_carga = (
-        SELECT MAX(data_carga) 
-        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
-    )
+    SELECT uf, br, km, municipio, regional, delegacia, uop
+    FROM "silver"."last_charged"
 ) AS source_data;
 
 MERGE INTO "silver"."dim_localizacao" AS target 

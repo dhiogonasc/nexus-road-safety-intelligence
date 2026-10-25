@@ -1,18 +1,15 @@
+SELECT setval(
+    'seq_dim_causa', 
+    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_causa"), 0), 1)
+);
+
 CREATE TEMP TABLE temp_dim_causa AS 
 SELECT 
-    COALESCE((SELECT MAX(id) FROM "silver"."dim_causa"), 0) + ROW_NUMBER() OVER () AS id,
+    nextval('seq_dim_causa') AS id,
     source_data.causa
 FROM (
-    SELECT COALESCE(causa_acidente :: VARCHAR, 'nao_informado') AS causa
-    FROM 
-        read_parquet(
-            's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
-            hive_partitioning = true
-        )
-    WHERE data_carga = (
-        SELECT MAX(data_carga) 
-        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
-    )
+    SELECT causa_acidente AS causa
+    FROM "silver"."last_charged"
 ) AS source_data;
 
 MERGE INTO "silver"."dim_causa" AS target 

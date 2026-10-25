@@ -1,18 +1,15 @@
+SELECT setval(
+    'seq_dim_tipo', 
+    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_tipo"), 0), 1)
+);
+
 CREATE TEMP TABLE temp_dim_tipo AS 
 SELECT 
-    COALESCE((SELECT MAX(id) FROM "silver"."dim_tipo"), 0) + ROW_NUMBER() OVER () AS id,
+    nextval('seq_dim_tipo') AS id,
     source_data.tipo
 FROM (
-    SELECT COALESCE(tipo_acidente :: VARCHAR, 'nao_informado') AS tipo
-    FROM 
-        read_parquet(
-            's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
-            hive_partitioning = true
-        )
-    WHERE data_carga = (
-        SELECT MAX(data_carga) 
-        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
-    )
+    SELECT tipo_acidente AS tipo
+    FROM "silver"."last_charged"
 ) AS source_data;
 
 MERGE INTO "silver"."dim_tipo" AS target 

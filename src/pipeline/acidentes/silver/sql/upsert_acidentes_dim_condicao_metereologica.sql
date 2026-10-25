@@ -1,18 +1,15 @@
+SELECT setval(
+    'seq_dim_condicao_metereologica', 
+    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_condicao_metereologica"), 0), 1)
+);
+
 CREATE TEMP TABLE temp_dim_condicao_metereologica AS 
 SELECT 
-    COALESCE((SELECT MAX(id) FROM "silver"."dim_condicao_metereologica"), 0) + ROW_NUMBER() OVER () AS id,
+    nextval('seq_dim_condicao_metereologica') AS id,
     source_data.condicao
 FROM (
-    SELECT COALESCE(condicao_metereologica :: VARCHAR, 'nao_informado') AS condicao
-    FROM 
-        read_parquet(
-            's3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias/**/*.parquet', 
-            hive_partitioning = true
-        )
-    WHERE data_carga = (
-        SELECT MAX(data_carga) 
-        FROM read_parquet('s3://{settings.STORAGE_BUCKET}/acidentes/bronze/ocorrencias_log/**/*.parquet')
-    )
+    SELECT condicao_metereologica AS condicao
+    FROM "silver"."last_charged" 
 ) AS source_data;
 
 MERGE INTO "silver"."dim_condicao_metereologica" AS target 

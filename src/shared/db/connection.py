@@ -15,16 +15,16 @@ def create_connection(
     """Gerencia a criacao de conexoes com entidades de persistencia (duckdb)"""
 
     Path(database).parent.mkdir(parents=True, exist_ok=True)
-    conn = duckdb.connect(database)
+    conn = duckdb.connect(
+        database, 
+        #config={"max_memory": "4GB"}
+    )
     try:
         if load_extensions_fn:
             load_extensions_fn(conn=conn)
 
         if attach_connections_fn:
             attach_connections_fn(conn=conn)
-
-        conn.execute("SET preserve_insertion_order = false;")
-        conn.execute("SET threads = 2;")
 
         yield conn
     finally:

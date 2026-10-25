@@ -345,6 +345,7 @@ fato_ocorrencia = Table(
         ),
     ],
     unique_constraint=[
+        "id_ocorrencia",
         "sk_tempo",
         "sk_localizacao",
         "sk_coordenada",
@@ -353,13 +354,5 @@ fato_ocorrencia = Table(
         "sk_classificacao",
         "sk_pista",
         "sk_condicao_metereologica",
-        "pessoas",
-        "mortos",
-        "feridos_leves",
-        "feridos_graves",
-        "feridos",
-        "ilesos",
-        "ignorados",
-        "veiculos",
     ],
 )

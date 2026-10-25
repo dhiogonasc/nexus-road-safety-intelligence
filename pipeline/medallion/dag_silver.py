@@ -1,7 +1,8 @@
 from functools import partial
-from prefect import flow
+from typing import Callable
+from prefect import flow, task
 
-from settings import bucket_settings
+from settings import BucketSettings, bucket_settings
 from src.shared.utils.fn import named_partial
 from src.shared.db.operation import (
     bootstrap_table,
@@ -11,6 +12,7 @@ from src.shared.db.operation import (
 )
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
+from src.pipeline.acidentes.silver.operation import fetch_last_charged
 from src.shared.pipeline.task import (
     task_create_schema,
     task_create_table,
@@ -48,11 +50,21 @@ def flow_silver(
         conn_fn=conn_fn,
         schema="silver",
     )
+    last_charged_future = task_open_bucket_operation.submit(
+        conn_fn=conn_fn,
+        settings=bucket_settings,
+        bucket_operation_fn=named_partial(
+            fn=fetch_last_charged,
+            name=f"fetch_last_charged",
+        ),
+        secret_label="fetch_last_charged",
+        wait_for=[schema_future],
+    )
 
     asset_futures = {}
 
     for asset in assets:
-        wait_tasks = [schema_future]
+        wait_tasks = [last_charged_future]
 
         table = asset.table
         upsert_fn = asset.upsert_fn

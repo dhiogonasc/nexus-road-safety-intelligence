@@ -1,0 +1,1 @@
+SELECT DISTINCT uf FROM "silver"."last_charged";
