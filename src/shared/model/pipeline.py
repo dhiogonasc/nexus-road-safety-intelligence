@@ -1,46 +1,24 @@
 from __future__ import annotations
 
-from typing import Callable, Dict, List, Optional
-from pydantic import BaseModel, computed_field, model_validator
-from src.shared.model.entity import Table
+from typing import Callable, Dict, List
+from pydantic import BaseModel, model_validator
 
 
-class PipelineAsset(BaseModel):
+class Routine(BaseModel):
     """Define estrutura de rotinas"""
 
-    table: Table
-    upsert_fn: Callable
-    depends_on: List[PipelineAsset] = []
+    operations: Dict[str, Callable]
+    depends_on: List[Routine] = []
 
 
-PipelineAsset.model_rebuild()
+class SchemaRoutine(BaseModel):
+    operations: Dict[str, Callable] = {}
+    depends_on: List[SchemaRoutine] = []
+    routines: List[Routine]
 
 
-class LayerSchemaConfig(BaseModel):
-    catalog: Optional[str] = None
-    name: str
-    assets: List[PipelineAsset]
-
-    @computed_field
-    @property
-    def fqn(self) -> str:
-        """Retorna o nome totalmente qualificado do schema (FQN)."""
-        if self.catalog:
-            return f'"{self.catalog}"."{self.name}"'
-        return f'"{self.name}"'
-
-    @model_validator(mode="after")
-    def propagate_parent_properties(self) -> "LayerSchemaConfig":
-        """Propaga o catalog e o nome do schema para todas as tabelas filhas."""
-        for asset in self.assets:
-            asset.table.schema = self.name
-            if self.catalog and not asset.table.catalog:
-                asset.table.catalog = self.catalog
-
-        return self
-
-
-LayerSchemaConfig.model_rebuild()
+Routine.model_rebuild()
+SchemaRoutine.model_rebuild()
 
 
 class DomainPipelineConfig(BaseModel):
