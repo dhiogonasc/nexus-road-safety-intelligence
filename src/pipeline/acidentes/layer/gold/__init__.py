@@ -1,11 +1,15 @@
-from src.shared.model.pipeline import SchemaRoutine
+from src.shared.model.pipeline import Layer
 from .routine import routines
 from .operation import operations
-from ..silver import schema_routine as silver_routine
+from ..silver import layer as silver_layer
 
-schema_routine = SchemaRoutine(
-    
+layer = Layer(
+    label="gold",
     operations=operations,
     routines=routines,
-    depends_on=[silver_routine],
+    depends_on=[silver_layer],
+    required_extensions=[
+        "httpfs",
+        "parquet",
+    ],
 )

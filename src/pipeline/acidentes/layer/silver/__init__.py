@@ -8,7 +8,7 @@ layer = Layer(
     routines=routines,
     operations=operations,
     depends_on=[bronze_layer],
-        required_extensions=[
+    required_extensions=[
         "httpfs",
         "parquet",
     ],

@@ -1,12 +1,13 @@
-INSERT INTO "gold"."condicoes_via"(
+INSERT INTO "gold"."agg_dispersao_geo_temporal"(
     id,
-    
+
+    uf,
+    br,
+    municipio,
+
     ano,
     mes,
-    dia,
     dia_semana,
-    fase_dia,
-
 
     total_ocorrencias,
     total_pessoas,
@@ -21,18 +22,13 @@ INSERT INTO "gold"."condicoes_via"(
 SELECT 
     source.id,
 
+    source.uf,
+    source.br,
+    source.municipio,
+
     source.ano,
     source.mes,
-    source.dia,
     source.dia_semana,
-    source.fase_dia,
-
-    source.condicao_metereologica,
-
-    source.sentido_via,
-    source.tracado_via,
-    source.tipo_via,
-    source.solo_via,
 
     source.total_ocorrencias,
     source.total_pessoas,
@@ -46,6 +42,6 @@ SELECT
 FROM read_parquet('{storage_path}/**/*.parquet') AS source
 WHERE NOT EXISTS (
     SELECT 1 
-    FROM "gold"."condicoes_via" AS target 
+    FROM "gold"."agg_dispersao_geo_temporal" AS target 
     WHERE target.id = source.id
 );

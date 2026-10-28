@@ -1,7 +1,5 @@
-from typing import Callable, Dict
+from typing import Callable, List
 
 from .registry import create
 
-operations: Dict[str, Callable] = {
-    create.__name__: create,
-}
+operations: List[Callable] = [create]

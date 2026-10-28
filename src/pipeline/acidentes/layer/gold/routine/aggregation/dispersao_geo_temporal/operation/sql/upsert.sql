@@ -1,33 +1,25 @@
+CREATE TEMP TABLE temp_dim_localizacao AS SELECT *
+FROM read_parquet('{dim_localizacao_storage_path}/**/*.parquet');
+
 CREATE TEMP TABLE temp_dim_tempo AS SELECT *
-FROM read_parquet('{silver_storage_path["dim_tempo"]}') ;
-
-CREATE TEMP TABLE temp_dim_condicao_metereologica AS SELECT *
-FROM read_parquet('{silver_storage_path["dim_condicao_metereologica"]}') ;
-
-CREATE TEMP TABLE temp_dim_pista AS SELECT *
-FROM read_parquet('{silver_storage_path["dim_pista"]}') ;
+FROM read_parquet('{dim_tempo_storage_path}/**/*.parquet');
 
 SELECT setval(
-    'seq_condicoes_via', 
-    GREATEST(COALESCE((SELECT MAX(id) FROM "gold"."condicoes_via"), 0), 1)
+    'seq_dispersao_geo_temporal', 
+    GREATEST(COALESCE((SELECT MAX(id) FROM "gold"."agg_dispersao_geo_temporal"), 0), 1)
 );
 
-CREATE TEMP TABLE temp_condicoes_via AS
-SELECT nextval('seq_condicoes_via') AS id, *
+CREATE TEMP TABLE temp_agg_dispersao_geo_temporal AS
+SELECT nextval('seq_dispersao_geo_temporal') AS id, *
 FROM (
     SELECT
+        localizacao.uf,
+        localizacao.br,
+        localizacao.municipio,
+
         tempo.ano,
         tempo.mes,
-        tempo.dia,
         tempo.dia_semana,
-        tempo.fase_dia,
-
-        cm.condicao AS condicao_metereologica,
-
-        pista.sentido AS sentido_via,
-        pista.tracado AS tracado_via,
-        pista.tipo AS tipo_via,
-        pista.solo AS solo_via,
 
         CAST(COUNT(fato.id) AS BIGINT) AS total_ocorrencias,
         CAST(SUM(fato.pessoas) AS BIGINT) AS total_pessoas,
@@ -39,27 +31,21 @@ FROM (
         CAST(SUM(fato.ilesos) AS BIGINT) AS total_ilesos,
         ROUND(CAST(SUM(fato.mortos) AS DOUBLE) / NULLIF(COUNT(fato.id), 0) * 100, 2) AS pct_mortalidade
     FROM
-        "gold"."ft_staging" AS fato
+        "gold"."stg" AS fato
+        JOIN temp_dim_localizacao AS localizacao ON fato.sk_localizacao = localizacao.id
         JOIN temp_dim_tempo AS tempo ON fato.sk_tempo = tempo.id
-        JOIN temp_dim_condicao_metereologica AS cm ON fato.sk_condicao_metereologica = cm.id
-        JOIN temp_dim_pista AS pista ON fato.sk_pista = pista.id
     GROUP BY
+        localizacao.uf,
+        localizacao.br,
+        localizacao.municipio,
+
         tempo.ano,
         tempo.mes,
-        tempo.dia,
-        tempo.dia_semana,
-        tempo.fase_dia,
+        tempo.dia_semana
+);
 
-        cm.condicao,
-
-        pista.sentido,
-        pista.tracado,
-        pista.tipo,
-        pista.solo
-) AS source_data;
-
-MERGE INTO "gold"."condicoes_via" AS target 
-USING temp_condicoes_via AS source 
+MERGE INTO "gold"."agg_dispersao_geo_temporal" AS target 
+USING temp_agg_dispersao_geo_temporal AS source 
     ON target.id = source.id
 
 WHEN MATCHED THEN
@@ -77,16 +63,15 @@ UPDATE SET
 WHEN NOT MATCHED THEN 
 INSERT (
     id,
+
+    uf, 
+    br, 
+    municipio,
+
     ano,
     mes,
-    dia,
     dia_semana,
-    fase_dia,
-    condicao_metereologica,
-    sentido_via,
-    tracado_via,
-    tipo_via,
-    solo_via,
+
     total_ocorrencias,
     total_pessoas,
     total_veiculos,
@@ -99,16 +84,15 @@ INSERT (
 ) 
 VALUES (
     source.id,
+
+    source.uf,
+    source.br,
+    source.municipio,
+
     source.ano,
     source.mes,
-    source.dia,
     source.dia_semana,
-    source.fase_dia,
-    source.condicao_metereologica,
-    source.sentido_via,
-    source.tracado_via,
-    source.tipo_via,
-    source.solo_via,
+
     source.total_ocorrencias,
     source.total_pessoas,
     source.total_veiculos,
@@ -120,8 +104,7 @@ VALUES (
     source.pct_mortalidade
 );
 
+DROP TABLE IF EXISTS temp_dim_localizacao;
 DROP TABLE IF EXISTS temp_dim_tempo;
-DROP TABLE IF EXISTS temp_dim_condicao_metereologica;
-DROP TABLE IF EXISTS temp_dim_pista;
 
-DROP TABLE IF EXISTS temp_condicoes_via;
+DROP TABLE IF EXISTS temp_agg_dispersao_geo_temporal;

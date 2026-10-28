@@ -1,5 +1,5 @@
-from typing import Dict, Callable
+from typing import List, Callable
 
-from ....staging.operation.registry import stage
+from .registry import create
 
-operations: Dict[str, Callable] = {stage.__name__: stage}
+operations: List[Callable] = [create]

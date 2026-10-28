@@ -66,6 +66,13 @@ LEFT JOIN "silver"."dim_condicao_metereologica" AS condicao_metereologica
 MERGE INTO "silver"."ft_ocorrencia" AS target 
 USING temp_ft_ocorrencias AS source 
     ON target.id_ocorrencia = source.id_ocorrencia
+    AND target.sk_tempo = source.sk_tempo
+    AND target.sk_localizacao = source.sk_localizacao
+    AND target.sk_coordenada = source.sk_coordenada
+    AND target.sk_pista = source.sk_pista
+    AND target.sk_causa = source.sk_causa
+    AND target.sk_tipo = source.sk_tipo
+    AND target.sk_classificacao = source.sk_classificacao
 
 WHEN MATCHED THEN 
 UPDATE SET 

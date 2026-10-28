@@ -1,15 +1,15 @@
-CREATE SEQUENCE IF NOT EXISTS "seq_condicoes_via" START 1;
+CREATE SEQUENCE IF NOT EXISTS "seq_dispersao_geo_temporal" START 1;
 
-CREATE TABLE "gold"."condicoes_via" (
-    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_condicoes_via'),
+CREATE TABLE IF NOT EXISTS "gold"."agg_dispersao_geo_temporal" (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_dispersao_geo_temporal'),
+
+    uf VARCHAR NOT NULL,
+    br VARCHAR NOT NULL,
+    municipio VARCHAR NOT NULL,
 
     ano INTEGER NOT NULL,
     mes INTEGER NOT NULL,
-    dia INTEGER NOT NULL,
     dia_semana VARCHAR NOT NULL,
-    fase_dia VARCHAR NOT NULL,
-
-
 
     total_ocorrencias BIGINT NOT NULL,
     total_pessoas BIGINT NOT NULL,
@@ -22,12 +22,8 @@ CREATE TABLE "gold"."condicoes_via" (
 
     pct_mortalidade DOUBLE PRECISION NOT NULL,
 
-    CONSTRAINT "uq_agg_condicoes_via" UNIQUE (
-        ano, mes, dia, 
-        dia_semana, fase_dia, 
-
+    CONSTRAINT "uq_agg_dispersao_geo_temporal" UNIQUE (
+        uf, br, municipio,
+        ano, mes, dia_semana,
     )
 );
-
-CREATE INDEX IF NOT EXISTS "idx_agg_condicoes_via_temporal" ON "gold"."condicoes_via" (ano, mes, dia);
-
