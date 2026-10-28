@@ -7,7 +7,7 @@ CREATE TEMP TABLE temp_dim_condicao_metereologica AS
 SELECT nextval('seq_dim_condicao_metereologica') AS id, condicao
 FROM (
     SELECT DISTINCT condicao_metereologica AS condicao
-    FROM "silver"."ultima_carga"
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_condicao_metereologica" AS target 

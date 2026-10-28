@@ -23,12 +23,15 @@ def bootstrap(
     settings: Optional[BucketSettings] = None,
 ):
     """Delega a execução do script bootstrap.sql"""
-    execute_query(
-        conn=conn,
-        query_key="bootstrap",
-        query_dict=QUERIES,
-        storage_path=set_storage_path(settings=settings),
-    )
+    try:
+        execute_query(
+            conn=conn,
+            query_key="bootstrap",
+            query_dict=QUERIES,
+            storage_path=set_storage_path(settings=settings),
+        )
+    except duckdb.IOException:
+        pass
 
 
 def copy(

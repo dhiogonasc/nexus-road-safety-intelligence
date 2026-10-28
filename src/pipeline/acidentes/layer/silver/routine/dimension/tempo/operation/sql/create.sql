@@ -10,7 +10,12 @@ CREATE TABLE IF NOT EXISTS "silver"."dim_tempo" (
     dia_semana VARCHAR NOT NULL,
     fase_dia VARCHAR NOT NULL,
 
-    CONSTRAINT "uq_dim_tempo" UNIQUE (data_hora)
+    CONSTRAINT "uq_dim_tempo" UNIQUE (
+        data_hora,
+        ano, mes, dia,
+        hora, dia_semana,
+        fase_dia
+    )
 );
 
 CREATE INDEX IF NOT EXISTS "idx_dim_tempo_ano_mes_dia" ON "silver"."dim_tempo" (ano, mes, dia);

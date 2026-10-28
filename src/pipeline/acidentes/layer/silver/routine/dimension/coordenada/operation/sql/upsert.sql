@@ -7,7 +7,7 @@ CREATE TEMP TABLE temp_dim_coordenada AS
 SELECT nextval('seq_dim_coordenada') AS id, latitude, longitude
 FROM (
     SELECT DISTINCT latitude, longitude
-    FROM "silver"."ultima_carga"
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_coordenada" AS target 

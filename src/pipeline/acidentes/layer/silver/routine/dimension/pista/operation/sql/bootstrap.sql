@@ -3,14 +3,14 @@ INSERT INTO "silver"."dim_pista"(
     sentido,
     tracado,
     tipo,
-    uso_solo
+    solo
 )
 SELECT 
     source.id,
     source.sentido,
     source.tracado,
     source.tipo,
-    source.uso_solo
+    source.solo
 FROM read_parquet('{storage_path}/**/*.parquet') AS source
 WHERE NOT EXISTS (
     SELECT 1 

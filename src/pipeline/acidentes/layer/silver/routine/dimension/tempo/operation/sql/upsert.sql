@@ -14,7 +14,7 @@ FROM (
         data_hora,
         ano, mes, dia, hora,
         dia_semana, fase_dia
-    FROM "silver"."ultima_carga"
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_tempo" AS target 

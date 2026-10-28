@@ -7,7 +7,7 @@ CREATE TEMP TABLE temp_dim_causa AS
 SELECT nextval('seq_dim_causa') AS id, causa
 FROM (
     SELECT DISTINCT causa_acidente AS causa
-    FROM "silver"."ultima_carga"
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_causa" AS target 

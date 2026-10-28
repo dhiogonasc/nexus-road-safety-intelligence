@@ -16,7 +16,7 @@ FROM (
         municipio, 
         regional, 
         delegacia
-    FROM "silver"."ultima_carga"
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_localizacao" AS target 

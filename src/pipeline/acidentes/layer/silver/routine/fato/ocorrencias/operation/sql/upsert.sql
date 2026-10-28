@@ -1,11 +1,11 @@
 SELECT setval(
-    'seq_fato_ocorrencia', 
-    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."fato_ocorrencia"), 0), 1)
+    'seq_ft_ocorrencia', 
+    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."ft_ocorrencia"), 0), 1)
 );
 
-CREATE TEMP TABLE temp_fato_ocorrencias AS 
+CREATE TEMP TABLE temp_ft_ocorrencias AS 
 SELECT 
-    nextval('seq_fato_ocorrencia') AS id,
+    nextval('seq_ft_ocorrencia') AS id,
     fato.id_ocorrencia,
     COALESCE(tempo.id, 0) AS sk_tempo,
     COALESCE(localizacao.id, 0) AS sk_localizacao,
@@ -25,7 +25,7 @@ SELECT
     fato.veiculos
 FROM (
     SELECT *
-    FROM "silver"."ultima_carga"
+    FROM "silver"."stg"
     WHERE uf = '{uf}'
 ) AS fato
 
@@ -58,13 +58,13 @@ LEFT JOIN "silver"."dim_pista" AS pista
     ON fato.sentido_via = pista.sentido
     AND fato.tracado_via = pista.tracado
     AND fato.tipo_pista = pista.tipo
-    AND fato.uso_solo = pista.uso_solo
+    AND fato.uso_solo = pista.solo
 
 LEFT JOIN "silver"."dim_condicao_metereologica" AS condicao_metereologica
     ON fato.condicao_metereologica = condicao_metereologica.condicao;
 
-MERGE INTO "silver"."fato_ocorrencia" AS target 
-USING temp_fato_ocorrencias AS source 
+MERGE INTO "silver"."ft_ocorrencia" AS target 
+USING temp_ft_ocorrencias AS source 
     ON target.id_ocorrencia = source.id_ocorrencia
 
 WHEN MATCHED THEN 
@@ -133,4 +133,4 @@ VALUES (
     source.veiculos
 );
 
-DROP TABLE IF EXISTS temp_fato_ocorrencias;
+DROP TABLE IF EXISTS temp_ft_ocorrencias;

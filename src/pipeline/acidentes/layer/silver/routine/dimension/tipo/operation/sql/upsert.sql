@@ -6,8 +6,8 @@ SELECT setval(
 CREATE TEMP TABLE temp_dim_tipo AS 
 SELECT nextval('seq_dim_tipo') AS id, tipo
 FROM (
-    SELECT tipo_acidente AS tipo
-    FROM "silver"."ultima_carga"
+    SELECT DISTINCT tipo_acidente AS tipo
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_tipo" AS target 

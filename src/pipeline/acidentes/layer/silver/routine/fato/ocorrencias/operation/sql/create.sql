@@ -1,7 +1,7 @@
-CREATE SEQUENCE IF NOT EXISTS "seq_fato_ocorrencia" START 1;
+CREATE SEQUENCE IF NOT EXISTS "seq_ft_ocorrencia" START 1;
 
-CREATE TABLE IF NOT EXISTS "silver"."fato_ocorrencia" (
-    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_fato_ocorrencia'),
+CREATE TABLE IF NOT EXISTS "silver"."ft_ocorrencia" (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_ft_ocorrencia'),
 
     id_ocorrencia BIGINT NOT NULL,
     sk_tempo INTEGER NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "silver"."fato_ocorrencia" (
     ignorados INTEGER NOT NULL,
     veiculos INTEGER NOT NULL,
 
-    CONSTRAINT "uq_fato_ocorrencia" UNIQUE (
+    CONSTRAINT "uq_ft_ocorrencia" UNIQUE (
         id_ocorrencia,
         sk_tempo,
         sk_localizacao,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "silver"."fato_ocorrencia" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_fato_ocorrencia_tempo" ON "silver"."fato_ocorrencia" (sk_tempo);
-CREATE INDEX IF NOT EXISTS "idx_fato_ocorrencia_localizacao" ON "silver"."fato_ocorrencia" (sk_localizacao);
-CREATE INDEX IF NOT EXISTS "idx_fato_ocorrencia_causa" ON "silver"."fato_ocorrencia" (sk_causa);
-CREATE INDEX IF NOT EXISTS "idx_fato_ocorrencia_condicao_metereologica" ON "silver"."fato_ocorrencia" (sk_condicao_metereologica);
+CREATE INDEX IF NOT EXISTS "idx_ft_ocorrencia_tempo" ON "silver"."ft_ocorrencia" (sk_tempo);
+CREATE INDEX IF NOT EXISTS "idx_ft_ocorrencia_localizacao" ON "silver"."ft_ocorrencia" (sk_localizacao);
+CREATE INDEX IF NOT EXISTS "idx_ft_ocorrencia_causa" ON "silver"."ft_ocorrencia" (sk_causa);
+CREATE INDEX IF NOT EXISTS "idx_ft_ocorrencia_condicao_metereologica" ON "silver"."ft_ocorrencia" (sk_condicao_metereologica);

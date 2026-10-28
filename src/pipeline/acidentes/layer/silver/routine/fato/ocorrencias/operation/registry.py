@@ -23,12 +23,15 @@ def bootstrap(
     settings: Optional[BucketSettings] = None,
 ):
     """Delega a execução do script bootstrap.sql"""
-    execute_query(
-        conn=conn,
-        query_key="bootstrap",
-        query_dict=QUERIES,
-        storage_path=set_storage_path(settings=settings),
-    )
+    try:
+        execute_query(
+            conn=conn,
+            query_key="bootstrap",
+            query_dict=QUERIES,
+            storage_path=set_storage_path(settings=settings),
+        )
+    except duckdb.IOException:
+        pass
 
 
 def copy(
@@ -55,8 +58,24 @@ def create(conn: duckdb.DuckDBPyConnection):
 
 def upsert(conn: duckdb.DuckDBPyConnection):
     """Delega a execução do script upsert.sql"""
-    execute_query(
+    for uf in _fetch_partition(conn=conn):
+        execute_query(
+            conn=conn,
+            query_key="upsert",
+            query_dict=QUERIES,
+            uf=uf
+        )
+
+
+def _fetch_partition(conn: duckdb.DuckDBPyConnection):
+    """
+    Delega a execução do script fetch_partition.sql
+    e retorna uma lista de valores para partição.
+    """
+    partitions = execute_query(
         conn=conn,
-        query_key="upsert",
+        query_key="fetch_partition",
         query_dict=QUERIES,
-    )
+    ).fetchall()
+
+    return [partition_row[0] for partition_row in partitions]

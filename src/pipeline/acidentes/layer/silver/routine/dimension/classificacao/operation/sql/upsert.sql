@@ -7,7 +7,7 @@ CREATE TEMP TABLE temp_dim_classificacao AS
 SELECT nextval('seq_dim_classificacao') AS id, classificacao
 FROM (
     SELECT DISTINCT classificacao_acidente AS classificacao
-    FROM "silver"."ultima_carga"
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_classificacao" AS target 

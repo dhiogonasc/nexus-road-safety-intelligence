@@ -7,16 +7,16 @@ CREATE TEMP TABLE temp_dim_pista AS
 SELECT 
     nextval('seq_dim_pista') AS id, 
     sentido, 
-    tracado, 
+    tracado,
     tipo, 
     solo
 FROM (
     SELECT DISTINCT 
-        sentido, 
-        tracado, 
-        tipo, 
-        uso_solo as solo
-    FROM "silver"."ultima_carga"
+        sentido_via AS sentido, 
+        tracado_via AS tracado, 
+        tipo_pista AS tipo, 
+        uso_solo AS solo
+    FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_pista" AS target 
@@ -42,4 +42,4 @@ VALUES (
     source.solo
 );
 
-DROP TABLE IF EXISTS temp_dim_localizacao;
+DROP TABLE IF EXISTS temp_dim_pista;

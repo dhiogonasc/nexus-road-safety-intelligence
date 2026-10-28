@@ -45,7 +45,9 @@ SELECT
     COALESCE(causa_acidente :: VARCHAR, 'nao_informado') AS causa_acidente,
     COALESCE(tipo_acidente :: VARCHAR, 'nao_informado') AS tipo_acidente,
     COALESCE(classificacao_acidente :: VARCHAR, 'nao_informado') AS classificacao_acidente,
+    
     COALESCE(condicao_metereologica :: VARCHAR, 'nao_informado') AS condicao_metereologica,
+
     COALESCE(sentido_via :: VARCHAR, 'nao_informado') AS sentido_via,
     COALESCE(tracado_via :: VARCHAR, 'nao_informado') AS tracado_via,
     COALESCE(tipo_pista :: VARCHAR, 'nao_informado') AS tipo_pista,
