@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "bronze"."ocorrencias" AS
+CREATE OR REPLACE TABLE "bronze"."ocorrencias" AS
 SELECT
     strftime(CURRENT_TIMESTAMP, '%Y-%m-%d_%H-%M-%S') AS data_carga,
     regexp_extract(filename, '([^/\\]+)\.[^./\\]+$', 1) AS arquivo_fonte,

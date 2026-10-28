@@ -1,6 +1,7 @@
 """src/shared/db/operation.py"""
 
 from contextlib import contextmanager
+from pathlib import Path
 from typing import (
     Callable,
     Dict,
@@ -22,6 +23,8 @@ def create_connection(
     attach_connections_fn: Optional[Callable[[duckdb.DuckDBPyConnection], None]] = None,
 ) -> Generator[duckdb.DuckDBPyConnection, None, None]:
     """Gerencia a criacao de conexoes com entidades de persistencia (duckdb)"""
+    Path(database).parent.mkdir(parents=True, exist_ok=True)
+    
     conn = duckdb.connect(
         database=database,
         config={

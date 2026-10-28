@@ -42,6 +42,7 @@ htmlcov/
 !.env.example
 
 # --- Bancos de Dados / DuckDB ---
+*/db/*
 *.duckdb
 *.duckdb.wal
 *.db

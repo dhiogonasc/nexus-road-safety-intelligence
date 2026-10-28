@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Optional
 from pydantic import BaseModel, model_validator
 
 
