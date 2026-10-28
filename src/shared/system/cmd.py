@@ -16,6 +16,6 @@ def declare_arg(flag: str):
     return parser.parse_args()
 
 
-def declare_domain():
-    """Declara flag --domain para prompt de comando"""
-    return declare_arg(flag="domain")
+def declare_catalog():
+    """Declara flag --catalog para prompt de comando"""
+    return declare_arg(flag="catalog")

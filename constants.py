@@ -2,9 +2,9 @@
 
 from pathlib import Path
 
-BASE_DIR = Path().resolve()
+ROOT = Path(__file__).resolve().parent
 
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = ROOT / "data"
 DATABASE_DIR = DATA_DIR / "db"
 RAW_DIR = DATA_DIR / "raw"
 

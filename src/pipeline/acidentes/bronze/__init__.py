@@ -1,5 +1,4 @@
-from shared.model.pipeline import SchemaRoutine
+from src.shared.model.pipeline import SchemaRoutine
+from .routine import routines
 
-from .ocorrencias import routine as ocorrencias_routine
-
-schema_routine = SchemaRoutine(routines=[ocorrencias_routine])
+schema_routine = SchemaRoutine(routines=routines)

@@ -3,30 +3,13 @@
 from os import getenv
 from pathlib import Path
 from typing import Literal
+from pydantic import BaseModel, computed_field
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
 )
 
-
-class DuckDBSettings(BaseSettings):
-    """Configura DuckDB"""
-
-    DB_DIR: str = str(Path(__file__).resolve().parent / "db")
-    EXTENSIONS: list[str] = [
-        "postgres",
-        "httpfs",
-        "parquet",
-    ]
-
-    model_config = SettingsConfigDict(
-        env_file_encoding="utf-8",
-        extra="ignore",
-    )
-
-    def get_database_path(self, domain: str) -> str:
-        """Define a chave de conexão duckdb"""
-        return str(Path(self.DB_DIR) / f"{domain}.db")
+from constants import ROOT
 
 
 class PostgresSettings(BaseSettings):
@@ -63,24 +46,7 @@ class PostgresSettings(BaseSettings):
         )
 
 
-class BucketSettings(BaseSettings):
-    """Configura a bucket"""
-
-    STORAGE_BUCKET: str
-    STORAGE_ENDPOINT: str
-    STORAGE_ACCESS_KEY_ID: str
-    STORAGE_SECRET_ACCESS_KEY: str
-    STORAGE_REGION: str
-
-    model_config = SettingsConfigDict(
-        env_file_encoding="utf-8",
-        extra="ignore",
-    )
-
-
 env_profile = getenv("ENV", "dev")
 ENV_FILE = f".env.{env_profile}"
 
-duckdb_settings = DuckDBSettings(_env_file=ENV_FILE)
 postgres_settings = PostgresSettings(_env_file=ENV_FILE)
-bucket_settings = BucketSettings(_env_file=ENV_FILE)

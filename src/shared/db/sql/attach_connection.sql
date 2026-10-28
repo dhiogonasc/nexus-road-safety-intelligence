@@ -1,1 +1,0 @@
-ATTACH IF NOT EXISTS '{conn_string}' AS {conn_alias} {conn_option};

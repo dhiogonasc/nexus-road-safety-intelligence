@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE SECRET "{settings.STORAGE_BUCKET}_{label}" (
+OR REPLACE SECRET "{settings.STORAGE_BUCKET}_{suffix}" (
     TYPE S3,
     PROVIDER CONFIG,
     KEY_ID '{settings.STORAGE_ACCESS_KEY_ID}',
