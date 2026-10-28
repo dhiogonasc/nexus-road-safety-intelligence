@@ -1,9 +1,10 @@
-from src.shared.model.pipeline import SchemaRoutine
+from src.shared.model.pipeline import Layer
 from .routine import routines
 from .operation import operations
 from ..bronze import schema_routine as bronze_routine
 
-schema_routine = SchemaRoutine(
+layer = Layer(
+    label="silver",
     operations=operations,
     routines=routines,
     depends_on=[bronze_routine],

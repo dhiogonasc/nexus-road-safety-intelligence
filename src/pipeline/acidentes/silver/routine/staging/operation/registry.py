@@ -1,36 +1,40 @@
+from functools import partial
 from pathlib import Path
 from typing import Optional
 
 import duckdb
 
-from constants import BASE_DIR
+from persistence.storage.utils import set_path
 from settings import BucketSettings
-from src.shared.db.operation import execute_query
+from src.persistence.database.operation import execute_query
 from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
 
+BASE_STORAGE_PATH = Path("acidentes", "bronze", "ocorrencias")
+BASE_LOG_PATH = Path("acidentes", "bronze", "log", "ocorrencias")
 
-def fetch(
+set_storage_path = partial(
+    set_path,
+    base_path=BASE_STORAGE_PATH,
+)
+
+set_log_path = partial(
+    set_path,
+    base_path=BASE_LOG_PATH,
+)
+
+
+def create(
     conn: duckdb.DuckDBPyConnection,
     settings: Optional[BucketSettings] = None,
 ):
-    """Delega a execução do script fetch.sql"""
-
-    base_path = Path("acidentes", "bronze", "ocorrencias").as_posix()
-    base_log_path = Path("acidentes", "bronze", "log", "ocorrencias").as_posix()
-
-    if settings:
-        storage_path = Path(f"s3://{settings.STORAGE_BUCKET}", base_path).as_posix()
-        log_path = Path(f"s3://{settings.STORAGE_BUCKET}", base_log_path).as_posix()
-    else:
-        storage_path = Path(BASE_DIR, base_path).as_posix()
-        log_path = Path(BASE_DIR, base_log_path).as_posix()
+    """Delega a execução do script create.sql"""
 
     execute_query(
         conn=conn,
-        query_key="fetch",
+        query_key="create",
         query_dict=QUERIES,
-        storage_path=storage_path,
-        log_path=log_path,
+        storage_path=set_storage_path(settings=settings),
+        log_path=set_log_path(settings=settings),
     )

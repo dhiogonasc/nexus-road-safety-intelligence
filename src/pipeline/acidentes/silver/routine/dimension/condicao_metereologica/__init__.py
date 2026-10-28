@@ -4,6 +4,7 @@ from .operation import operations
 from ...staging import routine as staging_routine
 
 routine = Routine(
+    label="dim_condicao_metereologica",
     operations=operations,
     depends_on=[staging_routine],
 )

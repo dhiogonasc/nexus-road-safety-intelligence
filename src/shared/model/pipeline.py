@@ -6,19 +6,21 @@ from pydantic import BaseModel, model_validator
 
 class Routine(BaseModel):
     """Define estrutura de rotinas"""
-
-    operations: Dict[str, Callable]
+    label: str
+    operations: List[Callable]
     depends_on: List[Routine] = []
 
-
-class SchemaRoutine(BaseModel):
-    operations: Dict[str, Callable] = {}
-    depends_on: List[SchemaRoutine] = []
+class Layer(Routine):
+    """Define estrutura de rotinas de camada"""
+    routines: List[Routine]
+    
+class Catalog(Routine):
+    """Define estrutura de rotinas de camada"""
     routines: List[Routine]
 
 
 Routine.model_rebuild()
-SchemaRoutine.model_rebuild()
+Layer.model_rebuild()
 
 
 class DomainPipelineConfig(BaseModel):

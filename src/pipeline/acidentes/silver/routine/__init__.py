@@ -2,8 +2,8 @@ from typing import List
 
 from src.shared.model.pipeline import Routine
 
-from .staging import routines as staging_routines
+from .staging import routine as staging_routine
 from .dimension import routines as dimension_routines
 from .fato import routines as fato_routines
 
-routines: List[Routine] = staging_routines + dimension_routines + fato_routines
+routines: List[Routine] = [staging_routine] + dimension_routines + fato_routines

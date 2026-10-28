@@ -1,5 +1,5 @@
-from typing import Dict, Callable
+from typing import List, Callable
 
-from .registry import fetch
+from .registry import create
 
-operations: Dict[str, Callable] = {fetch.__name__: fetch}
+operations: List[Callable] = [create]

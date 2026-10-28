@@ -1,4 +1,7 @@
-from src.shared.model.pipeline import SchemaRoutine
+from src.shared.model.pipeline import Layer
 from .routine import routines
 
-schema_routine = SchemaRoutine(routines=routines)
+layer = Layer(
+    label="bronze",
+    routines=routines,
+)

@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE "silver"."ultima_carga" AS 
+CREATE OR REPLACE TABLE "silver"."stg" AS 
 WITH 
 last_charge AS (
     SELECT *
@@ -9,7 +9,7 @@ last_charge AS (
     WHERE data_carga = (
         SELECT MAX(data_carga) 
         FROM read_parquet(
-            '{log_path}/carga.parquet'
+            '{log_path}/**/*.parquet'
         )
     )
 ),

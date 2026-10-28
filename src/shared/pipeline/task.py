@@ -1,76 +1,53 @@
-"""src/shared/pipeline/task.py"""
+from typing import Callable, Dict
 
-from typing import Callable, Optional
 from prefect import task
-from settings import BucketSettings
-from src.shared.db.operation import (
-    create_bucket_secret,
-    create_schema,
-)
+
+from shared.model.pipeline import LayerRoutine, Routine
 
 
-@task(
-    name="Create Schema",
-    task_run_name="task_create_schema: {schema}",
-)
-def task_create_schema(
+def _map_dependecies(
+    routine_futures: dict,
+    routine: Routine,
+) -> list:
+    wait_for = []
+    for dependency in routine.depends_on:
+        dependency_label = dependency.label
+        if dependency_label in routine_futures:
+            wait_for.append(routine_futures[dependency_label])
+
+    return wait_for
+
+
+@task
+def task_process_routine(
     conn_fn: Callable,
-    schema: str,
-    catalog: Optional[str] = None,
-) -> None:
-    """Consolida a criacao de schema para um dominio na entidade de persistencia dedicada"""
+    routine: Routine,
+):
     with conn_fn() as conn:
-        create_schema(
-            conn=conn,
-            schema=schema,
-            catalog=catalog,
+        for operation in routine.operations:
+            operation(conn=conn)
+
+
+@task
+def task_process_layer(
+    conn_fn: Callable,
+    layer: LayerRoutine,
+):
+    with conn_fn() as conn:
+        for operation in layer.operations:
+            operation(conn=conn)
+
+    routine_futures = {}
+    for routine in layer.routines:
+        routine_future = task_process_routine.submit(
+            conn_fn=conn_fn,
+            routine=routine,
+            wait_for=_map_dependecies(
+                routine_futures=routine_futures,
+                routine=routine,
+            ),
         )
+        routine_futures[routine.label] = routine_future
 
-
-@task(
-    name="Create Table",
-    task_run_name="task_create_table: {create_table_fn.__name__}",
-)
-def task_create_table(
-    conn_fn: Callable,
-    create_table_fn: Callable,
-) -> None:
-    """Consolida a criação de tabelas na entidade de persistencia dedicada"""
-    with conn_fn() as conn:
-        create_table_fn(conn=conn)
-
-
-@task(
-    name="Upsert Table",
-    task_run_name="task_upsert_table: {upsert_table_fn.__name__}",
-)
-def task_upsert_table(
-    conn_fn: Callable,
-    upsert_table_fn: Callable,
-) -> None:
-    """Consolida a atualização incremental de tabelas na entidade de persistencia dedicada"""
-    with conn_fn() as conn:
-        upsert_table_fn(conn=conn)
-
-
-@task(
-    name="Open Bucket Operation",
-    task_run_name="task_open_bucket_operation: {bucket_operation_fn.__name__}",
-)
-def task_open_bucket_operation(
-    conn_fn: Callable,
-    bucket_operation_fn: Callable,
-    settings: BucketSettings,
-    secret_label: str,
-) -> None:
-    """Consolida a abertura e execucao de operacaoes em bucket"""
-    with conn_fn() as conn:
-        create_bucket_secret(
-            conn=conn,
-            settings=settings,
-            label=secret_label,
-        )
-        bucket_operation_fn(
-            conn=conn,
-            settings=settings,
-        )
+    for routine_future in routine_futures.values():
+        routine_future.result()
