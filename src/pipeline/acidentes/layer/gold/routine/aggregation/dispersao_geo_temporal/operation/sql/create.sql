@@ -24,6 +24,6 @@ CREATE TABLE IF NOT EXISTS "gold"."agg_dispersao_geo_temporal" (
 
     CONSTRAINT "uq_agg_dispersao_geo_temporal" UNIQUE (
         uf, br, municipio,
-        ano, mes, dia_semana,
+        ano, mes, dia_semana
     )
 );
