@@ -1,29 +1,21 @@
-from prefect import flow
+from functools import partial
 
-from .setup.dag_setup import flow_setup
-
-from src.persistence.database import duckdb_settings, DuckDBSettings
+from src.pipeline import catalogs
+from src.shared.pipeline.task import flow_process_catalog
+from src.persistence.database import duckdb_settings
+from src.persistence.database.operation import create_connection
 from src.shared.system.cmd import declare_catalog
-
-
-@flow(
-    name="Main",
-    flow_run_name="flow_main: {catalog}",
-)
-def flow_main(
-    catalog: str,
-    settings: DuckDBSettings,
-) -> None:
-    flow_setup(
-        catalog=catalog,
-        settings=settings,
-    )
-
 
 if __name__ == "__main__":
     arg = declare_catalog()
-    CATALOG = arg.catalog
-    flow_main(
+    CATALOG = catalogs[arg.catalog]
+
+    conn_fn = partial(
+        create_connection,
+        database=duckdb_settings.database(catalog=CATALOG.label),
+    )
+
+    flow_process_catalog(
         catalog=CATALOG,
-        settings=duckdb_settings,
+        conn_fn=conn_fn,
     )

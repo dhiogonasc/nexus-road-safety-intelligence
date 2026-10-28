@@ -7,16 +7,9 @@ from constants import ROOT
 
 @dataclass
 class DuckDBSettings:
-    """ConfiguraÇção DuckDB"""
+    """Configuração DuckDB"""
 
     DIRECTORY: str = Path(ROOT, "db").as_posix()
-    EXTENSIONS: List[str] = field(
-        default_factory=lambda: [
-            "postgres",
-            "httpfs",
-            "parquet",
-        ]
-    )
 
     def database(self, catalog: str) -> str:
         """Chave de conexão"""

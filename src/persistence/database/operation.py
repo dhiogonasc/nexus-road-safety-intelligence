@@ -69,34 +69,17 @@ def attach_connections(
         pass
 
 
-def _dispatch_extension_operation(
-    conn: duckdb.DuckDBPyConnection,
-    operation: Literal["INSTALL", "LOAD"],
-    extensions: List[str],
-) -> None:
-    query = "\n".join([f"{operation} {extension};" for extension in extensions])
-    conn.execute(query=query)
-
-
-def install_extensions(
-    conn: duckdb.DuckDBPyConnection,
-    extensions: List[str],
-) -> None:
-    """Abstrai a instalacao de extensoes para duckdb"""
-    _dispatch_extension_operation(
-        conn=conn,
-        extensions=extensions,
-        operation="INSTALL",
-    )
-
-
 def load_extensions(
     conn: duckdb.DuckDBPyConnection,
     extensions: List[str],
 ) -> None:
     """Abstrai o carregamento de extensoes para duckdb"""
-    _dispatch_extension_operation(
-        conn=conn,
-        extensions=extensions,
-        operation="LOAD",
-    )
+    for extension in extensions:
+
+        try:
+            query = f"LOAD {extension};"
+            conn.execute(query=query)
+
+        except duckdb.BinderException:
+            query = f"INSTALL {extension};\n LOAD {extension};"
+            conn.execute(query=query)

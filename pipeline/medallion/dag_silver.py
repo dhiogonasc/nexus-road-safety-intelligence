@@ -12,7 +12,7 @@ from src.shared.db.operation import (
 )
 from src.shared.db.connection import create_connection
 from src.pipeline.index import PIPELINE_CONFIG
-from src.pipeline.acidentes.silver.operation import fetch_last_charged
+from pipeline.acidentes.layer.silver.operation import fetch_last_charged
 from src.shared.pipeline.task import (
     task_create_schema,
     task_create_table,
