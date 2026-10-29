@@ -5,9 +5,9 @@ from typing import Optional
 import duckdb
 
 from constants import AC_OCORRENCIAS_DIR
-from src.persistence.database.operation import execute_query
 from src.persistence.storage import BucketSettings
 from src.persistence.storage.utils import set_path
+from src.persistence.database.operation import execute_query
 from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
