@@ -10,7 +10,9 @@ SELECT
     km, 
     sentido, 
     municipio, 
-    area
+    area,
+    latitude,
+    longitude
 FROM (
     SELECT DISTINCT 
         uf, 
@@ -18,7 +20,9 @@ FROM (
         km, 
         sentido_via AS sentido, 
         municipio, 
-        uso_solo AS area
+        uso_solo AS area,
+        latitude,
+        longitude
     FROM "silver"."stg"
 );
 
@@ -29,7 +33,9 @@ USING temp_dim_local AS source
     AND target.km = source.km 
     AND target.sentido = source.sentido 
     AND target.municipio = source.municipio 
-    AND target.area = source.area 
+    AND target.area = source.area
+    AND target.latitude = source.latitude
+    AND target.longitude = source.longitude
 
 WHEN NOT MATCHED THEN 
 INSERT (
@@ -39,7 +45,9 @@ INSERT (
     km, 
     sentido, 
     municipio, 
-    area
+    area,
+    latitude,
+    longitude
 ) 
 VALUES (
     nextval('seq_dim_local'), 
@@ -48,7 +56,9 @@ VALUES (
     source.km, 
     source.sentido, 
     source.municipio, 
-    source.area
-    );
+    source.area,
+    source.latitude,
+    source.longitude
+);
 
 DROP TABLE IF EXISTS temp_dim_local;

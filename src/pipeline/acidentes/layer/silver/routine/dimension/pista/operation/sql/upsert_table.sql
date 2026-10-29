@@ -16,7 +16,7 @@ FROM (
 
 MERGE INTO "silver"."dim_pista" AS target 
 USING temp_dim_pista AS source 
-    AND target.tracado = source.tracado 
+    ON target.tracado = source.tracado 
     AND target.tipo = source.tipo 
 
 WHEN NOT MATCHED THEN 

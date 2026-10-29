@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS "silver"."dim_local" (
     km DOUBLE PRECISION NOT NULL,
     sentido VARCHAR NOT NULL,
     municipio VARCHAR NOT NULL,
-    area VARCHAR NOT NULL
+    area VARCHAR NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
     
     CONSTRAINT "uq_dim_local" UNIQUE (
         uf, 
@@ -16,6 +18,8 @@ CREATE TABLE IF NOT EXISTS "silver"."dim_local" (
         km, 
         sentido, 
         municipio, 
-        area
+        area,
+        latitude,
+        longitude
     )
 );

@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "gold"."agg_letalidade_pista_tempo" (
     CONSTRAINT "uq_agg_letalidade_pista_tempo" UNIQUE (
         uf, 
         br, 
-        arae,
+        area,
         tracado_via,
         tipo_via,
         mes, 

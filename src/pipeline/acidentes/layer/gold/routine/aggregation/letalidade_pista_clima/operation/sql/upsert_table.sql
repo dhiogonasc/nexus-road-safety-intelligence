@@ -40,7 +40,7 @@ FROM (
         local.area,
         pista.tracado,
         pista.tipo,
-        clima.condicao_metereologica,
+        clima.condicao,
         categoria.classificacao
 );
 
@@ -51,7 +51,7 @@ USING temp_agg_letalidade_pista_clima AS source
     AND target.area = source.area
     AND target.tracado_via = source.tracado_via
     AND target.tipo_via = source.tipo_via
-    AND target.condicao_metereologico = source.condicao_metereologico
+    AND target.condicao_metereologica = source.condicao_metereologica
     AND target.classificacao_acidente = source.classificacao_acidente
 
 WHEN MATCHED THEN
@@ -68,7 +68,7 @@ INSERT (
     tracado_via,
     tipo_via,
     condicao_metereologica,
-    categoria_acidente,
+    classificacao_acidente,
     total_ocorrencias,
     pct_mortalidade
 ) 
@@ -80,7 +80,7 @@ VALUES (
     source.tracado_via,
     source.tipo_via,
     source.condicao_metereologica,
-    source.categoria_acidente,
+    source.classificacao_acidente,
     source.total_ocorrencias,
     source.pct_mortalidade
 );

@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS "gold"."agg_trechos_criticos" (
         km, 
         sentido,
         area, 
-        sentido_via,
         tracado_via,
         tipo_via,
         classificacao_acidente

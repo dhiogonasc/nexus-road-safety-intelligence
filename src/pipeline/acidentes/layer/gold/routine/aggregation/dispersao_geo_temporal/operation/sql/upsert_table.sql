@@ -61,7 +61,7 @@ INSERT (
     pct_mortalidade
 ) 
 VALUES (
-    nextval('seq_dispersao_geo_temporal') AS id,
+    nextval('seq_dispersao_geo_temporal'),
     source.uf,
     source.area,
     source.municipio,

@@ -32,7 +32,7 @@ FROM (
         JOIN temp_dim_local AS local ON fato.sk_local = local.id
         JOIN temp_dim_clima AS clima ON fato.sk_clima = clima.id
         JOIN temp_dim_tempo AS tempo ON fato.sk_tempo = tempo.id
-        JOIN temp_dim_categoria AS causa ON fato.sk_causa = causa.id
+        JOIN temp_dim_categoria AS categoria ON fato.sk_categoria = categoria.id
     GROUP BY
         local.uf,
         local.area,
@@ -46,10 +46,10 @@ MERGE INTO "gold"."agg_letalidade_clima_tempo" AS target
 USING temp_agg_letalidade_clima_tempo AS source 
     ON target.uf = source.uf
     AND target.area = source.area
-    AND target.condicao = source.condicao
+    AND target.condicao_metereologica = source.condicao_metereologica
     AND target.mes = source.mes
     AND target.fase_dia = source.fase_dia
-    AND target.classificacao = source.classificacao
+    AND target.classificacao_acidente = source.classificacao_acidente
 
 WHEN MATCHED THEN
 UPDATE SET
@@ -69,7 +69,7 @@ INSERT (
     pct_mortalidade
 ) 
 VALUES (
-    nextval('seq_letalidade_clima_tempo') AS id,
+    nextval('seq_letalidade_clima_tempo'),
     source.uf, 
     source.area,
     source.condicao_metereologica,

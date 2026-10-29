@@ -18,6 +18,7 @@ INSERT INTO "silver"."ft_ocorrencia" (
 )
 SELECT 
     source.id,
+    source.id_ocorrencia,
     source.sk_tempo,
     source.sk_local,
     source.sk_pista,

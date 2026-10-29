@@ -7,7 +7,7 @@ CREATE OR REPLACE MACRO normalize_value(str) AS
                 LOWER(TRIM(str :: VARCHAR)), 
                 '[\s\-_/,]+', ' ', 'g'
             ), 
-                '[^\p{L}\p{N}\s]', '', 'g'
+                '[^\p{{L}}\p{{N}}\s]', '', 'g'
             )
     END;
 

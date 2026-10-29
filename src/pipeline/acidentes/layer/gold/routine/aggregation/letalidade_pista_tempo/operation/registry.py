@@ -87,9 +87,9 @@ def upsert_table(
             set_dim_storage_path(settings=settings),
             "dim_tempo",
         ).as_posix(),
-        "dim_clima_storage_path": Path(
+        "dim_categoria_storage_path": Path(
             set_dim_storage_path(settings=settings),
-            "dim_clima",
+            "dim_categoria",
         ).as_posix(),
     }
 

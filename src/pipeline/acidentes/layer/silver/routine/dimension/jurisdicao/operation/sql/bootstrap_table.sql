@@ -12,6 +12,6 @@ SELECT
 FROM read_parquet('{storage_path}/**/*.parquet') AS source
 WHERE NOT EXISTS (
     SELECT 1 
-    FROM "silver"."dim_jursdicao" AS target 
+    FROM "silver"."dim_jurisdicao" AS target 
     WHERE target.id = source.id
 );

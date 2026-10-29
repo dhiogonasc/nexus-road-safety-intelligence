@@ -75,9 +75,9 @@ def upsert_table(
 ):
     """Delega a execução do script upsert_table.sql"""
     dim_storage_path = {
-        "dim_localizacao_storage_path": Path(
+        "dim_local_storage_path": Path(
             set_dim_storage_path(settings=settings),
-            "dim_localizacao",
+            "dim_local",
         ).as_posix(),
         "dim_pista_storage_path": Path(
             set_dim_storage_path(settings=settings),
