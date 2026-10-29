@@ -2,7 +2,7 @@ from typing import List
 
 from .causa import routine as causa_routine
 from .classificacao import routine as classificacao_routine
-from .condicao_metereologica import routine as condicao_metereologica_routine
+from .clima import routine as condicao_metereologica_routine
 from .coordenada import routine as coordenada_routine
 from .localizacao import routine as localizacao_routine
 from .pista import routine as pista_routine
