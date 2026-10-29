@@ -6,7 +6,9 @@ INSERT INTO "silver"."dim_categoria"(
 )
 SELECT 
     source.id, 
-    source.condicao
+    source.classificacao,
+    source.causa,
+    source.tipo
 FROM read_parquet('{storage_path}/**/*.parquet') AS source
 WHERE NOT EXISTS (
     SELECT 1 
