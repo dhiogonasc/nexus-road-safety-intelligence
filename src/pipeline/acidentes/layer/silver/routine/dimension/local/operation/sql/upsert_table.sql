@@ -16,9 +16,9 @@ FROM (
         uf, 
         br, 
         km, 
-        sentido, 
+        sentido_via AS sentido, 
         municipio, 
-        area
+        uso_solo AS area
     FROM "silver"."stg"
 );
 
