@@ -1,16 +1,12 @@
 INSERT INTO "silver"."ft_ocorrencia" (
     id,
-
     id_ocorrencia,
     sk_tempo,
-    sk_localizacao,
-    sk_coordenada,
-    sk_causa,
-    sk_tipo,
-    sk_classificacao,
+    sk_local,
     sk_pista,
-    sk_condicao_metereologica,
-
+    sk_jurisdicao,
+    sk_clima,
+    sk_categoria,
     pessoas,
     mortos,
     feridos_leves,
@@ -22,17 +18,12 @@ INSERT INTO "silver"."ft_ocorrencia" (
 )
 SELECT 
     source.id,
-
-    source.id_ocorrencia,
     source.sk_tempo,
-    source.sk_localizacao,
-    source.sk_coordenada,
-    source.sk_causa,
-    source.sk_tipo,
-    source.sk_classificacao,
+    source.sk_local,
     source.sk_pista,
-    source.sk_condicao_metereologica,
-    
+    source.sk_jurisdicao,
+    source.sk_clima,
+    source.sk_categoria,
     source.pessoas,
     source.mortos,
     source.feridos_leves,
