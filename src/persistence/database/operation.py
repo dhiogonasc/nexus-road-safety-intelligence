@@ -7,7 +7,6 @@ from typing import (
     Dict,
     List,
     Generator,
-    Literal,
     Optional,
 )
 
@@ -24,7 +23,7 @@ def create_connection(
 ) -> Generator[duckdb.DuckDBPyConnection, None, None]:
     """Gerencia a criacao de conexoes com entidades de persistencia (duckdb)"""
     Path(database).parent.mkdir(parents=True, exist_ok=True)
-    
+
     conn = duckdb.connect(
         database=database,
         config={
@@ -51,7 +50,6 @@ def execute_query(
     """Abstrai a execucao de scripts sql para duckdb"""
     sql = query_dict[query_key]
     query = sql.format(**kwargs)
-    print(query)
     return conn.execute(query=query)
 
 

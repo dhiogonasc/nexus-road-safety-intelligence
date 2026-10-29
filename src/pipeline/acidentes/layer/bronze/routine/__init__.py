@@ -1,6 +1,3 @@
-from typing import List
+from .ocorrencias.operation import process_routine as ocorrencias_processor
 
-from src.shared.model.pipeline import Routine
-from .ocorrencias import routine as ocorrencias_routine
-
-routines: List[Routine] = [ocorrencias_routine]
+processors = [ocorrencias_processor]
