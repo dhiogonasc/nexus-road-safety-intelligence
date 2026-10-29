@@ -2,7 +2,7 @@ INSERT INTO "gold"."agg_dispersao_geo_temporal"(
     id,
 
     uf,
-    br,
+    area,
     municipio,
 
     ano,
@@ -23,7 +23,7 @@ SELECT
     source.id,
 
     source.uf,
-    source.br,
+    source.area,
     source.municipio,
 
     source.ano,

@@ -1,5 +1,5 @@
-CREATE TEMP TABLE temp_dim_localizacao AS SELECT *
-FROM read_parquet('{dim_localizacao_storage_path}/**/*.parquet');
+CREATE TEMP TABLE temp_dim_local AS SELECT *
+FROM read_parquet('{dim_local_storage_path}/**/*.parquet');
 
 CREATE TEMP TABLE temp_dim_tempo AS SELECT *
 FROM read_parquet('{dim_tempo_storage_path}/**/*.parquet');
@@ -10,17 +10,15 @@ SELECT setval(
 );
 
 CREATE TEMP TABLE temp_agg_dispersao_geo_temporal AS
-SELECT nextval('seq_dispersao_geo_temporal') AS id, *
+SELECT *
 FROM (
     SELECT
-        localizacao.uf,
-        localizacao.br,
-        localizacao.municipio,
-
+        local.uf,
+        local.area,
+        local.municipio,
         tempo.ano,
         tempo.mes,
         tempo.dia_semana,
-
         CAST(COUNT(fato.id) AS BIGINT) AS total_ocorrencias,
         CAST(SUM(fato.pessoas) AS BIGINT) AS total_pessoas,
         CAST(SUM(fato.veiculos) AS BIGINT) AS total_veiculos,
@@ -32,13 +30,12 @@ FROM (
         ROUND(CAST(SUM(fato.mortos) AS DOUBLE) / NULLIF(COUNT(fato.id), 0) * 100, 2) AS pct_mortalidade
     FROM
         "gold"."stg" AS fato
-        JOIN temp_dim_localizacao AS localizacao ON fato.sk_localizacao = localizacao.id
+        JOIN temp_dim_local AS local ON fato.sk_local = local.id
         JOIN temp_dim_tempo AS tempo ON fato.sk_tempo = tempo.id
     GROUP BY
-        localizacao.uf,
-        localizacao.br,
-        localizacao.municipio,
-
+        local.uf,
+        local.area,
+        local.municipio,
         tempo.ano,
         tempo.mes,
         tempo.dia_semana
@@ -46,7 +43,12 @@ FROM (
 
 MERGE INTO "gold"."agg_dispersao_geo_temporal" AS target 
 USING temp_agg_dispersao_geo_temporal AS source 
-    ON target.id = source.id
+    ON target.uf = source.uf
+    AND target.area = source.area
+    AND target.municipio = source.municipio
+    AND target.ano = source.ano
+    AND target.mes = source.mes
+    AND target.dia_semana = source.dia_semana
 
 WHEN MATCHED THEN
 UPDATE SET
@@ -63,15 +65,12 @@ UPDATE SET
 WHEN NOT MATCHED THEN 
 INSERT (
     id,
-
     uf, 
-    br, 
+    area, 
     municipio,
-
     ano,
     mes,
     dia_semana,
-
     total_ocorrencias,
     total_pessoas,
     total_veiculos,
@@ -83,16 +82,13 @@ INSERT (
     pct_mortalidade
 ) 
 VALUES (
-    source.id,
-
+    nextval('seq_dispersao_geo_temporal') AS id,
     source.uf,
-    source.br,
+    source.area,
     source.municipio,
-
     source.ano,
     source.mes,
     source.dia_semana,
-
     source.total_ocorrencias,
     source.total_pessoas,
     source.total_veiculos,
@@ -104,7 +100,6 @@ VALUES (
     source.pct_mortalidade
 );
 
-DROP TABLE IF EXISTS temp_dim_localizacao;
+DROP TABLE IF EXISTS temp_dim_local;
 DROP TABLE IF EXISTS temp_dim_tempo;
-
 DROP TABLE IF EXISTS temp_agg_dispersao_geo_temporal;
