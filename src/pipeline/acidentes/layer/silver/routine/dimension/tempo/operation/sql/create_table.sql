@@ -1,4 +1,4 @@
-CREATE SEQUENCE IF NOT EXISTS "seq_dim_tempo" START 1;
+CREATE SEQUENCE IF NOT EXISTS "seq_dim_tempo" START 1 INCREMENT 1;
 
 CREATE TABLE IF NOT EXISTS "silver"."dim_tempo" (
     id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_dim_tempo'),
