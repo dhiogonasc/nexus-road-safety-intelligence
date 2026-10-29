@@ -27,15 +27,15 @@ set_log_path = partial(
 )
 
 
-def create(
+def create_table(
     conn: duckdb.DuckDBPyConnection,
     delim: str = ";",
     encoding: str = "latin-1",
 ):
-    """Delega a execução do script create.sql"""
+    """Delega a execução do script create_table.sql"""
     execute_query(
         conn=conn,
-        query_key="create",
+        query_key="create_table",
         query_dict=QUERIES,
         csv_path=SOURCE_PATH,
         delim=delim,
@@ -43,27 +43,27 @@ def create(
     )
 
 
-def copy(
+def copy_to_parquet(
     conn: duckdb.DuckDBPyConnection,
     settings: Optional[BucketSettings] = None,
 ):
-    """Delega a execução do script copy.sql"""
+    """Delega a execução do script copy_to_parquet.sql"""
     execute_query(
         conn=conn,
-        query_key="copy",
+        query_key="copy_to_parquet",
         query_dict=QUERIES,
         storage_path=set_storage_path(settings=settings),
     )
 
 
-def log(
+def log_charge(
     conn: duckdb.DuckDBPyConnection,
     settings: Optional[BucketSettings] = None,
 ):
-    """Delega a execução do script log.sql"""
+    """Delega a execução do script log_charge.sql"""
     execute_query(
         conn=conn,
-        query_key="log",
+        query_key="log_charge",
         query_dict=QUERIES,
         storage_path=set_storage_path(settings=settings),
         log_path=set_log_path(settings=settings),
