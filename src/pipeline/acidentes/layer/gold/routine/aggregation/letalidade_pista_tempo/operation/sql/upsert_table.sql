@@ -16,7 +16,7 @@ SELECT setval(
 );
 
 CREATE TEMP TABLE temp_agg_letalidade_pista_tempo AS
-SELECT nextval('seq_letalidade_pista_tempo') AS id, *
+SELECT *
 FROM (
     SELECT
         local.uf,
@@ -81,7 +81,7 @@ INSERT (
     pct_mortalidade
 ) 
 VALUES (
-    source.id,
+    nextval('seq_letalidade_pista_tempo'), 
     source.uf, 
     source.br,
     source.area,
