@@ -18,14 +18,14 @@ set_storage_path = partial(
 )
 
 
-def create(
+def create_table(
     conn: duckdb.DuckDBPyConnection,
     settings: Optional[BucketSettings] = None,
 ):
-    """Delega a execução do script create.sql"""
+    """Delega a execução do script create_table.sql"""
     execute_query(
         conn=conn,
-        query_key="create",
+        query_key="create_table",
         query_dict=QUERIES,
         storage_path=set_storage_path(settings=settings),
     )
