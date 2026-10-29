@@ -27,7 +27,6 @@ BASE_LOG_PATH = Path(
     "log",
     "ocorrencias",
 )
-
 set_log_path = partial(
     set_path,
     base_path=BASE_LOG_PATH,
@@ -39,7 +38,6 @@ def create_table(
     settings: Optional[BucketSettings] = None,
 ):
     """Delega a execução do script create_table.sql"""
-
     execute_query(
         conn=conn,
         query_key="create_table",

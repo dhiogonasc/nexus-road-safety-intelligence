@@ -13,14 +13,23 @@ from src.shared.system.file import load_module_queries
 QUERIES = load_module_queries(current_file=__file__)
 
 SOURCE_PATH = Path(AC_OCORRENCIAS_DIR, "*.csv").as_posix()
-BASE_STORAGE_PATH = Path("acidentes", "bronze", "ocorrencias")
-BASE_LOG_PATH = Path("acidentes", "bronze", "log", "ocorrencias")
 
+BASE_STORAGE_PATH = Path(
+    "acidentes",
+    "bronze",
+    "ocorrencias",
+)
 set_storage_path = partial(
     set_path,
     base_path=BASE_STORAGE_PATH,
 )
 
+BASE_LOG_PATH = Path(
+    "acidentes",
+    "bronze",
+    "log",
+    "ocorrencias",
+)
 set_log_path = partial(
     set_path,
     base_path=BASE_LOG_PATH,
