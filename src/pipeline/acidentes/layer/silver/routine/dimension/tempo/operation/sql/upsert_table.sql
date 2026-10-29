@@ -5,25 +5,28 @@ SELECT setval(
 
 CREATE TEMP TABLE temp_dim_tempo AS 
 SELECT 
-    nextval('seq_dim_tempo') AS id, 
     data_hora,
-    ano, mes, dia, hora,
-    dia_semana, fase_dia
+    ano, 
+    mes, 
+    dia, 
+    hora,
+    dia_semana, 
+    fase_dia
 FROM (
     SELECT DISTINCT 
         data_hora,
-        ano, mes, dia, hora,
-        dia_semana, fase_dia
+        ano, 
+        mes, 
+        dia, 
+        hora,
+        dia_semana, 
+        fase_dia
     FROM "silver"."stg"
 );
 
 MERGE INTO "silver"."dim_tempo" AS target 
 USING temp_dim_tempo AS source 
     ON target.data_hora = source.data_hora 
-    AND target.ano = source.ano 
-    AND target.mes = source.mes 
-    AND target.dia = source.dia 
-    AND target.hora = source.hora 
     AND target.dia_semana = source.dia_semana 
     AND target.fase_dia = source.fase_dia
 
@@ -31,11 +34,15 @@ WHEN NOT MATCHED THEN
 INSERT (
     id, 
     data_hora, 
-    ano, mes, dia, hora, 
-    dia_semana, fase_dia
+    ano, 
+    mes, 
+    dia, 
+    hora, 
+    dia_semana, 
+    fase_dia
 ) 
 VALUES (
-    source.id, 
+    nextval('seq_dim_tempo'),
     source.data_hora, 
     source.ano, 
     source.mes, 

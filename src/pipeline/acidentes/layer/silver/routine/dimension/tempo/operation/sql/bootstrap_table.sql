@@ -1,8 +1,12 @@
 INSERT INTO "silver"."dim_tempo"(
     id,
     data_hora,
-    ano, mes, dia, hora, 
-    dia_semana, fase_dia
+    ano, 
+    mes, 
+    dia, 
+    hora, 
+    dia_semana, 
+    fase_dia
 )
 SELECT 
     source.id,

@@ -2,6 +2,7 @@ CREATE SEQUENCE IF NOT EXISTS "seq_dim_tempo" START 1;
 
 CREATE TABLE IF NOT EXISTS "silver"."dim_tempo" (
     id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_dim_tempo'),
+
     data_hora TIMESTAMP NOT NULL,
     ano INTEGER NOT NULL,
     mes INTEGER NOT NULL,
@@ -12,11 +13,7 @@ CREATE TABLE IF NOT EXISTS "silver"."dim_tempo" (
 
     CONSTRAINT "uq_dim_tempo" UNIQUE (
         data_hora,
-        ano, mes, dia,
-        hora, dia_semana,
+        dia_semana,
         fase_dia
     )
 );
-
-CREATE INDEX IF NOT EXISTS "idx_dim_tempo_ano_mes_dia" ON "silver"."dim_tempo" (ano, mes, dia);
-CREATE INDEX IF NOT EXISTS "idx_dim_tempo_fase_dia" ON "silver"."dim_tempo" (fase_dia);
