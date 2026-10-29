@@ -29,7 +29,7 @@ BASE_LOG_PATH = Path(
     "acidentes",
     "bronze",
     "log",
-    "ocorrencias",
+    "raw_ocorrencias",
 )
 set_log_path = partial(
     set_path,

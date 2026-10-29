@@ -5,7 +5,7 @@ from prefect import flow, task
 
 from src.shared.system.file import load_module_queries
 from src.persistence.storage.settings import BucketSettings
-from src.persistence.database.operation import execute_query, load_extensions
+from src.persistence.database.operation import execute_query
 from .routine import processors
 
 QUERIES = load_module_queries(current_file=__file__)

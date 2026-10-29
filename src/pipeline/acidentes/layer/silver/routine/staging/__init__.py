@@ -1,7 +1,7 @@
-from src.shared.model.pipeline import Routine
-from .operation import operations
+from .operation import process_routine as routine_processor
 
-routine = Routine(
-    label="stg",
-    operations=operations,
-)
+routine = {
+    "label": "stg",
+    "processor": routine_processor,
+    "depends_on": [],
+}

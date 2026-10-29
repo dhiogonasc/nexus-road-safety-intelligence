@@ -1,0 +1,69 @@
+from functools import partial
+from pathlib import Path
+from typing import Callable, Optional, ContextManager
+
+import duckdb
+from prefect import task
+
+from src.persistence.storage import BucketSettings
+from src.persistence.storage.utils import set_path
+from src.persistence.database.operation import execute_query
+from src.shared.system.file import load_module_queries
+
+QUERIES = load_module_queries(current_file=__file__)
+
+BASE_STORAGE_PATH = Path(
+    "acidentes",
+    "bronze",
+    "raw_ocorrencias",
+)
+set_storage_path = partial(
+    set_path,
+    base_path=BASE_STORAGE_PATH,
+)
+
+BASE_LOG_PATH = Path(
+    "acidentes",
+    "bronze",
+    "log",
+    "raw_ocorrencias",
+)
+set_log_path = partial(
+    set_path,
+    base_path=BASE_LOG_PATH,
+)
+
+
+@task(
+    name="create_table",
+    task_run_name="create_table: stg",
+)
+def create_table(
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    """Delega a execução do script create_table.sql"""
+    with conn_fn() as conn:
+        execute_query(
+            conn=conn,
+            query_key="create_table",
+            query_dict=QUERIES,
+            storage_path=set_storage_path(settings=settings),
+            log_path=set_log_path(settings=settings),
+        )
+
+
+@task(
+    name="process_routine",
+    task_run_name="process_routine: stg",
+)
+def process_routine(
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    """Delega a execução do script create_table.sql"""
+    create_future = create_table.submit(
+        conn_fn=conn_fn,
+        settings=settings,
+    )
+    create_future.result()
