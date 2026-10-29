@@ -20,13 +20,6 @@ FROM (
         tempo.mes,
         tempo.dia_semana,
         CAST(COUNT(fato.id) AS BIGINT) AS total_ocorrencias,
-        CAST(SUM(fato.pessoas) AS BIGINT) AS total_pessoas,
-        CAST(SUM(fato.veiculos) AS BIGINT) AS total_veiculos,
-        CAST(SUM(fato.mortos) AS BIGINT) AS total_mortos,
-        CAST(SUM(fato.feridos) AS BIGINT) AS total_feridos,
-        CAST(SUM(fato.feridos_graves) AS BIGINT) AS total_feridos_graves,
-        CAST(SUM(fato.feridos_leves) AS BIGINT) AS total_feridos_leves,
-        CAST(SUM(fato.ilesos) AS BIGINT) AS total_ilesos,
         ROUND(CAST(SUM(fato.mortos) AS DOUBLE) / NULLIF(COUNT(fato.id), 0) * 100, 2) AS pct_mortalidade
     FROM
         "gold"."stg" AS fato
@@ -53,13 +46,6 @@ USING temp_agg_dispersao_geo_temporal AS source
 WHEN MATCHED THEN
 UPDATE SET
     total_ocorrencias = source.total_ocorrencias,
-    total_pessoas = source.total_pessoas,
-    total_veiculos = source.total_veiculos,
-    total_mortos = source.total_mortos,
-    total_feridos = source.total_feridos,
-    total_feridos_graves = source.total_feridos_graves,
-    total_feridos_leves = source.total_feridos_leves,
-    total_ilesos = source.total_ilesos,
     pct_mortalidade = source.pct_mortalidade
 
 WHEN NOT MATCHED THEN 
@@ -72,13 +58,6 @@ INSERT (
     mes,
     dia_semana,
     total_ocorrencias,
-    total_pessoas,
-    total_veiculos,
-    total_mortos,
-    total_feridos,
-    total_feridos_graves,
-    total_feridos_leves,
-    total_ilesos,
     pct_mortalidade
 ) 
 VALUES (
@@ -90,13 +69,6 @@ VALUES (
     source.mes,
     source.dia_semana,
     source.total_ocorrencias,
-    source.total_pessoas,
-    source.total_veiculos,
-    source.total_mortos,
-    source.total_feridos,
-    source.total_feridos_graves,
-    source.total_feridos_leves,
-    source.total_ilesos,
     source.pct_mortalidade
 );
 
