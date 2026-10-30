@@ -109,18 +109,22 @@ def fetch_partitions(
 ):
     """Delega a execução do script fetch_partitions.sql"""
     with conn_fn() as conn:
-        partitons_row = execute_query(
+        partitions_row = execute_query(
             conn=conn,
             query_key="fetch_partitions",
             query_dict=QUERIES,
             staging_log_path=set_staging_log_path(settings=settings),
         ).fetchall()
 
-    partition_agg = defaultdict(list)
-    for ano, uf in partitons_row:
-        partition_agg[ano].append(uf)
+        anos, ufs = [], []
+        for ano, uf in partitions_row:
+            anos.append(ano)
+            ufs.append(uf)
 
-    return [{ano: ufs} for ano, ufs in partition_agg.items()]
+        return {
+            "anos": anos,
+            "ufs": ufs,
+        }
 
 
 @task(
@@ -183,23 +187,25 @@ def process_partitions(
     upstream_tasks: List[PrefectFuture],
     settings: Optional[BucketSettings] = None,
 ):
-    create_temp_future = create_temp_stg_table.submit(conn_fn=conn_fn)
-
-    upsert_temp_futures = []
-    for partition in fetch_partitions(
+    create_temp_future = create_temp_stg_table.submit(
         conn_fn=conn_fn,
+        wait_for=upstream_tasks,
+    )
+    
+    fetch_partitions_future = fetch_partitions.submit(
+        conn_fn=conn_fn, 
         settings=settings,
-    ):
-        for ano, ufs in partition.items():
-            for uf in ufs:
-                create_temp_future = upsert_temp_stg_table.submit(
-                    conn_fn=conn_fn,
-                    ano=ano,
-                    uf=uf,
-                    settings=settings,
-                    wait_for=upstream_tasks,
-                )
-                upsert_temp_futures.append(create_temp_future)
+    )
+    
+    partitions_data = fetch_partitions_future.result()
+    
+    upsert_temp_futures = upsert_temp_stg_table.map(
+        conn_fn=conn_fn,
+        ano=partitions_data["anos"],
+        uf=partitions_data["ufs"],
+        settings=settings,
+        wait_for=[create_temp_future],
+    )
 
     upsert_future = upsert_table.submit(
         conn_fn=conn_fn,
