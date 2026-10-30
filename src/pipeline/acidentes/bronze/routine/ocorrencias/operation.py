@@ -5,7 +5,7 @@ import duckdb
 from prefect import task
 
 from constants import AC_OCORRENCIAS_DIR
-from src.persistence.storage import BucketSettings
+from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.operation import execute_query
 from src.shared.system.file import load_module_queries
 from .storage import set_storage_path, set_log_path
