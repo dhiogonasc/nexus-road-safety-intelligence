@@ -28,7 +28,7 @@ FROM (
         CAST(COUNT(fato.id) AS BIGINT) AS total_ocorrencias,
         ROUND(CAST(SUM(fato.mortos) AS DOUBLE) / NULLIF(COUNT(fato.id), 0) * 100, 2) AS pct_mortalidade
     FROM
-        "gold"."stg" AS fato
+        "gold"."stg_ft_ocorrencia" AS fato
         JOIN temp_dim_local AS local ON fato.sk_local = local.id
         JOIN temp_dim_clima AS clima ON fato.sk_clima = clima.id
         JOIN temp_dim_tempo AS tempo ON fato.sk_tempo = tempo.id

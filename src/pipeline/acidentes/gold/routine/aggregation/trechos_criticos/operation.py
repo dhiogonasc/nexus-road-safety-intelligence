@@ -99,15 +99,15 @@ def upsert_table(
     dim_storage_path = {
         "dim_local_storage_path": Path(
             set_dim_storage_path(settings=settings),
-            "dim_local",
+            "local",
         ).as_posix(),
         "dim_pista_storage_path": Path(
             set_dim_storage_path(settings=settings),
-            "dim_pista",
+            "pista",
         ).as_posix(),
         "dim_categoria_storage_path": Path(
             set_dim_storage_path(settings=settings),
-            "dim_categoria",
+            "categoria",
         ).as_posix(),
     }
 
