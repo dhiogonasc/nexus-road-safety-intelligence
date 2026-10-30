@@ -172,11 +172,13 @@ def process_partitions(
     upstream_tasks: List[PrefectFuture],
     settings: Optional[BucketSettings] = None,
 ):
-    create_temp_futures = []
-    for partition in fetch_partitions(
+    partitions = fetch_partitions(
         conn_fn=conn_fn,
         settings=settings,
-    ):
+    )
+    
+    create_temp_futures = []
+    for partition in partitions:
         for ano, ufs in partition.items():
             for uf in ufs:
                 create_temp_future = create_temp_stg_table.submit(
@@ -188,6 +190,7 @@ def process_partitions(
                 )
                 create_temp_futures.append(create_temp_future)
 
+    for partition in partitions:
         for ano, ufs in partition.items():
             for uf in ufs:
                 upsert_future = upsert_table.submit(
