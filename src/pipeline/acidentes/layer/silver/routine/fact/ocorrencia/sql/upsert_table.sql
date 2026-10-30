@@ -4,7 +4,7 @@ SELECT setval(
 );
 
 MERGE INTO "silver"."ft_ocorrencia" AS target 
-USING "silver"."temp_ft_ocorrencia_{ano}_{uf}" AS source 
+USING "silver"."temp_ft_ocorrencia" AS source 
     ON target.id_ocorrencia = source.id_ocorrencia
     AND target.sk_tempo = source.sk_tempo
     AND target.sk_local = source.sk_local
@@ -63,4 +63,4 @@ VALUES (
     source.veiculos
 );
 
-DROP TABLE IF EXISTS "silver"."temp_ft_ocorrencia_{ano}_{uf}";
+DROP TABLE IF EXISTS "silver"."temp_ft_ocorrencia";

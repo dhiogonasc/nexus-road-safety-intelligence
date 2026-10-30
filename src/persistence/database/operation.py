@@ -76,11 +76,10 @@ def load_extensions(
 ) -> None:
     """Abstrai o carregamento de extensoes para duckdb"""
     for extension in extensions:
-
         try:
             query = f"LOAD {extension};"
             conn.execute(query=query)
 
-        except duckdb.BinderException:
+        except duckdb.IOException, duckdb.BinderException:
             query = f"INSTALL {extension};\n LOAD {extension};"
             conn.execute(query=query)

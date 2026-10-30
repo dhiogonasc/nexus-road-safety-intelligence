@@ -125,9 +125,26 @@ def fetch_partitions(
 
 @task(
     name="create_temp_stg_table",
-    task_run_name="temp_ft_ocorrencia_{ano}_{uf}: create_temp_stg_table",
+    task_run_name="temp_ft_ocorrencia: create_temp_stg_table",
 )
 def create_temp_stg_table(
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    with conn_fn() as conn:
+        execute_query(
+            conn=conn,
+            query_key="create_temp_stg_table",
+            query_dict=QUERIES,
+            staging_storage_path=set_staging_storage_path(settings=settings),
+        )
+
+
+@task(
+    name="upsert_temp_stg_table",
+    task_run_name="temp_ft_ocorrencia_{ano}_{uf}: upsert_temp_stg_table",
+)
+def upsert_temp_stg_table(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     ano: int,
     uf: str,
@@ -136,7 +153,7 @@ def create_temp_stg_table(
     with conn_fn() as conn:
         execute_query(
             conn=conn,
-            query_key="create_temp_stg_table",
+            query_key="upsert_temp_stg_table",
             query_dict=QUERIES,
             staging_storage_path=set_staging_storage_path(settings=settings),
             ano=ano,
@@ -146,20 +163,14 @@ def create_temp_stg_table(
 
 @task(
     name="upsert_table",
-    task_run_name="ft_ocorrencia: upsert_table - {ano}: {uf}",
+    task_run_name="ft_ocorrencia: upsert_table",
 )
-def upsert_table(
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    ano: int,
-    uf: str,
-):
+def upsert_table(conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]]):
     with conn_fn() as conn:
         execute_query(
             conn=conn,
             query_key="upsert_table",
             query_dict=QUERIES,
-            ano=ano,
-            uf=uf,
         )
 
 
@@ -172,38 +183,29 @@ def process_partitions(
     upstream_tasks: List[PrefectFuture],
     settings: Optional[BucketSettings] = None,
 ):
-    partitions = fetch_partitions(
+    create_temp_future = create_temp_stg_table.submit(conn_fn=conn_fn)
+
+    upsert_temp_futures = []
+    for partition in fetch_partitions(
         conn_fn=conn_fn,
         settings=settings,
-    )
-
-    create_temp_futures = []
-    for partition in partitions:
+    ):
         for ano, ufs in partition.items():
             for uf in ufs:
-                create_temp_future = create_temp_stg_table.submit(
+                create_temp_future = upsert_temp_stg_table.submit(
                     conn_fn=conn_fn,
                     ano=ano,
                     uf=uf,
                     settings=settings,
                     wait_for=upstream_tasks,
                 )
-                create_temp_futures.append(create_temp_future)
+                upsert_temp_futures.append(create_temp_future)
 
-    upsert_futures = []
-    for partition in partitions:
-        for ano, ufs in partition.items():
-            for uf in ufs:
-                upsert_future = upsert_table.submit(
-                    conn_fn=conn_fn,
-                    ano=ano,
-                    uf=uf,
-                    wait_for=create_temp_futures,
-                )
-                upsert_futures.append(upsert_future)
-
-    for future in upsert_futures:
-        future.result()
+    upsert_future = upsert_table.submit(
+        conn_fn=conn_fn,
+        wait_for=upsert_temp_futures,
+    )
+    upsert_future.result()
 
 
 @task(
