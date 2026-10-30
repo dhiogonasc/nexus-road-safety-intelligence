@@ -4,6 +4,7 @@ from typing import Callable, Optional, ContextManager
 
 import duckdb
 from prefect import task
+
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.storage.utils import set_path
 from src.persistence.database.operation import execute_query

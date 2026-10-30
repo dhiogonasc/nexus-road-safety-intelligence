@@ -19,7 +19,6 @@ LAYER = "bronze"
 )
 def flow_bronze():
     Path(DB_DIR).mkdir(parents=True, exist_ok=True)
-    
     with tempfile.TemporaryDirectory(
         dir=DB_DIR,
         prefix=LAYER,
