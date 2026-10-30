@@ -14,14 +14,35 @@ from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
 
-BASE_STORAGE_PATH = Path(
+STORAGE_PATH = Path(
     "acidentes",
     "silver",
     "ft_ocorrencia",
 ).as_posix()
 set_storage_path = partial(
     set_path,
-    base_path=BASE_STORAGE_PATH,
+    base_path=STORAGE_PATH,
+)
+
+STG_STORAGE_PATH = Path(
+    "acidentes",
+    "silver",
+    "stg",
+).as_posix()
+set_staging_storage_path = partial(
+    set_path,
+    base_path=STG_STORAGE_PATH,
+)
+
+STG_LOG_PATH = Path(
+    "acidentes",
+    "silver",
+    "log",
+    "stg",
+).as_posix()
+set_staging_log_path = partial(
+    set_path,
+    base_path=STG_LOG_PATH,
 )
 
 
@@ -82,13 +103,17 @@ def copy_to_parquet(
     name="fetch_partitions",
     task_run_name="ft_ocorrencia: fetch_partitions ['ano', 'uf']",
 )
-def fetch_partitions(conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]]):
+def fetch_partitions(
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
     """Delega a execução do script fetch_partitions.sql"""
     with conn_fn() as conn:
         partitons_row = execute_query(
             conn=conn,
             query_key="fetch_partitions",
             query_dict=QUERIES,
+            staging_log_path=set_staging_log_path(settings=settings),
         ).fetchall()
 
     partition_agg = defaultdict(list)
@@ -106,12 +131,14 @@ def create_temp_stg_table(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     ano: int,
     uf: str,
+    settings: Optional[BucketSettings] = None,
 ):
     with conn_fn() as conn:
         execute_query(
             conn=conn,
             query_key="create_temp_stg_table",
             query_dict=QUERIES,
+            staging_storage_path=set_staging_storage_path(settings=settings),
             ano=ano,
             uf=uf,
         )
@@ -143,15 +170,20 @@ def upsert_table(
 def process_partitions(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     upstream_tasks: List[PrefectFuture],
+    settings: Optional[BucketSettings] = None,
 ):
     create_temp_futures = []
-    for partition in fetch_partitions(conn_fn=conn_fn):
+    for partition in fetch_partitions(
+        conn_fn=conn_fn,
+        settings=settings,
+    ):
         for ano, ufs in partition.items():
             for uf in ufs:
                 create_temp_future = create_temp_stg_table.submit(
                     conn_fn=conn_fn,
                     ano=ano,
                     uf=uf,
+                    settings=settings,
                     wait_for=upstream_tasks,
                 )
                 create_temp_futures.append(create_temp_future)
@@ -185,6 +217,7 @@ def process_routine(
 
     process_partitions_future = process_partitions.submit(
         conn_fn=conn_fn,
+        settings=settings,
         upstream_tasks=[bootstrap_future],
     )
 

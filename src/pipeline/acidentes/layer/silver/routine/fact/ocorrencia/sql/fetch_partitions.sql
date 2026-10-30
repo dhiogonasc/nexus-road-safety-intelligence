@@ -1,1 +1,1 @@
-SELECT DISTINCT ano, uf FROM "silver"."stg";
+SELECT * FROM read_parquet('{staging_log_path}/**/*.parquet');

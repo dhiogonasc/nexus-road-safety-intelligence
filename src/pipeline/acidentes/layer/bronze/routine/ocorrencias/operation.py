@@ -90,7 +90,6 @@ def log_charge(
             conn=conn,
             query_key="log_charge",
             query_dict=QUERIES,
-            storage_path=set_storage_path(settings=settings),
             log_path=set_log_path(settings=settings),
         )
 

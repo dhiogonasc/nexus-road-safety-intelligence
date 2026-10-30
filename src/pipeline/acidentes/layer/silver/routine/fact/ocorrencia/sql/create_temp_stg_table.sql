@@ -17,8 +17,8 @@ SELECT
     fato.veiculos
 FROM (
     SELECT *
-    FROM "silver"."stg"
-    WHERE ano = '{ano}' AND uf = '{uf}'
+    FROM read_parquet('{staging_storage_path}/**/*.parquet', hive_partitioning = true)
+    WHERE ano = {ano} AND uf = '{uf}'
 ) AS fato
 
 LEFT JOIN "silver"."dim_tempo" AS tempo 

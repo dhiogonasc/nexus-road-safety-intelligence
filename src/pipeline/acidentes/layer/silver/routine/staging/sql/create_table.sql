@@ -13,13 +13,15 @@ CREATE OR REPLACE MACRO normalize_value(str) AS
 
 CREATE OR REPLACE TABLE "silver"."stg" AS
 WITH 
+ultima_data AS (
+    SELECT MAX(data_carga) AS data_carga 
+    FROM read_parquet('{raw_log_path}/**/*.parquet')
+),
 ultima_carga AS (
-    SELECT * 
-    FROM read_parquet('{storage_path}/**/*.parquet', hive_partitioning = true)
-    WHERE data_carga = (
-        SELECT MAX(data_carga) 
-        FROM read_parquet('{log_path}/**/*.parquet')
-    )
+    SELECT raw.* 
+    FROM read_parquet('{raw_storage_path}/**/*.parquet', hive_partitioning = true) AS raw
+    CROSS JOIN ultima_data AS ua
+    WHERE raw.data_carga = ua.data_carga
 ),
 base_tempo AS (
     SELECT 

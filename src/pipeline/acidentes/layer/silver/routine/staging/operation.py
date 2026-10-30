@@ -12,25 +12,46 @@ from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
 
-BASE_STORAGE_PATH = Path(
+STORAGE_PATH = Path(
+    "acidentes",
+    "silver",
+    "stg",
+).as_posix()
+set_storage_path = partial(
+    set_path,
+    base_path=STORAGE_PATH,
+)
+
+LOG_PATH = Path(
+    "acidentes",
+    "silver",
+    "log",
+    "stg",
+).as_posix()
+set_log_path = partial(
+    set_path,
+    base_path=LOG_PATH,
+)
+
+RAW_STORAGE_PATH = Path(
     "acidentes",
     "bronze",
     "raw_ocorrencias",
-)
-set_storage_path = partial(
+).as_posix()
+set_raw_storage_path = partial(
     set_path,
-    base_path=BASE_STORAGE_PATH,
+    base_path=RAW_STORAGE_PATH,
 )
 
-BASE_LOG_PATH = Path(
+RAW_LOG_PATH = Path(
     "acidentes",
     "bronze",
     "log",
     "raw_ocorrencias",
-)
-set_log_path = partial(
+).as_posix()
+set_raw_log_path = partial(
     set_path,
-    base_path=BASE_LOG_PATH,
+    base_path=RAW_LOG_PATH,
 )
 
 
@@ -48,7 +69,43 @@ def create_table(
             conn=conn,
             query_key="create_table",
             query_dict=QUERIES,
+            raw_storage_path=set_raw_storage_path(settings=settings),
+            raw_log_path=set_raw_log_path(settings=settings),
+        )
+
+
+@task(
+    name="copy_to_parquet",
+    task_run_name="stg: copy_to_parquet",
+)
+def copy_to_parquet(
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    """Delega a execução do script copy_to_parquet.sql"""
+    with conn_fn() as conn:
+        execute_query(
+            conn=conn,
+            query_key="copy_to_parquet",
+            query_dict=QUERIES,
             storage_path=set_storage_path(settings=settings),
+        )
+
+
+@task(
+    name="Log Table Charge",
+    task_run_name="stg: log_charge",
+)
+def log_charge(
+    conn_fn: Callable,
+    settings: Optional[BucketSettings] = None,
+):
+    """Delega a execução do script log_charge.sql"""
+    with conn_fn() as conn:
+        execute_query(
+            conn=conn,
+            query_key="log_charge",
+            query_dict=QUERIES,
             log_path=set_log_path(settings=settings),
         )
 
@@ -62,8 +119,23 @@ def process_routine(
     settings: Optional[BucketSettings] = None,
 ):
     """Delega a execução do script create_table.sql"""
-    create_future = create_table.submit(
+    create_future = create_table.submit(conn_fn=conn_fn)
+
+    futures = []
+
+    copy_future = copy_to_parquet.submit(
         conn_fn=conn_fn,
         settings=settings,
+        wait_for=[create_future],
     )
-    create_future.result()
+    futures.append(copy_future)
+
+    log_future = log_charge.submit(
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=[create_future],
+    )
+    futures.append(log_future)
+
+    for future in futures:
+        future.result()
