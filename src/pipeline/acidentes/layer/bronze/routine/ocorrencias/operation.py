@@ -39,7 +39,7 @@ set_log_path = partial(
 
 @task(
     name="Create Table",
-    task_run_name="create raw_ocorrencias",
+    task_run_name="raw_ocorrencias: create_table",
 )
 def create_table(
     conn_fn: Callable,
@@ -60,7 +60,7 @@ def create_table(
 
 @task(
     name="Copy Table to Parquet",
-    task_run_name="copy raw_ocorrencias to parquet",
+    task_run_name="raw_ocorrencias: copy_to_parquet",
 )
 def copy_to_parquet(
     conn_fn: Callable,
@@ -78,7 +78,7 @@ def copy_to_parquet(
 
 @task(
     name="Log Table Charge",
-    task_run_name="log raw_ocorrencias charge",
+    task_run_name="raw_ocorrencias: log_charge",
 )
 def log_charge(
     conn_fn: Callable,
@@ -96,7 +96,7 @@ def log_charge(
 
 @task(
     name="Process Table Routine",
-    task_run_name="process raw_ocorrencias routine",
+    task_run_name="raw_ocorrencias: process_routine",
 )
 def process_routine(
     conn_fn: Callable,
