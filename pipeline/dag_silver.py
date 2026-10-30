@@ -1,6 +1,6 @@
 from functools import partial
 
-from src.pipeline.acidentes.layer.silver.operation import process_layer
+from pipeline.acidentes.silver.operation import process_layer
 from src.persistence.database import duckdb_settings
 from src.persistence.database.operation import create_connection, load_extensions
 from src.shared.system.cmd import declare_catalog
