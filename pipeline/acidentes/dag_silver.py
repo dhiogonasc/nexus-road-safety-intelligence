@@ -1,0 +1,45 @@
+from functools import partial
+from pathlib import Path
+import tempfile
+
+from prefect import flow
+
+from constants import DB_DIR
+from src.persistence.database.operation import create_connection, load_extensions
+from src.persistence.database.settings import settings
+from src.pipeline.acidentes.silver.operation import process_layer
+
+CATALOG = "acidentes"
+LAYER = "silver"
+
+
+@flow(
+    name="Flow Silver",
+    flow_run_name="acidentes: flow_silver",
+)
+def flow_silver():
+    Path(DB_DIR).mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        dir=DB_DIR,
+        prefix=LAYER,
+    ) as silver_dir:
+        database = settings.database(name=f"{CATALOG}_{LAYER}", db_dir=silver_dir)
+
+        load_extensions_fn = partial(
+            load_extensions,
+            extensions=[
+                "httpfs",
+                "parquet",
+            ],
+        )
+        conn_fn = partial(
+            create_connection,
+            database=database,
+            load_extensions_fn=load_extensions_fn,
+        )
+
+        process_layer(conn_fn=conn_fn)
+
+
+if __name__ == "__main__":
+    flow_silver()
