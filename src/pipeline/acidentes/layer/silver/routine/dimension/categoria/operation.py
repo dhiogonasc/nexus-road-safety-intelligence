@@ -25,7 +25,7 @@ set_storage_path = partial(
 
 @task(
     name="create_table",
-    task_run_name="create_table: dim_categoria",
+    task_run_name="dim_categoria: create_table",
 )
 def create_table(conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]]):
     """Delega a execução do script create_table.sql"""
@@ -39,7 +39,7 @@ def create_table(conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]
 
 @task(
     name="bootstrap_table",
-    task_run_name="bootstrap_table: dim_categoria",
+    task_run_name="dim_categoria: bootstrap_table",
 )
 def bootstrap_table(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
@@ -60,7 +60,7 @@ def bootstrap_table(
 
 @task(
     name="upsert_table",
-    task_run_name="upsert_table: dim_categoria",
+    task_run_name="dim_categoria: upsert_table",
 )
 def upsert_table(conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]]):
     """Delega a execução do script upsert_table.sql"""
@@ -74,7 +74,7 @@ def upsert_table(conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]
 
 @task(
     name="copy_to_parquet",
-    task_run_name="copy_to_parquet: dim_categoria",
+    task_run_name="dim_categoria: copy_to_parquet",
 )
 def copy_to_parquet(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
@@ -92,7 +92,7 @@ def copy_to_parquet(
 
 @task(
     name="process_routine",
-    task_run_name="process_routine: dim_categoria",
+    task_run_name="dim_categoria: process_routine",
 )
 def process_routine(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],

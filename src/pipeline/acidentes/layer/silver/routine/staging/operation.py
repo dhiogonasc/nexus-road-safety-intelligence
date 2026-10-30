@@ -36,7 +36,7 @@ set_log_path = partial(
 
 @task(
     name="create_table",
-    task_run_name="create_table: stg",
+    task_run_name="stg: create_table",
 )
 def create_table(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
@@ -55,7 +55,7 @@ def create_table(
 
 @task(
     name="process_routine",
-    task_run_name="process_routine: stg",
+    task_run_name="stg: process_routine",
 )
 def process_routine(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
