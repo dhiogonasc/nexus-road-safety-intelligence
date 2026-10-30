@@ -176,7 +176,7 @@ def process_partitions(
         conn_fn=conn_fn,
         settings=settings,
     )
-    
+
     create_temp_futures = []
     for partition in partitions:
         for ano, ufs in partition.items():
@@ -190,6 +190,7 @@ def process_partitions(
                 )
                 create_temp_futures.append(create_temp_future)
 
+    upsert_futures = []
     for partition in partitions:
         for ano, ufs in partition.items():
             for uf in ufs:
@@ -197,9 +198,12 @@ def process_partitions(
                     conn_fn=conn_fn,
                     ano=ano,
                     uf=uf,
-                    wait_for=[create_temp_futures],
+                    wait_for=create_temp_futures,
                 )
-                upsert_future.result()
+                upsert_futures.append(upsert_future)
+
+    for future in upsert_futures:
+        future.result()
 
 
 @task(
