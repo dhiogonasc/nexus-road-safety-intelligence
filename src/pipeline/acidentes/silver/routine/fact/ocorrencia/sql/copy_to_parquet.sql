@@ -1,3 +1,7 @@
 COPY "silver"."ft_ocorrencia"
-TO '{storage_path}/ft_ocorrencia.parquet'
-(FORMAT PARQUET, OVERWRITE_OR_IGNORE 1);
+TO '{storage_path}/'
+(
+    FORMAT PARQUET,
+    PARTITION_BY (ano, uf),
+    OVERWRITE_OR_IGNORE 1
+);

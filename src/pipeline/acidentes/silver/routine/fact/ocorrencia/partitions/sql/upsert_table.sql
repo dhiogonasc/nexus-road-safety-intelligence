@@ -42,7 +42,9 @@ INSERT (
     feridos, 
     ilesos, 
     ignorados, 
-    veiculos
+    veiculos,
+    ano,
+    uf
 ) 
 VALUES (
     nextval('seq_ft_ocorrencia'),
@@ -60,7 +62,9 @@ VALUES (
     source.feridos, 
     source.ilesos, 
     source.ignorados, 
-    source.veiculos
+    source.veiculos,
+    source.ano,
+    source.uf
 );
 
 DROP TABLE IF EXISTS "silver"."temp_ft_ocorrencia";

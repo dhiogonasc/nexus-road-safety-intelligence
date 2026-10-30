@@ -14,7 +14,9 @@ INSERT INTO "silver"."ft_ocorrencia" (
     feridos,
     ilesos,
     ignorados,
-    veiculos
+    veiculos,
+    ano,
+    uf,
 )
 SELECT 
     source.id,
@@ -32,7 +34,9 @@ SELECT
     source.feridos,
     source.ilesos,
     source.ignorados,
-    source.veiculos
+    source.veiculos,
+    source.ano,
+    source.uf
 FROM read_parquet('{storage_path}/**/*.parquet') AS source
 WHERE NOT EXISTS (
     SELECT 1 

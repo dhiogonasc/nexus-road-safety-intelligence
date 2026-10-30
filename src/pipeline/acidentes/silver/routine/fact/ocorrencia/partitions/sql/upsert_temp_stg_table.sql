@@ -14,7 +14,9 @@ SELECT
     fato.feridos,
     fato.ilesos,
     fato.ignorados,
-    fato.veiculos
+    fato.veiculos,
+    tempo.ano,
+    local.uf
 FROM (
     SELECT *
     FROM read_parquet('{staging_storage_path}/**/*.parquet', hive_partitioning = true)
@@ -91,7 +93,9 @@ INSERT (
     feridos, 
     ilesos, 
     ignorados, 
-    veiculos
+    veiculos,
+    ano,
+    uf
 ) 
 VALUES (
     source.id_ocorrencia, 
@@ -108,7 +112,9 @@ VALUES (
     source.feridos, 
     source.ilesos, 
     source.ignorados, 
-    source.veiculos
+    source.veiculos,
+    source.ano,
+    source.uf
 );
 
 DROP TABLE IF EXISTS "silver"."temp_ft_ocorrencia_{ano}_{uf}";

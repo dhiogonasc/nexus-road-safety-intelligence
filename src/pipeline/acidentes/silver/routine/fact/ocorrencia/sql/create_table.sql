@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS "silver"."ft_ocorrencia" (
     ignorados INTEGER NOT NULL,
     veiculos INTEGER NOT NULL,
 
+    -- base de particao
+    ano INTEGER NOT NULL,
+    uf VARCHAR NOT NULL,
+
     CONSTRAINT "uq_ft_ocorrencia" UNIQUE (
         id_ocorrencia,
         sk_tempo,
