@@ -123,6 +123,7 @@ def upsert_table(
             **dim_storage_path,
         )
 
+
 @task(
     name="process_routine",
     task_run_name="agg_clima_tempo: process_routine",
@@ -150,4 +151,3 @@ def process_routine(
         wait_for=[upsert_future],
     )
     copy_future.result()
-
