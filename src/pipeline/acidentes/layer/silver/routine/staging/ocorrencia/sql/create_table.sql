@@ -11,7 +11,7 @@ CREATE OR REPLACE MACRO normalize_value(str) AS
             )
     END;
 
-CREATE OR REPLACE TABLE "silver"."stg" AS
+CREATE OR REPLACE TABLE "silver"."stg_ocorrencia" AS
 WITH 
 ultima_data AS (
     SELECT MAX(data_carga) AS data_carga 

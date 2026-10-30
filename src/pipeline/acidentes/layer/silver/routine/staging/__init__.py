@@ -1,7 +1,3 @@
-from .operation import process_routine as routine_processor
+from .ocorrencia import routine as stg_ocorrencia_rotine
 
-routine = {
-    "label": "stg",
-    "processor": routine_processor,
-    "depends_on": [],
-}
+routines = [stg_ocorrencia_rotine]

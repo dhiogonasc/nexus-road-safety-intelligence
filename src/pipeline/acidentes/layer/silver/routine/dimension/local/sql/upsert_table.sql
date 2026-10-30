@@ -23,7 +23,7 @@ FROM (
         uso_solo AS area,
         latitude,
         longitude
-    FROM "silver"."stg"
+    FROM "silver"."stg_ocorrencia"
 );
 
 MERGE INTO "silver"."dim_local" AS target 

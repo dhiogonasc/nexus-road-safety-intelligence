@@ -1,2 +1,2 @@
-CREATE OR REPLACE TABLE "gold"."stg" AS 
-SELECT * FROM read_parquet('{storage_path}/**/*.parquet')
+CREATE OR REPLACE "gold"."stg_ft_ocorrencia" AS
+SELECT * FROM read_parquet('{silver_storage_path}/ft_ocorrencia/**/*.parquet');

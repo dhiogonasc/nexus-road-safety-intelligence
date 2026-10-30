@@ -13,7 +13,7 @@ FROM (
         uop,
         regional,
         delegacia
-    FROM "silver"."stg"
+    FROM "silver"."stg_ocorrencia"
 );
 
 MERGE INTO "silver"."dim_jurisdicao" AS target 

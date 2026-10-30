@@ -11,7 +11,7 @@ FROM (
     SELECT DISTINCT 
         tracado_via AS tracado, 
         tipo_pista AS tipo
-    FROM "silver"."stg"
+    FROM "silver"."stg_ocorrencia"
 );
 
 MERGE INTO "silver"."dim_pista" AS target 

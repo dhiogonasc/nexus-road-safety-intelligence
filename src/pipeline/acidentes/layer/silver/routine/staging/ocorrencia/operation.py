@@ -15,7 +15,8 @@ QUERIES = load_module_queries(current_file=__file__)
 STORAGE_PATH = Path(
     "acidentes",
     "silver",
-    "stg",
+    "staging",
+    "ocorrencia",
 ).as_posix()
 set_storage_path = partial(
     set_path,
@@ -25,8 +26,9 @@ set_storage_path = partial(
 LOG_PATH = Path(
     "acidentes",
     "silver",
+    "staging",
     "log",
-    "stg",
+    "ocorrencia",
 ).as_posix()
 set_log_path = partial(
     set_path,

@@ -7,7 +7,7 @@ CREATE TEMP TABLE temp_dim_clima AS
 SELECT condicao
 FROM (
     SELECT DISTINCT condicao_metereologica AS condicao
-    FROM "silver"."stg"
+    FROM "silver"."stg_ocorrencia"
 );
 
 MERGE INTO "silver"."dim_clima" AS target 

@@ -16,7 +16,8 @@ QUERIES = load_module_queries(current_file=__file__)
 STORAGE_PATH = Path(
     "acidentes",
     "silver",
-    "ft_ocorrencia",
+    "fact",
+    "ocorrencia",
 ).as_posix()
 set_storage_path = partial(
     set_path,

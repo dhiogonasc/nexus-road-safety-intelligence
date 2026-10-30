@@ -21,7 +21,7 @@ FROM (
         hora,
         dia_semana, 
         fase_dia
-    FROM "silver"."stg"
+    FROM "silver"."stg_ocorrencia"
 );
 
 MERGE INTO "silver"."dim_tempo" AS target 

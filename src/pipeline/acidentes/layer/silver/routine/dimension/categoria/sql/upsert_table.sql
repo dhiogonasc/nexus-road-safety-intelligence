@@ -13,7 +13,7 @@ FROM (
         classificacao_acidente AS classificacao,
         causa_acidente AS causa,
         tipo_acidente AS tipo
-    FROM "silver"."stg"
+    FROM "silver"."stg_ocorrencia"
 );
 
 MERGE INTO "silver"."dim_categoria" AS target 

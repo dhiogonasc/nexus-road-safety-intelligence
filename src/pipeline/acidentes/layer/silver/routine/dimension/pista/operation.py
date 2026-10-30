@@ -12,14 +12,15 @@ from src.shared.system.file import load_module_queries
 
 QUERIES = load_module_queries(current_file=__file__)
 
-BASE_STORAGE_PATH = Path(
+STORAGE_PATH = Path(
     "acidentes",
     "silver",
-    "dim_pista",
+    "dimension",
+    "pista",
 ).as_posix()
 set_storage_path = partial(
     set_path,
-    base_path=BASE_STORAGE_PATH,
+    base_path=STORAGE_PATH,
 )
 
 
