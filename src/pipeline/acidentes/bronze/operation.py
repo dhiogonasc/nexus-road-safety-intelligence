@@ -10,11 +10,6 @@ from .routine import processors
 
 QUERIES = load_module_queries(current_file=__file__)
 
-required_extensions = [
-    "httpfs",
-    "parquet",
-]
-
 
 @task(
     name="Create Layer Schema",
