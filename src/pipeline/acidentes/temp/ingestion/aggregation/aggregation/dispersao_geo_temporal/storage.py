@@ -6,6 +6,7 @@ from src.persistence.storage.utils import set_path
 STORAGE_PATH = Path(
     "acidentes",
     "gold",
+    "aggregation",
     "dispersao_geo_temporal",
 ).as_posix()
 set_storage_path = partial(

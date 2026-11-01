@@ -3,7 +3,7 @@ from typing import Callable, ContextManager, Optional
 
 import duckdb
 
-from src.persistence.database.settings import settings
+from src.persistence.database.settings import settings_temp
 from src.persistence.database.operation import create_connection, load_extensions
 from src.persistence.storage.settings import BucketSettings
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     conn_fn = partial(
         create_connection,
         load_extensions_fn=load_extensions_fn,
-        database=settings.database(
+        database=settings_temp.database(
             name="acidentes",
             db_dir="acidentes",
         ),

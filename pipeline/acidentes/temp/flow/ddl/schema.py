@@ -4,7 +4,7 @@ from typing import Callable, ContextManager, List
 import duckdb
 from prefect import flow
 
-from src.persistence.database.settings import settings
+from src.persistence.database.settings import settings_temp
 from src.persistence.database.operation import create_connection
 from src.pipeline.acidentes.temp.ddl.operation import create_schema
 
@@ -34,7 +34,7 @@ def schema_ddl_flow(
 if __name__ == "__main__":
     conn_fn = partial(
         create_connection,
-        database=settings.database(name="acidentes"),
+        database=settings_temp.database(name="acidentes"),
     )
     schema_ddl_flow(
         conn_fn=conn_fn,

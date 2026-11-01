@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "analytics"."agg_letalidade_pista_clima" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."analytics"."agg_letalidade_pista_clima" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     uf VARCHAR NOT NULL,
@@ -23,5 +23,5 @@ CREATE TABLE IF NOT EXISTS "analytics"."agg_letalidade_pista_clima" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_clima_condicao_metereologica" ON "analytics"."agg_letalidade_pista_clima" (condicao_metereologica);
-CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_clima_uf" ON "analytics"."agg_letalidade_pista_clima" (uf);
+CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_clima_condicao_metereologica" ON "{catalog_name}"."analytics"."agg_letalidade_pista_clima" (condicao_metereologica);
+CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_clima_uf" ON "{catalog_name}"."analytics"."agg_letalidade_pista_clima" (uf);

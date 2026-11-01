@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "core"."dim_clima" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_clima" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     condicao VARCHAR NOT NULL,

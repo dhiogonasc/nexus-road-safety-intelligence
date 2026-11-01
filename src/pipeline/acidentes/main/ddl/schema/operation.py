@@ -10,18 +10,20 @@ QUERIES = load_module_queries(current_file=__file__)
 
 
 @task(
-    name="create_schema",
-    task_run_name="create_schema: {schema_name}",
+    name="create",
+    task_run_name="create: {schema_name}",
 )
-def create_schema(
+def create(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     schema_name: str,
+    catalog_name: str,
 ):
-    """Delega a execução do script create_schema.sql"""
+    """Delega a execução do script create.sql"""
     with conn_fn() as conn:
         execute_query(
             conn=conn,
-            query_key="create_schema",
+            query_key="create",
             query_dict=QUERIES,
             schema_name=schema_name,
+            catalog_name=catalog_name,
         )

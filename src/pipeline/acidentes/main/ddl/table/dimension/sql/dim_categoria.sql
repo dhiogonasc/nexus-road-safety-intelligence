@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "core"."dim_categoria" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_categoria" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     classificacao VARCHAR NOT NULL,
@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS "core"."dim_categoria" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_dim_categoria_classificacao" ON "core"."dim_categoria" (classificacao);
+CREATE INDEX IF NOT EXISTS "idx_dim_categoria_classificacao" ON "{catalog_name}"."core"."dim_categoria" (classificacao);

@@ -54,8 +54,8 @@ SELECT
     TRY_CAST(REPLACE(longitude :: VARCHAR, ',', '.') AS DOUBLE) AS longitude,
     
     -- dim_pista
-    COALESCE(tracado_via :: VARCHAR, 'não informado') AS tracado_via,
-    COALESCE(tipo_pista :: VARCHAR, 'não informado') AS tipo_pista,
+    normalize_value(tracado_via) AS tracado_via,
+    normalize_value(tipo_pista) AS tipo_pista,
 
     -- dim_jurisdicao
     TRIM(COALESCE(UPPER(uop :: VARCHAR), 'não informado')) AS uop,

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "core"."dim_tempo" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_tempo" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     data_hora TIMESTAMP NOT NULL,
@@ -16,4 +16,4 @@ CREATE TABLE IF NOT EXISTS "core"."dim_tempo" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_dim_tempo_ano" ON "core"."dim_tempo" (ano);
+CREATE INDEX IF NOT EXISTS "idx_dim_tempo_ano" ON "{catalog_name}"."core"."dim_tempo" (ano);

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "core"."dim_local" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_local" (
     id INTEGER NOT NULL PRIMARY KEY,
     
     uf VARCHAR NOT NULL,
@@ -22,4 +22,4 @@ CREATE TABLE IF NOT EXISTS "core"."dim_local" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_dim_local_uf" ON "core"."dim_local" (uf);
+CREATE INDEX IF NOT EXISTS "idx_dim_local_uf" ON "{catalog_name}"."core"."dim_local" (uf);

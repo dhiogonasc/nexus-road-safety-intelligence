@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "analytics"."agg_trechos_criticos" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."analytics"."agg_trechos_criticos" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     uf VARCHAR NOT NULL,
@@ -25,4 +25,4 @@ CREATE TABLE IF NOT EXISTS "analytics"."agg_trechos_criticos" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_agg_trechos_criticos_uf_br" ON "analytics"."agg_trechos_criticos" (uf, br);
+CREATE INDEX IF NOT EXISTS "idx_agg_trechos_criticos_uf_br" ON "{catalog_name}"."analytics"."agg_trechos_criticos" (uf, br);

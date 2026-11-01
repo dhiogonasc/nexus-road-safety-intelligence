@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "core"."dim_jurisdicao" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_jurisdicao" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     uop VARCHAR NOT NULL,
@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS "core"."dim_jurisdicao" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_dim_jurisdicao_uop" ON "core"."dim_jurisdicao" (uop);
+CREATE INDEX IF NOT EXISTS "idx_dim_jurisdicao_uop" ON "{catalog_name}"."core"."dim_jurisdicao" (uop);

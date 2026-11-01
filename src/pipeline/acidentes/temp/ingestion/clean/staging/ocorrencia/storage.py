@@ -30,6 +30,7 @@ set_log_path = partial(
 RAW_STORAGE_PATH = Path(
     "acidentes",
     "bronze",
+    "raw",
     "ocorrencias",
 ).as_posix()
 set_raw_storage_path = partial(
@@ -40,6 +41,7 @@ set_raw_storage_path = partial(
 RAW_LOG_PATH = Path(
     "acidentes",
     "bronze",
+    "raw",
     "log",
     "ocorrencias",
 ).as_posix()

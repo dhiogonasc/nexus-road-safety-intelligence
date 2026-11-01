@@ -1,6 +1,6 @@
 COPY (
     SELECT MAX(data_carga) as data_carga
-    FROM "bronze"."ocorrencias"
+    FROM "bronze"."raw_ocorrencias"
 ) 
 TO '{log_path}/carga.parquet' (
     FORMAT PARQUET,

@@ -6,6 +6,7 @@ from src.persistence.storage.utils import set_path
 STORAGE_PATH = Path(
     "acidentes",
     "bronze",
+    "raw",
     "ocorrencias",
 )
 set_storage_path = partial(
@@ -16,6 +17,7 @@ set_storage_path = partial(
 LOG_PATH = Path(
     "acidentes",
     "bronze",
+    "raw",
     "log",
     "ocorrencias",
 )

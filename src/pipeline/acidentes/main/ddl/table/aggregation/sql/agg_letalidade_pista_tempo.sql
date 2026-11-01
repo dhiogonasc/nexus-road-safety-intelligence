@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "analytics"."agg_letalidade_pista_tempo" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."analytics"."agg_letalidade_pista_tempo" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     uf VARCHAR NOT NULL,
@@ -27,5 +27,5 @@ CREATE TABLE IF NOT EXISTS "analytics"."agg_letalidade_pista_tempo" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_tempo_uf" ON "analytics"."agg_letalidade_pista_tempo" (uf);
-CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_tempo_dia_semana" ON "analytics"."agg_letalidade_pista_tempo" (dia_semana);
+CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_tempo_uf" ON "{catalog_name}"."analytics"."agg_letalidade_pista_tempo" (uf);
+CREATE INDEX IF NOT EXISTS "idx_agg_letalidade_pista_tempo_dia_semana" ON "{catalog_name}"."analytics"."agg_letalidade_pista_tempo" (dia_semana);

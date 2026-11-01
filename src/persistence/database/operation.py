@@ -58,7 +58,7 @@ def attach_connections(
     """Abstrai a conexao de bases para duckdb"""
     query = "\n".join(
         [
-            f"ATTACH '{connection.string}' AS {connection.alias} {connection.option};"
+            f"ATTACH '{connection['string']}' AS {connection['alias']} {connection['option']};"
             for connection in connections
         ]
     )

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "analytics"."agg_dispersao_geo_temporal" (
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."analytics"."agg_dispersao_geo_temporal" (
     id INTEGER NOT NULL PRIMARY KEY,
 
     uf VARCHAR NOT NULL,
@@ -21,4 +21,4 @@ CREATE TABLE IF NOT EXISTS "analytics"."agg_dispersao_geo_temporal" (
     )
 );
 
-CREATE INDEX IF NOT EXISTS "idx_agg_dispersao_geo_temporal_uf" ON "analytics"."agg_dispersao_geo_temporal" (uf);
+CREATE INDEX IF NOT EXISTS "idx_agg_dispersao_geo_temporal_uf" ON "{catalog_name}"."analytics"."agg_dispersao_geo_temporal" (uf);
