@@ -34,6 +34,7 @@ def main_flow(
         settings=settings,
     )
 
+
 if __name__ == "__main__":
     load_extensions_fn = partial(
         load_extensions,
@@ -45,7 +46,10 @@ if __name__ == "__main__":
     conn_fn = partial(
         create_connection,
         load_extensions_fn=load_extensions_fn,
-        database=settings.database(name="acidentes"),
+        database=settings.database(
+            name="acidentes",
+            db_dir="acidentes",
+        ),
     )
 
     main_flow(conn_fn=conn_fn)
