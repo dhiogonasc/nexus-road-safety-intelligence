@@ -12,8 +12,8 @@ class StgOperations(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     stage: Task
-    copy_to_parquet: Task
-    log_charge: Task
+    copy_to_parquet: Optional[Task] = None
+    log_charge: Optional[Task] = None
 
 
 class StgTask(BaseModel):
@@ -31,23 +31,26 @@ class StgTask(BaseModel):
 
         stage_future = operations.stage.submit(conn_fn=conn_fn)
 
-        storage_futures = []
-        copy_future = operations.copy_to_parquet.submit(
-            conn_fn=conn_fn,
-            settings=settings,
-            wait_for=[stage_future],
-        )
-        storage_futures.append(copy_future)
+        if operations.copy_to_parquet is not None and operations.log_charge is not None:
+            storage_futures = []
+            copy_future = operations.copy_to_parquet.submit(
+                conn_fn=conn_fn,
+                settings=settings,
+                wait_for=[stage_future],
+            )
+            storage_futures.append(copy_future)
 
-        log_future = operations.log_charge.submit(
-            conn_fn=conn_fn,
-            settings=settings,
-            wait_for=[stage_future],
-        )
-        storage_futures.append(log_future)
+            log_future = operations.log_charge.submit(
+                conn_fn=conn_fn,
+                settings=settings,
+                wait_for=[stage_future],
+            )
+            storage_futures.append(log_future)
 
-        for future in storage_futures:
-            future.result()
+            for future in storage_futures:
+                future.result()
+        else:
+            stage_future.result()
 
 
     def create_prefect_task(self):

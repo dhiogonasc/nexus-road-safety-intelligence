@@ -10,6 +10,7 @@ from src.persistence.storage.settings import BucketSettings
 from .ddl.schema import schema_ddl_flow, SCHEMAS
 from .ingestion.clean import clean_ingestion_flow
 from .ingestion.raw import raw_ingestion_flow
+from .ingestion.aggregation import aggregation_ingestion_flow
 
 
 def main_flow(
@@ -25,6 +26,10 @@ def main_flow(
         settings=settings,
     )
     clean_ingestion_flow(
+        conn_fn=conn_fn,
+        settings=settings,
+    )
+    aggregation_ingestion_flow(
         conn_fn=conn_fn,
         settings=settings,
     )
