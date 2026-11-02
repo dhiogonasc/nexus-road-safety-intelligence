@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_local" (
+    id INTEGER NOT NULL PRIMARY KEY,
+    
+    uf VARCHAR NOT NULL,
+    br VARCHAR NOT NULL,
+    km DOUBLE PRECISION NOT NULL,
+    sentido VARCHAR NOT NULL,
+    tipo_area VARCHAR NOT NULL,
+    municipio VARCHAR NOT NULL,
+    
+    CONSTRAINT "uq_dim_local" UNIQUE (
+        uf, 
+        br, 
+        km, 
+        sentido, 
+        tipo_area,
+        municipio, 
+    )
+);

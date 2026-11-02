@@ -7,7 +7,7 @@ from prefect import Task, flow
 from src.persistence.database.settings import settings_temp
 from src.persistence.database.operation import create_connection, load_extensions
 from src.persistence.storage.settings import BucketSettings
-from ...task.ingestion.aggregation import  aggregate_tasks
+from ...task.ingestion.aggregation import aggregate_tasks
 
 
 @flow(
@@ -58,7 +58,10 @@ if __name__ == "__main__":
     conn_fn = partial(
         create_connection,
         load_extensions_fn=load_extensions_fn,
-        database=settings_temp.database(name="acidentes"),
+        database=settings_temp.database(
+            name="acidentes",
+            db_dir="acidentes",
+        ),
     )
 
     aggregation_ingestion_flow(conn_fn=conn_fn)

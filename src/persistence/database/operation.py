@@ -15,7 +15,7 @@ import duckdb
 
 @contextmanager
 def create_connection(
-    database: str,
+    database: str = ":memory:",
     max_memory: str = "4GB",
     enable_object_cache: str = "false",
     load_extensions_fn: Optional[Callable[[duckdb.DuckDBPyConnection], None]] = None,
@@ -49,6 +49,14 @@ def execute_query(
     sql = query_dict[query_key]
     query = sql.format(**kwargs)
     return conn.execute(query=query)
+
+def execute(
+    query: str,
+    conn: duckdb.DuckDBPyConnection,
+    **kwargs,
+) -> duckdb.DuckDBPyRelation:
+    return conn.execute(query=query.format(**kwargs))
+
 
 
 def attach_connections(

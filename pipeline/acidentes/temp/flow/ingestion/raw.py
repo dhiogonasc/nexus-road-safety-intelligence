@@ -40,7 +40,10 @@ if __name__ == "__main__":
     conn_fn = partial(
         create_connection,
         load_extensions_fn=load_extensions_fn,
-        database=settings_temp.database(name="acidentes"),
+        database=settings_temp.database(
+            name="acidentes",
+            db_dir="acidentes",
+        ),
     )
 
     raw_ingestion_flow(conn_fn=conn_fn)

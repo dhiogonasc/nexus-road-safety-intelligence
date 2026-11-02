@@ -1,0 +1,4 @@
+SCHEMAS = [
+    "core",
+    "analytics",
+]

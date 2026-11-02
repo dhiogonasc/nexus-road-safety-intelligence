@@ -1,0 +1,5 @@
+SCHEMAS = [
+    "bronze",
+    "silver",
+    "gold",
+]

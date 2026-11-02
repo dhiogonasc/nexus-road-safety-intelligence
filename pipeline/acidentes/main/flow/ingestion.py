@@ -16,34 +16,20 @@ from src.persistence.database.operation import (
     create_connection,
 )
 
+from src.pipeline.acidentes.main.ingestion.core.dimension.operation import (
+    upsert as upsert_dimension,
+    DIM_TABLES,
+)
 
-from src.pipeline.acidentes.temp.ddl.operation import create_schema
+from src.pipeline.acidentes.main.ingestion.core.fact.operation import (
+    upsert as upsert_fact,
+    FT_TABLES,
+)
 
 from src.pipeline.acidentes.main.ingestion.analytics.operation import (
     upsert as upsert_analytics,
     ANALYTICS_TABLES,
 )
-
-
-@flow(
-    name="analytics_ingestion_flow",
-    flow_run_name="analytics_ingestion_flow",
-)
-def analytics_ingestion_flow(
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    catalog_name: str,
-    settings: Optional[BucketSettings] = None,
-):
-    futures = upsert_analytics.map(
-        conn_fn=conn_fn,
-        table_name=ANALYTICS_TABLES,
-        catalog_name=catalog_name,
-        settings=settings,
-    )
-
-    for future in futures:
-        future.result()
-
 
 @flow(
     name="ingestion_flow",
@@ -54,11 +40,34 @@ def ingestion_flow(
     catalog_name: str,
     settings: Optional[BucketSettings] = None,
 ):
-    analytics_ingestion_flow(
+    futures = []
+
+    dim_futures = upsert_dimension.map(
         conn_fn=conn_fn,
+        table_name=DIM_TABLES,
         catalog_name=catalog_name,
         settings=settings,
     )
+
+    ft_futures = upsert_fact.map(
+        conn_fn=conn_fn,
+        table_name=FT_TABLES,
+        catalog_name=catalog_name,
+        settings=settings,
+        wait_for=[dim_futures],
+    )
+    futures = futures + ft_futures
+
+    agg_futures = upsert_analytics.map(
+        conn_fn=conn_fn,
+        table_name=ANALYTICS_TABLES,
+        catalog_name=catalog_name,
+        settings=settings,
+    )
+    futures = futures + agg_futures
+
+    for future in futures:
+        future.result()
 
 
 if __name__ == "__main__":

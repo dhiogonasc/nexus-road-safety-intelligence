@@ -6,13 +6,8 @@ from prefect import flow
 
 from src.persistence.database.settings import settings_temp
 from src.persistence.database.operation import create_connection
-from src.pipeline.acidentes.temp.ddl.operation import create_schema
-
-SCHEMAS = [
-    "bronze",
-    "silver",
-    "gold",
-]
+from src.pipeline.acidentes.temp.task.ddl.schema.operation import create_schema
+from src.pipeline.acidentes.temp.task.ddl.schema.constants.name import SCHEMAS
 
 
 @flow(
@@ -20,12 +15,12 @@ SCHEMAS = [
     flow_run_name="ddl_flow: {schemas}",
 )
 def schema_ddl_flow(
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     schemas: List[str],
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
 ):
     futures = create_schema.map(
-        conn_fn=conn_fn,
         schema_name=schemas,
+        conn_fn=conn_fn,
     )
     for future in futures:
         future.result()
@@ -34,7 +29,10 @@ def schema_ddl_flow(
 if __name__ == "__main__":
     conn_fn = partial(
         create_connection,
-        database=settings_temp.database(name="acidentes"),
+        database=settings_temp.database(
+            name="acidentes",
+            db_dir="acidentes",
+        ),
     )
     schema_ddl_flow(
         conn_fn=conn_fn,

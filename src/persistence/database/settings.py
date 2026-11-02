@@ -48,7 +48,6 @@ class PostgresSettings(BaseSettings):
 
     @property
     def conn_string(self) -> str:
-        """Define o sslmode dinamicamente com base no nome do _env_file utilizado"""
         sslmode = "require" if self.ENV == "prod" else "prefer"
 
         return (
@@ -59,6 +58,22 @@ class PostgresSettings(BaseSettings):
             f"port={self.DB_PORT} "
             f"sslmode={sslmode}"
         )
+
+    @property
+    def conn_alias(self) -> str:
+        return self.DB_NAME
+    
+    @property
+    def conn_option(self) -> str:
+        return "(TYPE POSTGRES)"
+
+    @property
+    def attach_config(self) -> str:
+        return {
+            "string": self.conn_string,
+            "alias": self.conn_alias,
+            "option": self.conn_option,
+        }
 
 
 settings_main = PostgresSettings()

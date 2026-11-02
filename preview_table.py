@@ -10,16 +10,12 @@ storage_path = Path(
     DB_DIR,
     "acidentes",
     "silver",
-    "dimension",
-    "clima",
+    "staging",
+    "ocorrencia",
 )
 query = f"""
-    SELECT 
-        * 
-    FROM read_parquet('/{storage_path}/**/*.parquet', filename = true)
-    WHERE condicao IS NULL 
-       OR TRIM(condicao) = ''
-       OR condicao = 'null'
+    SELECT *
+    FROM read_parquet('/{storage_path}/**/*.parquet', filename = true);
 """
 
 df = conn.execute(query).fetchdf()
