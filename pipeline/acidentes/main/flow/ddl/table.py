@@ -1,13 +1,10 @@
 from functools import partial
-from typing import Callable, ContextManager, Dict, List
+from typing import Callable, ContextManager, List
 
 import duckdb
 from prefect import flow, task
 
-from src.persistence.database.settings import (
-    settings_main,
-    settings_temp,
-)
+from src.persistence.database.settings import settings_main
 from src.persistence.database.operation import (
     load_extensions,
     attach_connections,
@@ -89,10 +86,6 @@ if __name__ == "__main__":
         create_connection,
         load_extensions_fn=load_extensions_fn,
         attach_connections_fn=attach_connections_fn,
-        database=settings_temp.database(
-            name="acidentes",
-            db_dir="acidentes",
-        ),
     )
     table_ddl_flow(
         conn_fn=conn_fn,
