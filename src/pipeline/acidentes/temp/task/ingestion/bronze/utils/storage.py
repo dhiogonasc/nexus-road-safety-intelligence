@@ -1,16 +1,34 @@
-from functools import partial
+from pathlib import Path
+from typing import Optional
 
 from src.persistence.storage.utils import set_path
-from ..constants.storage import (
-    STORAGE_PATH,
-    LOG_PATH,
-)
+from src.persistence.storage.settings import BucketSettings
+from ..constants.storage import LAYER_PATH
 
-set_storage_path = partial(
-    set_path,
-    base_path=STORAGE_PATH,
-)
-set_log_path = partial(
-    set_path,
-    base_path=LOG_PATH,
-)
+
+def _set_table_storage_path(table_name: str):
+    return Path(LAYER_PATH, table_name).as_posix()
+
+
+def _set_table_log_path(table_name: str):
+    return Path(LAYER_PATH, "log", table_name).as_posix()
+
+
+def set_storage_path(
+    table_name: str,
+    settings: Optional[BucketSettings] = None,
+):
+    return set_path(
+        base_path=_set_table_storage_path(table_name=table_name),
+        settings=settings,
+    )
+
+
+def set_log_path(
+    table_name: str,
+    settings: Optional[BucketSettings] = None,
+):
+    return set_path(
+        base_path=_set_table_log_path(table_name=table_name),
+        settings=settings,
+    )

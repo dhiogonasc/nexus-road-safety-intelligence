@@ -52,7 +52,10 @@ def log_table_charge(
         execute(
             conn=conn,
             query=LOG_CHARGE_QUERIES_SQL[table_name],
-            log_path=set_log_path(settings=settings),
+            log_path=set_log_path(
+                table_name=table_name,
+                settings=settings,
+            ),
         )
 
 
@@ -70,5 +73,8 @@ def copy_table_to_parquet(
         execute(
             conn=conn,
             query=COPY_TO_PARQUET_QUERIES_SQL[table_name],
-            storage_path=set_storage_path(settings=settings),
+            storage_path=set_storage_path(
+                table_name=table_name,
+                settings=settings,
+            ),
         )

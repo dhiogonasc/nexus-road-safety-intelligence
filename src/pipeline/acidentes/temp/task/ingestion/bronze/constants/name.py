@@ -1,3 +1,3 @@
 BRONZE_TABLES = [
-    "raw_ocorrencia",
+    "raw_ocorrencias",
 ]

@@ -8,5 +8,5 @@ OCORRENCIA_SOURCE_PATH = Path(
 ).as_posix()
 
 SOURCE_PATHS = {
-    "raw_ocorrencia": OCORRENCIA_SOURCE_PATH,
+    "raw_ocorrencias": OCORRENCIA_SOURCE_PATH,
 }
