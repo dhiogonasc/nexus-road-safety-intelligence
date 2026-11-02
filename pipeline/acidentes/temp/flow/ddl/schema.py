@@ -11,15 +11,14 @@ from src.pipeline.acidentes.temp.task.ddl.schema.constants.name import SCHEMAS
 
 
 @flow(
-    name="ddl_flow",
-    flow_run_name="ddl_flow: {schemas}",
+    name="schema_ddl_flow",
+    flow_run_name="schema_ddl_flow",
 )
 def schema_ddl_flow(
-    schemas: List[str],
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]]
 ):
     futures = create_schema.map(
-        schema_name=schemas,
+        schema_name=SCHEMAS,
         conn_fn=conn_fn,
     )
     for future in futures:
