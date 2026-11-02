@@ -10,33 +10,41 @@ from src.persistence.database.operation import (
     load_extensions,
     create_connection,
 )
+
+from src.pipeline.acidentes.temp.task.ingestion.silver.staging.constants.name import (
+    STAGING_TABLES,
+)
 from src.pipeline.acidentes.temp.task.ingestion.silver.staging.operation import (
     stage_table,
     log_table_charge,
     copy_table_to_parquet,
 )
-from src.pipeline.acidentes.temp.task.ingestion.silver.staging.constants.name import (
-    STAGING_TABLES,
-)
 
+from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.name import (
+    DIMENSION_TABLES,
+)
 from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.operation import (
     create_table as create_dimension_table,
     bootstrap_table as bootstrap_dimension_table,
     upsert_table as upsert_dimension_table,
     copy_table_to_parquet as copy_dimension_table_to_parquet,
 )
-from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.name import (
-    DIMENSION_TABLES,
-)
 
+from src.pipeline.acidentes.temp.task.ingestion.silver.fact.constants.name import (
+    FACT_TABLES,
+)
+from src.pipeline.acidentes.temp.task.ingestion.silver.fact.operation import (
+    create_table as create_fact_table,
+    bootstrap_table as bootstrap_fact_table,
+    upsert_table_by_partitions as upsert_fact_table,
+    copy_table_to_parquet as copy_fact_table_to_parquet,
+)
 
 @flow(
     name="staging_ingestion_flow",
     flow_run_name="staging_ingestion_flow",
 )
 def staging_ingestion_flow(
-    target_table: str,
-    source_table: str,
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
@@ -56,7 +64,7 @@ def staging_ingestion_flow(
         target_table=target_tables,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=[stage_futures],
+        wait_for=stage_futures,
     )
     storage_futures.append(log_futures)
 
@@ -64,7 +72,7 @@ def staging_ingestion_flow(
         target_table=target_tables,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=[stage_futures],
+        wait_for=stage_futures,
     )
     storage_futures.append(copy_futures)
 
@@ -91,20 +99,61 @@ def dimension_ingestion_flow(
         table_name=DIMENSION_TABLES,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=[create_futures],
+        wait_for=create_futures,
     )
 
     upsert_futures = upsert_dimension_table.map(
         table_name=DIMENSION_TABLES,
         conn_fn=conn_fn,
-        wait_for=[bootstrap_futures],
+        wait_for=bootstrap_futures,
     )
 
     copy_futures = copy_dimension_table_to_parquet.map(
         table_name=DIMENSION_TABLES,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=[upsert_futures],
+        wait_for=upsert_futures,
+    )
+
+    for future in copy_futures:
+        future.result()
+
+@flow(
+    name="fact_ingestion_flow",
+    flow_run_name="fact_ingestion_flow",
+)
+def fact_ingestion_flow(
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    target_tables = [item["target"] for item in FACT_TABLES]
+    source_tables = [item["source"] for item in FACT_TABLES]
+
+    create_futures = create_fact_table.map(
+        table_name=target_tables,
+        conn_fn=conn_fn,
+        wait_for=[],
+    )
+
+    bootstrap_futures = bootstrap_fact_table.map(
+        table_name=target_tables,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=create_futures,
+    )
+
+    upsert_futures = upsert_fact_table.map(
+        target_table=target_tables,
+        source_table=source_tables,
+        conn_fn=conn_fn,
+        wait_for=bootstrap_futures,
+    )
+
+    copy_futures = copy_fact_table_to_parquet.map(
+        table_name=target_tables,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=upsert_futures,
     )
 
     for future in copy_futures:
@@ -124,6 +173,10 @@ def ingestion_flow(
         settings=settings,
     )
     dimension_ingestion_flow(
+        conn_fn=conn_fn,
+        settings=settings,
+    )
+    fact_ingestion_flow(
         conn_fn=conn_fn,
         settings=settings,
     )
