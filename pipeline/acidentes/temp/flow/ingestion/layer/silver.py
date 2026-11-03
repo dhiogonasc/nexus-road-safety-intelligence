@@ -12,7 +12,7 @@ from src.persistence.database.operation import (
 )
 
 from pipeline.acidentes.temp.task.ingestion.silver.staging.constants.summary import (
-    STAGING_TABLES,
+    TABLES as STAGING_TABLES,
 )
 from src.pipeline.acidentes.temp.task.ingestion.silver.staging.operation import (
     stage_table,
@@ -50,18 +50,18 @@ def staging_ingestion_flow(
 ):
     storage_futures = []
 
-    target_tables = [item["target"] for item in STAGING_TABLES]
-    source_tables = [item["source"] for item in STAGING_TABLES]
+    table_name_list = [item["table_name"] for item in STAGING_TABLES]
+    source_table_list = [item["source_table"] for item in STAGING_TABLES]
 
     stage_futures = stage_table.map(
-        target_table=target_tables,
-        source_table=source_tables,
+        target_table=table_name_list,
+        source_table=source_table_list,
         conn_fn=conn_fn,
         settings=settings,
     )
 
     log_futures = log_table_charge.map(
-        target_table=target_tables,
+        target_table=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=stage_futures,
@@ -69,7 +69,7 @@ def staging_ingestion_flow(
     storage_futures.append(log_futures)
 
     copy_futures = copy_table_to_parquet.map(
-        target_table=target_tables,
+        target_table=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=stage_futures,
