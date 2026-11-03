@@ -15,10 +15,10 @@ CREATE OR REPLACE TABLE "silver"."stg_ocorrencias" AS
 WITH 
 ultima_carga AS (
     SELECT * 
-    FROM read_parquet('{raw_storage_path}/**/*.parquet', hive_partitioning = true)
+    FROM read_parquet('{source_storage_path}/**/*.parquet', hive_partitioning = true)
     WHERE data_carga = (
-            SELECT * 
-            FROM read_parquet('{raw_log_path}/**/*.parquet')
+        SELECT * 
+        FROM read_parquet('{source_log_path}/**/*.parquet')
     )
 ),
 SELECT 

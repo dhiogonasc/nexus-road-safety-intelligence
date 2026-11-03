@@ -15,8 +15,8 @@ from .utils.storage import (
     set_log_path,
 )
 from ...bronze.utils.storage import (
-    set_storage_path as set_raw_storage_path,
-    set_log_path as set_raw_log_path,
+    set_storage_path as set_source_storage_path,
+    set_log_path as set_source_log_path,
 )
 
 
@@ -35,11 +35,11 @@ def stage_table(
         execute(
             conn=conn,
             query=STAGE_QUERIES_SQL[target_table],
-            raw_storage_path=set_raw_storage_path(
+            source_storage_path=set_source_storage_path(
                 table_name=source_table,
                 settings=settings,
             ),
-            raw_log_path=set_raw_log_path(
+            source_log_path=set_source_log_path(
                 table_name=source_table,
                 settings=settings,
             ),
