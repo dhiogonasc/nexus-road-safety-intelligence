@@ -128,7 +128,7 @@ def upsert_table_by_partitions(
                 fetch_partitions_future,
             ],
         )
-    upsert_temp_futures.append(future)
+        upsert_temp_futures.append(future)
 
     upsert_future = upsert_ft_table.submit(
         target_table=target_table,
