@@ -1,7 +1,5 @@
-CREATE SEQUENCE IF NOT EXISTS "seq_ft_ocorrencia" START 1;
-
 CREATE TABLE IF NOT EXISTS "silver"."ft_ocorrencia" (
-    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_ft_ocorrencia'),
+    id VARCHAR NOT NULL PRIMARY KEY,
 
     id_ocorrencia BIGINT NOT NULL,
     sk_local INTEGER NOT NULL,

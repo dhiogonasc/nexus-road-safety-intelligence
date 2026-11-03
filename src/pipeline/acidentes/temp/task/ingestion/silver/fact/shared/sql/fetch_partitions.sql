@@ -1,1 +1,1 @@
-SELECT * FROM read_parquet('{staging_log_path}/**/*.parquet');
+SELECT * FROM read_parquet('{source_log_path}/**/*.parquet');

@@ -17,6 +17,9 @@ from pipeline.acidentes.temp.task.ingestion.silver.staging.constants.summary imp
 from pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.summary import (
     TABLES as DIMENSION_TABLES,
 )
+from pipeline.acidentes.temp.task.ingestion.silver.fact.constants.summary import (
+    TABLES as FACT_TABLES,
+)
 
 from src.pipeline.acidentes.temp.task.ingestion.silver.staging.operation import (
     stage_table,
@@ -29,16 +32,13 @@ from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.operation impor
     bootstrap_table as bootstrap_dimension_table,
     copy_table_to_parquet as copy_dimension_table_to_parquet,
 )
-
-from src.pipeline.acidentes.temp.task.ingestion.silver.fact.constants.name import (
-    FACT_TABLES,
-)
 from src.pipeline.acidentes.temp.task.ingestion.silver.fact.operation import (
+    upsert_table_by_partitions,
     create_table as create_fact_table,
     bootstrap_table as bootstrap_fact_table,
-    upsert_table_by_partitions as upsert_fact_table,
     copy_table_to_parquet as copy_fact_table_to_parquet,
 )
+
 
 @flow(
     name="staging_ingestion_flow",
@@ -118,6 +118,7 @@ def dimension_ingestion_flow(
     for future in copy_futures:
         future.result()
 
+
 @flow(
     name="fact_ingestion_flow",
     flow_run_name="fact_ingestion_flow",
@@ -126,31 +127,31 @@ def fact_ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    target_tables = [item["target"] for item in FACT_TABLES]
-    source_tables = [item["source"] for item in FACT_TABLES]
+    table_name_list = [item["table_name"] for item in FACT_TABLES]
+    source_table_list = [item["source_table"] for item in FACT_TABLES]
 
     create_futures = create_fact_table.map(
-        table_name=target_tables,
+        table_name=table_name_list,
         conn_fn=conn_fn,
         wait_for=[],
     )
 
     bootstrap_futures = bootstrap_fact_table.map(
-        table_name=target_tables,
+        table_name=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=create_futures,
     )
 
-    upsert_futures = upsert_fact_table.map(
-        target_table=target_tables,
-        source_table=source_tables,
+    upsert_futures = upsert_table_by_partitions.map(
+        table_name=table_name_list,
+        source_table=source_table_list,
         conn_fn=conn_fn,
         wait_for=bootstrap_futures,
     )
 
     copy_futures = copy_fact_table_to_parquet.map(
-        table_name=target_tables,
+        table_name=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=upsert_futures,
