@@ -12,9 +12,9 @@ USING (
         local.sentido,
         local.tipo_area, 
         local.municipio,
-        categoria.tipo_acidente,
-        categoria.causa_acidente,
-        categoria.classificacao_acidente,
+        categoria.tipo as tipo_acidente,
+        categoria.causa as causa_acidente,
+        categoria.classificacao as classificacao_acidente,
         CAST(SUM(fato.mortos) AS DOUBLE) AS mortos,
         CAST(COUNT(fato.id) AS BIGINT) AS total_ocorrencias,
         ROUND(CAST(SUM(fato.mortos) AS DOUBLE) / NULLIF(COUNT(fato.id), 0) * 100, 2) AS pct_mortalidade
@@ -22,11 +22,11 @@ USING (
         "gold"."stg_ft_ocorrencia" AS fato
         JOIN (
             SELECT *
-            FROM read_parquet('{dim_local_storage_path}/**/*.parquet');
+            FROM read_parquet('{dim_local_storage_path}/**/*.parquet')
         ) AS local ON fato.sk_local = local.id
         JOIN (
             SELECT *
-            FROM read_parquet('{dim_categoria_storage_path}/**/*.parquet');
+            FROM read_parquet('{dim_categoria_storage_path}/**/*.parquet')
         ) AS categoria ON fato.sk_categoria = categoria.id
     GROUP BY
         local.uf, 
@@ -35,9 +35,9 @@ USING (
         local.sentido,
         local.tipo_area, 
         local.municipio,
-        categoria.tipo_acidente,
-        categoria.causa_acidente,
-        categoria.classificacao_acidente
+        categoria.tipo,
+        categoria.causa,
+        categoria.classificacao
 ) AS source 
     ON target.uf = source.uf
     AND target.br = source.br

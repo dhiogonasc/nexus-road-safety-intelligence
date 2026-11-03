@@ -79,27 +79,31 @@ def aggregation_ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
+    aggregation_tables = [item["aggregation"] for item in AGGREGATION_TABLES]
+    dimension_tables = [item["dimension"] for item in AGGREGATION_TABLES]
+
     create_futures = create_aggregation_table.map(
-        table_name=AGGREGATION_TABLES,
+        table_name=aggregation_tables,
         conn_fn=conn_fn,
         wait_for=[],
     )
 
     bootstrap_futures = bootstrap_aggregation_table.map(
-        table_name=AGGREGATION_TABLES,
+        table_name=aggregation_tables,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=create_futures,
     )
 
     upsert_futures = upsert_aggregation_table.map(
-        table_name=AGGREGATION_TABLES,
+        table_name=aggregation_tables,
+        dimension_tables=dimension_tables,
         conn_fn=conn_fn,
         wait_for=bootstrap_futures,
     )
 
     copy_futures = copy_aggregation_table_to_parquet.map(
-        table_name=AGGREGATION_TABLES,
+        table_name=aggregation_tables,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=upsert_futures,

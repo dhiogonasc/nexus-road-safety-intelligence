@@ -6,7 +6,7 @@ from prefect import task
 from src.persistence.database.operation import execute
 from src.persistence.storage.settings import BucketSettings
 from .utils.storage import set_storage_path
-from ...silver.dimension.utils.storage import set_storage_path
+from ...silver.dimension.utils.storage import set_storage_path as set_dimension_storage_path
 from .constants.sql import (
     BOOTSTRAP_QUERIES_SQL,
     COPY_TO_PARQUET_QUERIES_SQL,
@@ -63,13 +63,23 @@ def upsert_table(
     table_name: str,
     dimension_tables: List[str],
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
 ):
     """Delega a execução do script de upsert"""
+
+    dimension_storage_path = {
+        f"{table}_storage_path": set_dimension_storage_path(
+            table_name=table,
+            settings=settings,
+        )
+        for table in dimension_tables
+    }
 
     with conn_fn() as conn:
         execute(
             conn=conn,
             query=UPSERT_QUERIES_SQL[table_name],
+            **dimension_storage_path,
         )
 
 
