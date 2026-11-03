@@ -1,6 +1,16 @@
 CREATE OR REPLACE MACRO normalize_value(str) AS 
     CASE 
-        WHEN str IS NULL OR TRIM(str :: VARCHAR) = '' THEN 'não informado'
+        WHEN str IS NULL 
+             OR LOWER(TRIM(str :: VARCHAR)) IN (
+                'na', 
+                'n/a', 
+                'nan', 
+                'null', 
+                'none', 
+                '-', 
+                ''
+            ) 
+        THEN 'não informado'
         ELSE 
             REGEXP_REPLACE(
             REGEXP_REPLACE(

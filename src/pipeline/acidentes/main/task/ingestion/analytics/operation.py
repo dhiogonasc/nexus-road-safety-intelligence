@@ -4,31 +4,29 @@ import duckdb
 from prefect import task
 
 from src.persistence.storage.settings import BucketSettings
-from src.shared.system.file import load_module_queries
-from src.persistence.database.operation import execute_query
-from .storage import set_storage_path_fn
-
-QUERIES = load_module_queries(current_file=__file__)
-ANALYTICS_TABLES = list(QUERIES.keys())
+from src.persistence.database.operation import execute
+from .utils.storage import get_table_source_path
+from .constants.sql import QUERIES_SQL
 
 
 @task(
-    name="upsert",
-    task_run_name="upsert: {table_name}",
+    name="upsert_table",
+    task_run_name="upsert_table: {table_name}",
 )
-def upsert(
+def upsert_table(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     table_name: str,
     catalog_name: str,
     settings: Optional[BucketSettings] = None,
 ):
-    """Delega a execução do script upsert.sql"""
-    set_storage_path = set_storage_path_fn(table_name=table_name)
+    """Delega a execução do script de upsert"""
     with conn_fn() as conn:
-        execute_query(
+        execute(
             conn=conn,
-            query_key=table_name,
-            query_dict=QUERIES,
+            query=QUERIES_SQL[table_name],
             catalog_name=catalog_name,
-            storage_path=set_storage_path(settings=settings),
+            source_storage_path=get_table_source_path(
+                table_name=table_name,
+                settings=settings,
+            ),
         )

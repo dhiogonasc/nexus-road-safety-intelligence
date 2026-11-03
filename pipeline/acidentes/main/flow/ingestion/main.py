@@ -16,7 +16,10 @@ from src.persistence.database.operation import (
     create_connection,
 )
 
-from .layer import core
+from .layer import (
+    core,
+    analytics,
+)
 
 
 @flow(
@@ -29,6 +32,11 @@ def ingestion_flow(
     settings: Optional[BucketSettings] = None,
 ):
     core.ingestion_flow(
+        conn_fn=conn_fn,
+        settings=settings,
+        catalog_name=catalog_name,
+    )
+    analytics.ingestion_flow(
         conn_fn=conn_fn,
         settings=settings,
         catalog_name=catalog_name,

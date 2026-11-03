@@ -17,6 +17,12 @@ from src.pipeline.acidentes.main.task.ingestion.core.dimension.constants.summary
 from src.pipeline.acidentes.main.task.ingestion.core.dimension.operation import (
     upsert_table as upsert_dimension_table,
 )
+from src.pipeline.acidentes.main.task.ingestion.core.fact.constants.summary import (
+    TABLES as FACT_TABLES,
+)
+from src.pipeline.acidentes.main.task.ingestion.core.fact.operation import (
+    upsert_table as upsert_fact_table,
+)
 
 
 @flow(
@@ -41,6 +47,27 @@ def dimension_ingestion_flow(
 
 
 @flow(
+    name="fact_ingestion_flow",
+    flow_run_name="fact_ingestion_flow",
+)
+def fact_ingestion_flow(
+    catalog_name: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+
+    futures = upsert_fact_table.map(
+        conn_fn=conn_fn,
+        settings=settings,
+        catalog_name=catalog_name,
+        table_name=FACT_TABLES,
+    )
+
+    for future in futures:
+        future.result()
+
+
+@flow(
     name="ingestion_flow",
     flow_run_name="ingestion_flow",
 )
@@ -54,6 +81,12 @@ def ingestion_flow(
         settings=settings,
         catalog_name=catalog_name,
     )
+    fact_ingestion_flow(
+        conn_fn=conn_fn,
+        settings=settings,
+        catalog_name=catalog_name,
+    )
+    
 
 
 if __name__ == "__main__":
