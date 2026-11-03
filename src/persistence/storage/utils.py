@@ -5,7 +5,7 @@ from constants import DB_DIR
 from .settings import BucketSettings
 
 
-def _get_storage_path(
+def _get_storage_base_path(
     base_path: str,
     settings: Optional[BucketSettings] = None,
 ) -> str:
@@ -18,28 +18,28 @@ def _get_storage_path(
     return path.as_posix()
 
 
-def get_source_storage_path(
+def get_storage_path(
     table_name: str,
-    source_base_path: str,
+    base_path: str,
     settings: Optional[BucketSettings] = None,
 ):
-    return _get_storage_path(
+    return _get_storage_base_path(
         base_path=Path(
-            source_base_path,
+            base_path,
             table_name,
         ).as_posix(),
         settings=settings,
     )
 
 
-def get_source_log_path(
+def get_log_path(
     table_name: str,
-    source_base_path: str,
+    base_path: str,
     settings: Optional[BucketSettings] = None,
 ):
-    return _get_storage_path(
+    return _get_storage_base_path(
         base_path=Path(
-            source_base_path,
+            base_path,
             "log",
             table_name,
         ).as_posix(),

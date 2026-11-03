@@ -4,7 +4,7 @@ SELECT
     *
 FROM
     read_csv_auto(
-        '{csv_path}',
+        '{source_data}',
         delim = '{delim}',
         encoding = '{encoding}',
         header = TRUE,

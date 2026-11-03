@@ -11,7 +11,7 @@ from src.persistence.database.operation import (
     create_connection,
 )
 
-from src.pipeline.acidentes.temp.task.ingestion.silver.staging.constants.name import (
+from pipeline.acidentes.temp.task.ingestion.silver.staging.constants.summary import (
     STAGING_TABLES,
 )
 from src.pipeline.acidentes.temp.task.ingestion.silver.staging.operation import (

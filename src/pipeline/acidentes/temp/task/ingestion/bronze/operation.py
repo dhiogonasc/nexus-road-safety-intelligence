@@ -4,8 +4,8 @@ import duckdb
 from prefect import task
 
 from src.persistence.storage.utils import (
-    get_source_log_path,
-    get_source_storage_path,
+    get_log_path,
+    get_storage_path,
 )
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.operation import execute
@@ -14,7 +14,7 @@ from .constants.sql import (
     LOG_CHARGE_QUERIES_SQL,
     COPY_TO_PARQUET_QUERIES_SQL,
 )
-from .constants.storage import SOURCE_BASE_PATH
+from .constants.storage import BASE_PATH
 
 
 @task(
@@ -23,7 +23,7 @@ from .constants.storage import SOURCE_BASE_PATH
 )
 def stage_table(
     table_name: str,
-    source_data_path: str,
+    source_data: str,
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     delim: str = ";",
     encoding: str = "latin-1",
@@ -32,7 +32,7 @@ def stage_table(
         execute(
             conn=conn,
             query=STAGE_QUERIES_SQL[table_name],
-            csv_path=source_data_path,
+            source_data=source_data,
             delim=delim,
             encoding=encoding,
         )
@@ -47,14 +47,13 @@ def log_table_charge(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    """Delega a execução do script de log_charge"""
     with conn_fn() as conn:
         execute(
             conn=conn,
             query=LOG_CHARGE_QUERIES_SQL[table_name],
-            source_log_path=get_source_log_path(
+            log_path=get_log_path(
                 table_name=table_name,
-                source_base_path=SOURCE_BASE_PATH,
+                base_path=BASE_PATH,
                 settings=settings,
             ),
         )
@@ -69,14 +68,13 @@ def copy_table_to_parquet(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    """Delega a execução do script de copy_to_parquet"""
     with conn_fn() as conn:
         execute(
             conn=conn,
             query=COPY_TO_PARQUET_QUERIES_SQL[table_name],
-            source_storage_path=get_source_storage_path(
+            storage_path=get_storage_path(
                 table_name=table_name,
-                source_base_path=SOURCE_BASE_PATH,
+                base_path=BASE_PATH,
                 settings=settings,
             ),
         )

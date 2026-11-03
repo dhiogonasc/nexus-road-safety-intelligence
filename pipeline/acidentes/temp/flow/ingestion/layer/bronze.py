@@ -26,17 +26,17 @@ def ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    table_names = [item["table_name"] for item in TABLES]
-    source_data_paths = [item["source_data_path"] for item in TABLES]
+    table_name_list = [item["table_name"] for item in TABLES]
+    source_data_list = [item["source_data"] for item in TABLES]
 
     storage_futures = []
     stage_futures = stage_table.map(
-        table_name=table_names,
-        source_data_path=source_data_paths,
+        table_name=table_name_list,
+        source_data_path=source_data_list,
         conn_fn=conn_fn,
     )
     log_futures = log_table_charge.map(
-        table_name=table_names,
+        table_name=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=[stage_futures],
@@ -44,7 +44,7 @@ def ingestion_flow(
     storage_futures.append(log_futures)
 
     copy_futures = copy_table_to_parquet.map(
-        table_name=table_names,
+        table_name=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=[stage_futures],
