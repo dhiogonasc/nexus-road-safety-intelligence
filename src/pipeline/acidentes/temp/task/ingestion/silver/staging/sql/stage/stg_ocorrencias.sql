@@ -39,7 +39,7 @@ SELECT
     -- dim_local
     normalize_value(uf) AS uf,
     COALESCE(TRY_CAST(br AS INTEGER), 0) AS br,
-    COALESCE(TRY_CAST(REPLACE(km :: VARCHAR, ',', '.') AS DECIMAL(5, 2)), 0) AS km,
+    COALESCE(TRY_CAST(REPLACE(km :: VARCHAR, ',', '.') AS DECIMAL(5, 3)), 0) AS km,
     normalize_value(sentido_via) AS sentido,
     normalize_value(municipio) AS municipio,
     CASE 

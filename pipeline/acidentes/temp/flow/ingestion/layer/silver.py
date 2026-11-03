@@ -14,19 +14,19 @@ from src.persistence.database.operation import (
 from pipeline.acidentes.temp.task.ingestion.silver.staging.constants.summary import (
     TABLES as STAGING_TABLES,
 )
+from pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.summary import (
+    TABLES as DIMENSION_TABLES,
+)
+
 from src.pipeline.acidentes.temp.task.ingestion.silver.staging.operation import (
     stage_table,
     log_table_charge,
     copy_table_to_parquet,
 )
-
-from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.name import (
-    DIMENSION_TABLES,
-)
 from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.operation import (
+    upsert_table as upsert_dimension_table,
     create_table as create_dimension_table,
     bootstrap_table as bootstrap_dimension_table,
-    upsert_table as upsert_dimension_table,
     copy_table_to_parquet as copy_dimension_table_to_parquet,
 )
 

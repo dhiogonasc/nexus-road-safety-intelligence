@@ -1,29 +1,28 @@
 SELECT setval(
     'seq_dim_local', 
-    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_local"), 0), 1)
+    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_local"), 0), 0)
 );
 
-CREATE TEMP TABLE temp_dim_local AS 
-SELECT 
-    uf, 
-    br, 
-    km, 
-    sentido, 
-    tipo_area,
-    municipio
-FROM (
-    SELECT DISTINCT 
+MERGE INTO "silver"."dim_local" AS target 
+USING (
+    SELECT 
         uf, 
         br, 
         km, 
         sentido, 
         tipo_area,
-        municipio 
-    FROM "silver"."stg_ocorrencias"
-);
-
-MERGE INTO "silver"."dim_local" AS target 
-USING temp_dim_local AS source 
+        municipio
+    FROM (
+        SELECT DISTINCT 
+            uf, 
+            br, 
+            km, 
+            sentido, 
+            tipo_area,
+            municipio 
+        FROM "silver"."stg_ocorrencias"
+    )
+) AS source 
     ON target.uf = source.uf 
     AND target.br = source.br 
     AND target.km = source.km 
@@ -50,5 +49,3 @@ VALUES (
     source.tipo_area,
     source.municipio
 );
-
-DROP TABLE IF EXISTS temp_dim_local;

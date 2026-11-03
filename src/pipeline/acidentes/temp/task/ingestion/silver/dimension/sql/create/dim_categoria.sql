@@ -1,7 +1,7 @@
-CREATE SEQUENCE IF NOT EXISTS "seq_dim_categoria" START 1;
+CREATE SEQUENCE IF NOT EXISTS "seq_dim_categoria" START;
 
 CREATE TABLE IF NOT EXISTS "silver"."dim_categoria" (
-    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_dim_categoria'),
+    id INTEGER NOT NULL PRIMARY KEY,
 
     tipo VARCHAR NOT NULL,
     causa VARCHAR NOT NULL,

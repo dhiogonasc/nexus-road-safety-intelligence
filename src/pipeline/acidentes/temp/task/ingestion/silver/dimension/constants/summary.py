@@ -1,4 +1,4 @@
-DIMENSION_TABLES = [
+TABLES = [
     "dim_categoria",
     "dim_clima",
     "dim_local",

@@ -1,27 +1,32 @@
 SELECT setval(
     'seq_dim_tempo', 
-    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_tempo"), 0), 1)
+    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_tempo"), 0), 0)
 );
 
-CREATE TEMP TABLE temp_dim_tempo AS 
-SELECT 
-    ano, 
-    mes, 
-    semana,
-    dia_semana, 
-    fase_dia
-FROM (
-    SELECT DISTINCT 
+MERGE INTO "silver"."dim_tempo" AS target 
+USING (
+    SELECT 
         ano, 
         mes, 
         semana,
         dia_semana, 
-        fase_dia
-    FROM "silver"."stg_ocorrencias"
-);
-
-MERGE INTO "silver"."dim_tempo" AS target 
-USING temp_dim_tempo AS source 
+        fase_dia,
+        mes_str, 
+        dia_semana_str, 
+        fase_dia_str
+    FROM (
+        SELECT DISTINCT 
+            ano, 
+            mes, 
+            semana,
+            dia_semana, 
+            fase_dia,
+            mes_str, 
+            dia_semana_str, 
+            fase_dia_str
+        FROM "silver"."stg_ocorrencias"
+    )
+) AS source 
     ON target.ano = source.ano 
     AND target.mes = source.mes 
     AND target.semana = source.semana 
@@ -35,7 +40,10 @@ INSERT (
     mes, 
     semana,
     dia_semana, 
-    fase_dia
+    fase_dia,
+    mes_str, 
+    dia_semana_str, 
+    fase_dia_str
 ) 
 VALUES (
     nextval('seq_dim_tempo'),
@@ -43,7 +51,8 @@ VALUES (
     source.mes, 
     source.semana, 
     source.dia_semana, 
-    source.fase_dia
+    source.fase_dia,
+    source.mes_str, 
+    source.dia_semana_str, 
+    source.fase_dia_str
 );
-
-DROP TABLE IF EXISTS temp_dim_tempo;
