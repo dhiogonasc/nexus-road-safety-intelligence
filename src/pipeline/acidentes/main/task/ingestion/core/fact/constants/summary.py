@@ -1,0 +1,3 @@
+TABLES = [
+    "ft_ocorrencia",
+]
