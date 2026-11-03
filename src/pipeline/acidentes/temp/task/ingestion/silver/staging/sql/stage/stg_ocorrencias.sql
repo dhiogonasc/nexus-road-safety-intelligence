@@ -40,6 +40,7 @@ SELECT
     CASE 
         WHEN normalize_value(uso_solo) = 'não' THEN 'rural'
         WHEN normalize_value(uso_solo) = 'sim' THEN 'urbano'
+        ELSE 'não informado'
     END AS tipo_area,
 
     -- dim_clima
