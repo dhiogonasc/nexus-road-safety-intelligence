@@ -7,7 +7,7 @@ from prefect import flow
 from src.persistence.database.settings import settings_temp
 from src.persistence.database.operation import create_connection
 from src.pipeline.acidentes.temp.task.ddl.schema.operation import create_schema
-from src.pipeline.acidentes.temp.task.ddl.schema.constants.name import SCHEMAS
+from src.pipeline.acidentes.temp.task.ddl.schema.constants.summary import SCHEMAS
 
 
 @flow(

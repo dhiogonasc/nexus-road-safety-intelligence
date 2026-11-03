@@ -1,6 +1,6 @@
 from pathlib import Path
 
-LAYER_PATH = Path(
+SOURCE_BASE_PATH = Path(
     "acidentes",
     "bronze",
 ).as_posix()

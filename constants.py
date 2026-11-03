@@ -9,4 +9,4 @@ RAW_DIR = DATA_DIR / "raw"
 DB_DIR = DATA_DIR / "db"
 
 ACIDENTES_DIR = RAW_DIR / "acidentes"
-AC_OCORRENCIAS_DIR = ACIDENTES_DIR / "ocorrencias"
+OCORRENCIAS_DIR = ACIDENTES_DIR / "ocorrencias"

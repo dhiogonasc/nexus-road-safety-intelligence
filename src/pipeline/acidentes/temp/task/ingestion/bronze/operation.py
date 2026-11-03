@@ -3,6 +3,10 @@ from typing import Callable, ContextManager, Optional
 import duckdb
 from prefect import task
 
+from src.persistence.storage.utils import (
+    get_source_log_path,
+    get_source_storage_path,
+)
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.operation import execute
 from .constants.sql import (
@@ -10,11 +14,7 @@ from .constants.sql import (
     LOG_CHARGE_QUERIES_SQL,
     COPY_TO_PARQUET_QUERIES_SQL,
 )
-from .constants.source import SOURCE_PATHS
-from .utils.storage import (
-    set_storage_path,
-    set_log_path,
-)
+from .constants.storage import SOURCE_BASE_PATH
 
 
 @task(
@@ -23,16 +23,16 @@ from .utils.storage import (
 )
 def stage_table(
     table_name: str,
+    source_data_path: str,
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     delim: str = ";",
     encoding: str = "latin-1",
 ):
-    """Delega a execução do script de stage"""
     with conn_fn() as conn:
         execute(
             conn=conn,
             query=STAGE_QUERIES_SQL[table_name],
-            csv_path=SOURCE_PATHS[table_name],
+            csv_path=source_data_path,
             delim=delim,
             encoding=encoding,
         )
@@ -52,8 +52,9 @@ def log_table_charge(
         execute(
             conn=conn,
             query=LOG_CHARGE_QUERIES_SQL[table_name],
-            log_path=set_log_path(
+            source_log_path=get_source_log_path(
                 table_name=table_name,
+                source_base_path=SOURCE_BASE_PATH,
                 settings=settings,
             ),
         )
@@ -73,8 +74,9 @@ def copy_table_to_parquet(
         execute(
             conn=conn,
             query=COPY_TO_PARQUET_QUERIES_SQL[table_name],
-            storage_path=set_storage_path(
+            source_storage_path=get_source_storage_path(
                 table_name=table_name,
+                source_base_path=SOURCE_BASE_PATH,
                 settings=settings,
             ),
         )
