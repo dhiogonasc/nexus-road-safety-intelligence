@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."ft_ocorrencia" (
-    id INTEGER NOT NULL PRIMARY KEY,
+    id VARCHAR NOT NULL PRIMARY KEY,
 
     id_ocorrencia BIGINT NOT NULL,
     sk_tempo INTEGER NOT NULL,

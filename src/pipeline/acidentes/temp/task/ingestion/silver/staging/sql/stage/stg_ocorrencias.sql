@@ -30,9 +30,8 @@ SELECT
         WHEN 'plena noite' THEN 4
         ELSE 5
     END AS fase_dia,
-
-        -- dim_tempo: coluna auxiliar de exibição
-    normalize_value(STRFTIME(TRY_CAST(data_inversa AS DATE), '%m')) AS mes_str,
+        -- coluna auxiliar de exibição
+    normalize_value(STRFTIME(TRY_CAST(data_inversa AS DATE), '%B')) AS mes_str,
     normalize_value(dia_semana) AS dia_semana_str,
     normalize_value(fase_dia) AS fase_dia_str,
 

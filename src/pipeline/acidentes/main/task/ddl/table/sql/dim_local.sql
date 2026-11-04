@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_local" (
     id INTEGER NOT NULL PRIMARY KEY,
     
     uf VARCHAR NOT NULL,
-    br VARCHAR NOT NULL,
-    km DOUBLE PRECISION NOT NULL,
+    br INTEGER NOT NULL,
+    km DECIMAL(5, 3) NOT NULL,
     sentido VARCHAR NOT NULL,
     tipo_area VARCHAR NOT NULL,
     municipio VARCHAR NOT NULL,

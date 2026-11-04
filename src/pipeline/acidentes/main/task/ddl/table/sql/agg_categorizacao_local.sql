@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS "{catalog_name}"."analytics"."agg_categorizacao_local" (
-    id INTEGER NOT NULL PRIMARY KEY,
+    id VARCHAR NOT NULL PRIMARY KEY,
 
     uf VARCHAR NOT NULL,
-    br VARCHAR NOT NULL,
-    km DOUBLE PRECISION NOT NULL,
+    br INTEGER NOT NULL,
+    km DECIMAL(5, 3) NOT NULL,
     sentido VARCHAR NOT NULL,
     tipo_area VARCHAR NOT NULL,
     municipio VARCHAR NOT NULL,
@@ -11,9 +11,12 @@ CREATE TABLE IF NOT EXISTS "{catalog_name}"."analytics"."agg_categorizacao_local
     causa_acidente VARCHAR NOT NULL,
     classificacao_acidente VARCHAR NOT NULL,
 
-    mortos BIGINT NOT NULL,
+    total_mortos BIGINT NOT NULL,
+    total_envolvidos BIGINT NOT NULL,
     total_ocorrencias BIGINT NOT NULL,
-    pct_mortalidade DOUBLE PRECISION NOT NULL,
+
+    taxa_mortalidade_por_ocorrencia DECIMAL(5, 2) NOT NULL,
+    taxa_mortalidade_por_envolvido DECIMAL(5, 2) NOT NULL,
 
     CONSTRAINT "uq_agg_categorizacao_local" UNIQUE (
         uf, 

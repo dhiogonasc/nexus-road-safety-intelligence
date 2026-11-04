@@ -1,11 +1,7 @@
 from pathlib import Path
 
-_SILVER_STORAGE_PATH = Path(
+BASE_PATH = Path(
     "acidentes",
     "silver",
-).as_posix()
-
-BASE_SOURCE_PATH = Path(
-    _SILVER_STORAGE_PATH,
     "fact",
 ).as_posix()

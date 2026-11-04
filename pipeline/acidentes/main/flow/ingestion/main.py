@@ -11,15 +11,76 @@ from src.persistence.database.operation import (
     attach_connections,
     create_connection,
 )
-from src.persistence.database.operation import (
-    load_extensions,
-    create_connection,
+from src.pipeline.acidentes.main.task.ingestion.core.dimension.constants.summary import (
+    TABLES as DIMENSION_TABLES,
+)
+from src.pipeline.acidentes.main.task.ingestion.core.fact.constants.summary import (
+    TABLES as FACT_TABLES,
+)
+from src.pipeline.acidentes.main.task.ingestion.analytics.constants.summary import (
+    TABLES as AGGREGATION_TABLES,
 )
 
-from .layer import (
-    core,
-    analytics,
+from src.pipeline.acidentes.main.task.ingestion.core.dimension.operation import (
+    upsert_table as upsert_dimension_table,
 )
+from src.pipeline.acidentes.main.task.ingestion.core.fact.operation import (
+    upsert_table as upsert_fact_table,
+)
+from src.pipeline.acidentes.main.task.ingestion.analytics.operation import (
+    upsert_table as upsert_aggregation_table,
+)
+
+
+@flow(
+    name="dimension_ingestion_flow",
+    flow_run_name="dimension_ingestion_flow",
+)
+def dimension_ingestion_flow(
+    catalog_name: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    upsert_dimension_table.map(
+        conn_fn=conn_fn,
+        settings=settings,
+        catalog_name=catalog_name,
+        table_name=DIMENSION_TABLES,
+    ).result()
+
+
+@flow(
+    name="fact_ingestion_flow",
+    flow_run_name="fact_ingestion_flow",
+)
+def fact_ingestion_flow(
+    catalog_name: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    upsert_fact_table.map(
+        conn_fn=conn_fn,
+        settings=settings,
+        catalog_name=catalog_name,
+        table_name=FACT_TABLES,
+    ).result()
+
+
+@flow(
+    name="aggregation_ingestion_flow",
+    flow_run_name="aggregation_ingestion_flow",
+)
+def aggregation_ingestion_flow(
+    catalog_name: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    upsert_aggregation_table.map(
+        conn_fn=conn_fn,
+        settings=settings,
+        catalog_name=catalog_name,
+        table_name=AGGREGATION_TABLES,
+    ).result()
 
 
 @flow(
@@ -31,12 +92,17 @@ def ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    core.ingestion_flow(
+    dimension_ingestion_flow(
         conn_fn=conn_fn,
         settings=settings,
         catalog_name=catalog_name,
     )
-    analytics.ingestion_flow(
+    fact_ingestion_flow(
+        conn_fn=conn_fn,
+        settings=settings,
+        catalog_name=catalog_name,
+    )
+    aggregation_ingestion_flow(
         conn_fn=conn_fn,
         settings=settings,
         catalog_name=catalog_name,
@@ -44,7 +110,6 @@ def ingestion_flow(
 
 
 if __name__ == "__main__":
-
     load_extensions_fn = partial(
         load_extensions,
         extensions=["postgres"],

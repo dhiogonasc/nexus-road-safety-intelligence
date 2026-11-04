@@ -1,15 +1,17 @@
 MERGE INTO "{catalog_name}"."analytics"."agg_categorizacao_local" AS target
 USING (
     SELECT * 
-    FROM read_parquet('{source_storage_path}/**/*.parquet')
+    FROM read_parquet('{storage_path}/**/*.parquet')
 ) AS source
 ON target.id = source.id
 
 WHEN MATCHED THEN 
     UPDATE SET 
-        mortos = source.mortos,
+        total_mortos = source.total_mortos,
+        total_envolvidos = source.total_envolvidos,
         total_ocorrencias = source.total_ocorrencias,
-        pct_mortalidade = source.pct_mortalidade
+        taxa_mortalidade_por_envolvido = source.taxa_mortalidade_por_envolvido,
+        taxa_mortalidade_por_ocorrencia = source.taxa_mortalidade_por_ocorrencia
 
 WHEN NOT MATCHED THEN 
     INSERT (
@@ -23,9 +25,11 @@ WHEN NOT MATCHED THEN
         tipo_acidente,
         causa_acidente,
         classificacao_acidente,
-        mortos,
+        total_mortos,
+        total_envolvidos,
         total_ocorrencias,
-        pct_mortalidade
+        taxa_mortalidade_por_envolvido,
+        taxa_mortalidade_por_ocorrencia
     )
     VALUES (
         source.id,
@@ -38,7 +42,9 @@ WHEN NOT MATCHED THEN
         source.tipo_acidente,
         source.causa_acidente,
         source.classificacao_acidente,
-        source.mortos,
+        source.total_mortos,
+        source.total_envolvidos,
         source.total_ocorrencias,
-        source.pct_mortalidade
+        source.taxa_mortalidade_por_envolvido,
+        source.taxa_mortalidade_por_ocorrencia
     );

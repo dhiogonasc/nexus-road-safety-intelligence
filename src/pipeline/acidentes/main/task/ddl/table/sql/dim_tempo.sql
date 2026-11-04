@@ -4,8 +4,12 @@ CREATE TABLE IF NOT EXISTS "{catalog_name}"."core"."dim_tempo" (
     ano INTEGER NOT NULL,
     mes INTEGER NOT NULL,
     semana INTEGER NOT NULL,
-    dia_semana VARCHAR NOT NULL,
-    fase_dia VARCHAR NOT NULL,
+    dia_semana INTEGER NOT NULL,
+    fase_dia INTEGER NOT NULL,
+
+    mes_str VARCHAR NOT NULL,
+    dia_semana_str VARCHAR NOT NULL,
+    fase_dia_str VARCHAR NOT NULL,
 
     CONSTRAINT "uq_dim_tempo" UNIQUE (
         ano,
