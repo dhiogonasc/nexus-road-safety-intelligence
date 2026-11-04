@@ -1,4 +1,4 @@
-from typing import Callable, ContextManager, List, Optional
+from typing import Callable, ContextManager, Dict, List, Optional
 
 import duckdb
 from prefect import task
@@ -81,41 +81,17 @@ def copy_table_to_parquet(
 
 
 @task(
-    name="upsert_table_by_partitions",
-    task_run_name="upsert_table_by_partitions: {table_name}",
+    name="_upsert_table",
+    task_run_name="_upsert_table: {filter_clause}",
 )
-def upsert_table_by_partitions(
+def _upsert_table(
     table_name: str,
     source_fact_table: str,
-    source_dimension_tables: List[str],
+    source_dimension_storage_path: Dict[str, str],
+    filter_clause: str,
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    fetch_partitions_future = fetch_table_partitions.submit(
-        source_table=source_fact_table,
-        source_base_path=SOURCE_BASE_PATH,
-        conn_fn=conn_fn,
-        settings=settings,
-    )
-    partitions = fetch_partitions_future.result()
-
-    for partition in partitions:
-        filter_clauses_list = []
-        for key, val in partition.items():
-            formatted_val = f"'{val}'" if isinstance(val, str) else str(val)
-            filter_clauses_list.append(f"AND {key} = {formatted_val}\n")
-
-    filter_clause = "\n ".join(filter_clauses_list)
-
-    source_dimension_storage_path = {
-        f"{dimension_table_name}_storage_path": get_storage_path(
-            table_name=table_name,
-            base_path=SOURCE_DIMENSION_BASE_PATH,
-            settings=settings,
-        )
-        for dimension_table_name in source_dimension_tables
-    }
-
     with conn_fn() as conn:
         execute(
             conn=conn,
@@ -127,4 +103,50 @@ def upsert_table_by_partitions(
                 settings=settings,
             ),
             **source_dimension_storage_path,
+        )
+
+@task(
+    name="upsert_table_by_partitions",
+    task_run_name="upsert_table_by_partitions: {table_name}",
+)
+def upsert_table_by_partitions(
+    table_name: str,
+    source_fact_table: str,
+    source_dimension_tables: List[str],
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+
+    source_dimension_storage_path = {
+        f"{dim}_storage_path": get_storage_path(
+            table_name=dim,
+            base_path=SOURCE_DIMENSION_BASE_PATH,
+            settings=settings,
+        )
+        for dim in source_dimension_tables
+    }
+
+    partitions = fetch_table_partitions.submit(
+        source_table=source_fact_table,
+        source_base_path=SOURCE_BASE_PATH,
+        conn_fn=conn_fn,
+        settings=settings,
+    ).result()
+
+    filter_clauses = [
+        " ".join(
+            f"AND fato.{k} = {f"'{v}'" if isinstance(v, str) else v}"
+            for k, v in partition.items()
+        )
+        for partition in partitions
+    ]
+
+    for filter_clause in filter_clauses:
+        _upsert_table(
+            table_name=table_name,
+            source_fact_table=source_fact_table,
+            source_dimension_storage_path=source_dimension_storage_path,
+            filter_clause=filter_clause,
+            conn_fn=conn_fn,
+            settings=settings,
         )

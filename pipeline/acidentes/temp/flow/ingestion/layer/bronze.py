@@ -18,6 +18,43 @@ from src.pipeline.acidentes.temp.task.ingestion.bronze.operation import (
 from src.pipeline.acidentes.temp.task.ingestion.bronze.constants.summary import TABLES
 
 
+@task(
+    name="_bronze_ingestion_flow_factory",
+    task_run_name="_bronze_ingestion_flow_factory: {table_name}",
+)
+def _ingestion_flow_factory(
+    table_name: str,
+    source_data: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    stage_future = stage_table.submit(
+        table_name=table_name,
+        source_data_path=source_data,
+        conn_fn=conn_fn,
+    )
+
+    storage_futures = []
+    log_future = log_table_charge.submit(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=[stage_future],
+    )
+    storage_futures.append(log_future)
+
+    copy_future = copy_table_to_parquet.submit(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=[stage_future],
+    )
+    storage_futures.append(copy_future)
+
+    for future in storage_futures:
+        future.result()
+
+
 @flow(
     name="bronze_ingestion_flow",
     flow_run_name="bronze_ingestion_flow",
@@ -29,29 +66,14 @@ def ingestion_flow(
     table_name_list = [item["table_name"] for item in TABLES]
     source_data_list = [item["source_data_path"] for item in TABLES]
 
-    storage_futures = []
-    stage_futures = stage_table.map(
+    futures = _ingestion_flow_factory.map(
         table_name=table_name_list,
-        source_data_path=source_data_list,
-        conn_fn=conn_fn,
-    )
-    log_futures = log_table_charge.map(
-        table_name=table_name_list,
+        source_data=source_data_list,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=[stage_futures],
     )
-    storage_futures.append(log_futures)
 
-    copy_futures = copy_table_to_parquet.map(
-        table_name=table_name_list,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=[stage_futures],
-    )
-    storage_futures.append(copy_futures)
-
-    for future in storage_futures:
+    for future in futures:
         future.result()
 
 

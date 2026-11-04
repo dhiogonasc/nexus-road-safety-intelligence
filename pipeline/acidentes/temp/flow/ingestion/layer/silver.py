@@ -2,7 +2,7 @@ from functools import partial
 from typing import Callable, ContextManager, Optional
 
 import duckdb
-from prefect import flow
+from prefect import flow, task
 
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.settings import settings_temp
@@ -41,6 +41,125 @@ from src.pipeline.acidentes.temp.task.ingestion.silver.fact.operation import (
 )
 
 
+@task(
+    name="_staging_ingestion_flow_factory",
+    task_run_name="_staging_ingestion_flow_factory: {table_name}",
+)
+def _staging_ingestion_flow_factory(
+    table_name: str,
+    source_table: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    stage_future = stage_table.submit(
+        table_name=table_name,
+        source_table=source_table,
+        conn_fn=conn_fn,
+        settings=settings,
+    )
+
+    storage_futures = []
+    log_future = log_table_charge.submit(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=[stage_future],
+    )
+    storage_futures.append(log_future)
+
+    copy_future = copy_table_to_parquet.submit(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=[stage_future],
+    )
+    storage_futures.append(copy_future)
+
+    for future in storage_futures:
+        future.result()
+
+
+@task(
+    name="_dimension_ingestion_flow_factory",
+    task_run_name="_dimension_ingestion_flow_factory: {table_name}",
+)
+def _dimension_ingestion_flow_factory(
+    table_name: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    create_dimension_table(
+        table_name=table_name,
+        conn_fn=conn_fn,
+    )
+
+    bootstrap_dimension_table(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+    )
+
+    upsert_dimension_table(
+        table_name=table_name,
+        conn_fn=conn_fn,
+    )
+
+    copy_dimension_table_to_parquet(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+    )
+
+
+@task(
+    name="_fact_ingestion_flow_factory",
+    task_run_name="_fact_ingestion_flow_factory: {table_name}",
+)
+def _fact_ingestion_flow_factory(
+    table_name: str,
+    source_table: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    create_fact_table(
+        table_name=table_name,
+        conn_fn=conn_fn,
+    )
+
+    bootstrap_fact_table(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+    )
+
+    upsert_future = upsert_table_by_partitions.submit(
+        table_name=table_name,
+        source_table=source_table,
+        conn_fn=conn_fn,
+    )
+
+    storage_futures = []
+
+    log_futures = log_fact_charge.submit(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=[upsert_future],
+    )
+    storage_futures.append(log_futures)
+
+    copy_futures = copy_fact_table_to_parquet.submit(
+        table_name=table_name,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=[upsert_future],
+    )
+    storage_futures.append(copy_futures)
+
+    for future in storage_futures:
+        future.result()
+
+
 @flow(
     name="staging_ingestion_flow",
     flow_run_name="staging_ingestion_flow",
@@ -49,37 +168,15 @@ def staging_ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    storage_futures = []
-
     table_name_list = [item["table_name"] for item in STAGING_TABLES]
     source_table_list = [item["source_table"] for item in STAGING_TABLES]
 
-    stage_futures = stage_table.map(
+    _staging_ingestion_flow_factory.map(
         table_name=table_name_list,
         source_table=source_table_list,
         conn_fn=conn_fn,
         settings=settings,
-    )
-
-    log_futures = log_table_charge.map(
-        table_name=table_name_list,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=stage_futures,
-    )
-    storage_futures.append(log_futures)
-
-    copy_futures = copy_table_to_parquet.map(
-        table_name=table_name_list,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=stage_futures,
-    )
-    storage_futures.append(copy_futures)
-
-    for future_list in storage_futures:
-        for future in future_list:
-            future.result()
+    ).result()
 
 
 @flow(
@@ -90,34 +187,11 @@ def dimension_ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    create_futures = create_dimension_table.map(
-        table_name=DIMENSION_TABLES,
-        conn_fn=conn_fn,
-        wait_for=[],
-    )
-
-    bootstrap_futures = bootstrap_dimension_table.map(
+    _dimension_ingestion_flow_factory.map(
         table_name=DIMENSION_TABLES,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=create_futures,
-    )
-
-    upsert_futures = upsert_dimension_table.map(
-        table_name=DIMENSION_TABLES,
-        conn_fn=conn_fn,
-        wait_for=bootstrap_futures,
-    )
-
-    copy_futures = copy_dimension_table_to_parquet.map(
-        table_name=DIMENSION_TABLES,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=upsert_futures,
-    )
-
-    for future in copy_futures:
-        future.result()
+    ).result()
 
 
 @flow(
@@ -131,52 +205,17 @@ def fact_ingestion_flow(
     table_name_list = [item["table_name"] for item in FACT_TABLES]
     source_table_list = [item["source_table"] for item in FACT_TABLES]
 
-    create_futures = create_fact_table.map(
-        table_name=table_name_list,
-        conn_fn=conn_fn,
-        wait_for=[],
-    )
-
-    bootstrap_futures = bootstrap_fact_table.map(
-        table_name=table_name_list,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=create_futures,
-    )
-
-    upsert_futures = upsert_table_by_partitions.map(
+    _fact_ingestion_flow_factory.map(
         table_name=table_name_list,
         source_table=source_table_list,
         conn_fn=conn_fn,
-        wait_for=bootstrap_futures,
-    )
-
-    storage_futures = []
-
-    log_futures = log_fact_charge.map(
-        table_name=table_name_list,
-        conn_fn=conn_fn,
         settings=settings,
-        wait_for=upsert_futures,
-    )
-    storage_futures.append(log_futures)
-
-    copy_futures = copy_fact_table_to_parquet.map(
-        table_name=table_name_list,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=upsert_futures,
-    )
-    storage_futures.append(copy_futures)
-    
-    for future_list in storage_futures:
-        for future in future_list:
-            future.result()
+    ).result()
 
 
 @flow(
-    name="ingestion_flow",
-    flow_run_name="ingestion_flow",
+    name="silver_ingestion_flow",
+    flow_run_name="silver_ingestion_flow",
 )
 def ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],

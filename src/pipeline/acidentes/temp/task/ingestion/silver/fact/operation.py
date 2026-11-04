@@ -103,31 +103,16 @@ def log_table_charge(
 
 
 @task(
-    name="upsert_table_by_partitions",
-    task_run_name="upsert_table_by_partitions: {table_name}",
+    name="_upsert_table",
+    task_run_name="_upsert_table: {filter_clause}",
 )
-def upsert_table_by_partitions(
+def _upsert_table(
     table_name: str,
     source_table: str,
+    filter_clause: str,
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    fetch_partitions_future = fetch_table_partitions.submit(
-        source_table=source_table,
-        source_base_path=SOURCE_BASE_PATH,
-        conn_fn=conn_fn,
-        settings=settings,
-    )
-    partitions = fetch_partitions_future.result()
-
-    for partition in partitions:
-        filter_clauses_list = []
-        for key, val in partition.items():
-            formatted_val = f"'{val}'" if isinstance(val, str) else str(val)
-            filter_clauses_list.append(f"AND {key} = {formatted_val}\n")
-
-    filter_clause = "\n ".join(filter_clauses_list)
-
     with conn_fn() as conn:
         execute(
             conn=conn,
@@ -138,4 +123,39 @@ def upsert_table_by_partitions(
                 base_path=SOURCE_BASE_PATH,
                 settings=settings,
             ),
+        )
+
+
+@task(
+    name="upsert_table_by_partitions",
+    task_run_name="upsert_table_by_partitions: {table_name}",
+)
+def upsert_table_by_partitions(
+    table_name: str,
+    source_table: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    partitions = fetch_table_partitions.submit(
+        source_table=source_table,
+        source_base_path=SOURCE_BASE_PATH,
+        conn_fn=conn_fn,
+        settings=settings,
+    ).result()
+
+    filter_clauses = [
+        " ".join(
+            f"AND {k} = {f"'{v}'" if isinstance(v, str) else v}"
+            for k, v in partition.items()
+        )
+        for partition in partitions
+    ]
+
+    for filter_clause in filter_clauses:
+        _upsert_table(
+            table_name=table_name,
+            source_table=source_table,
+            filter_clause=filter_clause,
+            conn_fn=conn_fn,
+            settings=settings,
         )

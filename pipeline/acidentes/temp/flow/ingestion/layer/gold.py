@@ -21,8 +21,8 @@ from src.pipeline.acidentes.temp.task.ingestion.gold.operation import (
 
 
 @task(
-    name="_ingestion_flow_factory",
-    task_run_name="_ingestion_flow_factory: {table_name}",
+    name="_gold_ingestion_flow_factory",
+    task_run_name="_gold_ingestion_flow_factory: {table_name}",
 )
 def _ingestion_flow_factory(
     table_name: str,
@@ -63,8 +63,8 @@ def _ingestion_flow_factory(
 
 
 @flow(
-    name="ingestion_flow",
-    flow_run_name="ingestion_flow",
+    name="gold_ingestion_flow",
+    flow_run_name="gold_ingestion_flow",
 )
 def ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
