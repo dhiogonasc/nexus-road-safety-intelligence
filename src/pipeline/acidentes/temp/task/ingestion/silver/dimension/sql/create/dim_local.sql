@@ -1,7 +1,7 @@
-CREATE SEQUENCE IF NOT EXISTS "seq_dim_local" START;
+CREATE SEQUENCE IF NOT EXISTS "seq_dim_local";
 
 CREATE TABLE IF NOT EXISTS "silver"."dim_local" (
-    id INTEGER NOT NULL PRIMARY KEY,
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('seq_dim_local'),
     
     uf VARCHAR NOT NULL,
     br INTEGER NOT NULL,

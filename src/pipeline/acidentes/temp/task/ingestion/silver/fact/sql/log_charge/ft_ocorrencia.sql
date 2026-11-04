@@ -1,6 +1,6 @@
 COPY (
     SELECT DISTINCT ano, uf
-    FROM "gold"."stg_ft_ocorrencia"
+    FROM "silver"."ft_ocorrencia"
 ) 
 TO '{log_path}/carga.parquet' (
     FORMAT PARQUET,

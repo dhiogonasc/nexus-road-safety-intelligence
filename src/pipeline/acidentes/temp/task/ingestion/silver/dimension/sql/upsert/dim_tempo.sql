@@ -1,11 +1,11 @@
 SELECT setval(
     'seq_dim_tempo', 
-    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_tempo"), 0), 0)
+    COALESCE((SELECT MAX(id) FROM "silver"."dim_tempo"), 1)
 );
 
 MERGE INTO "silver"."dim_tempo" AS target 
 USING (
-    SELECT 
+    SELECT DISTINCT 
         ano, 
         mes, 
         semana,
@@ -14,18 +14,7 @@ USING (
         mes_str, 
         dia_semana_str, 
         fase_dia_str
-    FROM (
-        SELECT DISTINCT 
-            ano, 
-            mes, 
-            semana,
-            dia_semana, 
-            fase_dia,
-            mes_str, 
-            dia_semana_str, 
-            fase_dia_str
-        FROM "silver"."stg_ocorrencias"
-    )
+    FROM "silver"."stg_ocorrencias"
 ) AS source 
     ON target.ano = source.ano 
     AND target.mes = source.mes 
@@ -35,7 +24,7 @@ USING (
 
 WHEN NOT MATCHED THEN 
 INSERT (
-    id, 
+    id,
     ano, 
     mes, 
     semana,

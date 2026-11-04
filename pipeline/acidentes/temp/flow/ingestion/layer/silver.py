@@ -11,13 +11,13 @@ from src.persistence.database.operation import (
     create_connection,
 )
 
-from pipeline.acidentes.temp.task.ingestion.silver.staging.constants.summary import (
+from src.pipeline.acidentes.temp.task.ingestion.silver.staging.constants.summary import (
     TABLES as STAGING_TABLES,
 )
-from pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.summary import (
+from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.summary import (
     TABLES as DIMENSION_TABLES,
 )
-from pipeline.acidentes.temp.task.ingestion.silver.fact.constants.summary import (
+from src.pipeline.acidentes.temp.task.ingestion.silver.fact.constants.summary import (
     TABLES as FACT_TABLES,
 )
 
@@ -35,6 +35,7 @@ from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.operation impor
 from src.pipeline.acidentes.temp.task.ingestion.silver.fact.operation import (
     upsert_table_by_partitions,
     create_table as create_fact_table,
+    log_table_charge as log_fact_charge,
     bootstrap_table as bootstrap_fact_table,
     copy_table_to_parquet as copy_fact_table_to_parquet,
 )
@@ -54,14 +55,14 @@ def staging_ingestion_flow(
     source_table_list = [item["source_table"] for item in STAGING_TABLES]
 
     stage_futures = stage_table.map(
-        target_table=table_name_list,
+        table_name=table_name_list,
         source_table=source_table_list,
         conn_fn=conn_fn,
         settings=settings,
     )
 
     log_futures = log_table_charge.map(
-        target_table=table_name_list,
+        table_name=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=stage_futures,
@@ -69,7 +70,7 @@ def staging_ingestion_flow(
     storage_futures.append(log_futures)
 
     copy_futures = copy_table_to_parquet.map(
-        target_table=table_name_list,
+        table_name=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=stage_futures,
@@ -150,15 +151,27 @@ def fact_ingestion_flow(
         wait_for=bootstrap_futures,
     )
 
+    storage_futures = []
+
+    log_futures = log_fact_charge.map(
+        table_name=table_name_list,
+        conn_fn=conn_fn,
+        settings=settings,
+        wait_for=upsert_futures,
+    )
+    storage_futures.append(log_futures)
+
     copy_futures = copy_fact_table_to_parquet.map(
         table_name=table_name_list,
         conn_fn=conn_fn,
         settings=settings,
         wait_for=upsert_futures,
     )
-
-    for future in copy_futures:
-        future.result()
+    storage_futures.append(copy_futures)
+    
+    for future_list in storage_futures:
+        for future in future_list:
+            future.result()
 
 
 @flow(

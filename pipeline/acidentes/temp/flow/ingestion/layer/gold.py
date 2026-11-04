@@ -1,8 +1,8 @@
 from functools import partial
-from typing import Callable, ContextManager, Optional
+from typing import Callable, ContextManager, List, Optional
 
 import duckdb
-from prefect import flow
+from prefect import flow, task
 
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.settings import settings_temp
@@ -11,106 +11,55 @@ from src.persistence.database.operation import (
     create_connection,
 )
 
-from src.pipeline.acidentes.temp.task.ingestion.gold.staging.constants.name import (
-    STAGING_TABLES,
-)
-from src.pipeline.acidentes.temp.task.ingestion.gold.staging.operation import (
-    stage_table,
-    log_table_charge,
+from src.pipeline.acidentes.temp.task.ingestion.gold.constants.summary import TABLES
+from src.pipeline.acidentes.temp.task.ingestion.gold.operation import (
+    create_table,
+    bootstrap_table,
     copy_table_to_parquet,
+    upsert_table_by_partitions,
 )
 
-from src.pipeline.acidentes.temp.task.ingestion.gold.aggregation.constants.name import (
-    AGGREGATION_TABLES,
-)
-from src.pipeline.acidentes.temp.task.ingestion.gold.aggregation.operation import (
-    create_table as create_aggregation_table,
-    bootstrap_table as bootstrap_aggregation_table,
-    upsert_table as upsert_aggregation_table,
-    copy_table_to_parquet as copy_aggregation_table_to_parquet,
-)
 
-@flow(
-    name="staging_ingestion_flow",
-    flow_run_name="staging_ingestion_flow",
+@task(
+    name="_ingestion_flow_factory",
+    task_run_name="_ingestion_flow_factory: {table_name}",
 )
-def staging_ingestion_flow(
+def _ingestion_flow_factory(
+    table_name: str,
+    source_fact_table: str,
+    source_dimension_tables: List[str],
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    storage_futures = []
-
-    target_tables = [item["target"] for item in STAGING_TABLES]
-    source_tables = [item["source"] for item in STAGING_TABLES]
-
-    stage_futures = stage_table.map(
-        target_table=target_tables,
-        source_table=source_tables,
-        conn_fn=conn_fn,
-        settings=settings,
-    )
-
-    log_futures = log_table_charge.map(
-        target_table=target_tables,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=stage_futures,
-    )
-    storage_futures.append(log_futures)
-
-    copy_futures = copy_table_to_parquet.map(
-        target_table=target_tables,
-        conn_fn=conn_fn,
-        settings=settings,
-        wait_for=stage_futures,
-    )
-    storage_futures.append(copy_futures)
-
-    for future_list in storage_futures:
-        for future in future_list:
-            future.result()
-
-
-@flow(
-    name="aggregation_ingestion_flow",
-    flow_run_name="aggregation_ingestion_flow",
-)
-def aggregation_ingestion_flow(
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    settings: Optional[BucketSettings] = None,
-):
-    aggregation_tables = [item["aggregation"] for item in AGGREGATION_TABLES]
-    dimension_tables = [item["dimension"] for item in AGGREGATION_TABLES]
-
-    create_futures = create_aggregation_table.map(
-        table_name=aggregation_tables,
+    create_future = create_table.submit(
+        table_name=table_name,
         conn_fn=conn_fn,
         wait_for=[],
     )
 
-    bootstrap_futures = bootstrap_aggregation_table.map(
-        table_name=aggregation_tables,
+    bootstrap_future = bootstrap_table.submit(
+        table_name=table_name,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=create_futures,
+        wait_for=[create_future],
     )
 
-    upsert_futures = upsert_aggregation_table.map(
-        table_name=aggregation_tables,
-        dimension_tables=dimension_tables,
+    upsert_futures = upsert_table_by_partitions.submit(
+        table_name=table_name,
+        source_fact_table=source_fact_table,
+        source_dimension_tables=source_dimension_tables,
         conn_fn=conn_fn,
-        wait_for=bootstrap_futures,
+        wait_for=[bootstrap_future],
     )
 
-    copy_futures = copy_aggregation_table_to_parquet.map(
-        table_name=aggregation_tables,
+    copy_future = copy_table_to_parquet.submit(
+        table_name=table_name,
         conn_fn=conn_fn,
         settings=settings,
-        wait_for=upsert_futures,
+        wait_for=[upsert_futures],
     )
 
-    for future in copy_futures:
-        future.result()
+    copy_future.result()
 
 
 @flow(
@@ -121,14 +70,20 @@ def ingestion_flow(
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     settings: Optional[BucketSettings] = None,
 ):
-    staging_ingestion_flow(
+    table_name_list = [item["table_name"] for item in TABLES]
+    source_fact_table_list = [item["source_fact_table"] for item in TABLES]
+    source_dimension_tables_lists = [item["source_dimension_tables"] for item in TABLES]
+
+    futures = _ingestion_flow_factory.map(
         conn_fn=conn_fn,
+        table_name=table_name_list,
+        source_fact_table=source_fact_table_list,
+        source_dimension_tables=source_dimension_tables_lists,
         settings=settings,
     )
-    aggregation_ingestion_flow(
-        conn_fn=conn_fn,
-        settings=settings,
-    )
+
+    for future in futures:
+        future.result()
 
 
 if __name__ == "__main__":

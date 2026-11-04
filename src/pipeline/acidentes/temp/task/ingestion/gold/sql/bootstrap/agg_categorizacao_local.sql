@@ -8,7 +8,12 @@ INSERT INTO "gold"."agg_categorizacao_local" (
     municipio,
     tipo_acidente,
     causa_acidente,
-    classificacao_acidente
+    classificacao_acidente,
+    total_mortos,
+    total_envolvidos,
+    total_ocorrencias,
+    taxa_mortalidade_por_ocorrencia,
+    taxa_mortalidade_por_envolvido
 )
 SELECT 
     source.id, 
@@ -20,7 +25,12 @@ SELECT
     source.municipio,
     source.tipo_acidente,
     source.causa_acidente,
-    source.classificacao_acidente
+    source.classificacao_acidente,
+    source.total_mortos,
+    source.total_envolvidos,
+    source.total_ocorrencias,
+    source.taxa_mortalidade_por_ocorrencia,
+    source.taxa_mortalidade_por_envolvido
 FROM read_parquet('{storage_path}/**/*.parquet') AS source
 WHERE NOT EXISTS (
     SELECT 1 

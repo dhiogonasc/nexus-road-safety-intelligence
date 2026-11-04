@@ -23,7 +23,7 @@ from .constants.storage import BASE_PATH
 )
 def stage_table(
     table_name: str,
-    source_data: str,
+    source_data_path: str,
     conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
     delim: str = ";",
     encoding: str = "latin-1",
@@ -32,7 +32,7 @@ def stage_table(
         execute(
             conn=conn,
             query=STAGE_QUERIES_SQL[table_name],
-            source_data=source_data,
+            source_data_path=source_data_path,
             delim=delim,
             encoding=encoding,
         )

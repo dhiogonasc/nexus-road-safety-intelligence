@@ -3,17 +3,21 @@ from typing import Callable, ContextManager, Optional
 import duckdb
 from prefect import task
 
-from src.persistence.storage.utils import get_storage_path
+from src.persistence.storage.utils import (
+    get_log_path,
+    get_storage_path,
+)
 from src.persistence.database.operation import execute
 from src.persistence.storage.settings import BucketSettings
 from .constants.sql import (
     CREATE_QUERIES_SQL,
     BOOTSTRAP_QUERIES_SQL,
+    LOG_CHARGE_QUERIES_SQL,
     COPY_TO_PARQUET_QUERIES_SQL,
     UPSERT_BY_PARTITIONS_QUERIES_SQL,
 )
 from .constants.storage import BASE_PATH
-from ...bronze.constants.storage import BASE_PATH as SOURCE_BASE_PATH
+from ..staging.constants.storage import BASE_PATH as SOURCE_BASE_PATH
 from .shared.operation import fetch_table_partitions
 
 
@@ -70,6 +74,27 @@ def copy_table_to_parquet(
             conn=conn,
             query=COPY_TO_PARQUET_QUERIES_SQL[table_name],
             storage_path=get_storage_path(
+                table_name=table_name,
+                base_path=BASE_PATH,
+                settings=settings,
+            ),
+        )
+
+
+@task(
+    name="log_table_charge",
+    task_run_name="log_table_charge: {table_name}",
+)
+def log_table_charge(
+    table_name: str,
+    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    settings: Optional[BucketSettings] = None,
+):
+    with conn_fn() as conn:
+        execute(
+            conn=conn,
+            query=LOG_CHARGE_QUERIES_SQL[table_name],
+            log_path=get_log_path(
                 table_name=table_name,
                 base_path=BASE_PATH,
                 settings=settings,

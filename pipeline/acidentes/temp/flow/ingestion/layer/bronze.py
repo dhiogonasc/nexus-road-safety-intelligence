@@ -27,7 +27,7 @@ def ingestion_flow(
     settings: Optional[BucketSettings] = None,
 ):
     table_name_list = [item["table_name"] for item in TABLES]
-    source_data_list = [item["source_data"] for item in TABLES]
+    source_data_list = [item["source_data_path"] for item in TABLES]
 
     storage_futures = []
     stage_futures = stage_table.map(

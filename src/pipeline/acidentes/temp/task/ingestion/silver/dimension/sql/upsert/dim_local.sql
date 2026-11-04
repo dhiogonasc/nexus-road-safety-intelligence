@@ -1,27 +1,18 @@
 SELECT setval(
     'seq_dim_local', 
-    GREATEST(COALESCE((SELECT MAX(id) FROM "silver"."dim_local"), 0), 0)
+    COALESCE((SELECT MAX(id) FROM "silver"."dim_local"), 1)
 );
 
 MERGE INTO "silver"."dim_local" AS target 
 USING (
-    SELECT 
+    SELECT DISTINCT 
         uf, 
         br, 
         km, 
         sentido, 
         tipo_area,
-        municipio
-    FROM (
-        SELECT DISTINCT 
-            uf, 
-            br, 
-            km, 
-            sentido, 
-            tipo_area,
-            municipio 
-        FROM "silver"."stg_ocorrencias"
-    )
+        municipio 
+    FROM "silver"."stg_ocorrencias"
 ) AS source 
     ON target.uf = source.uf 
     AND target.br = source.br 
@@ -32,7 +23,7 @@ USING (
 
 WHEN NOT MATCHED THEN 
 INSERT (
-    id, 
+    id,
     uf, 
     br, 
     km, 
@@ -41,7 +32,7 @@ INSERT (
     municipio 
 ) 
 VALUES (
-    nextval('seq_dim_local'), 
+    nextval('seq_dim_local'),
     source.uf, 
     source.br, 
     source.km, 
