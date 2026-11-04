@@ -1,7 +1,9 @@
 MERGE INTO "{catalog_name}"."core"."ft_ocorrencia" AS target
 USING (
     SELECT * 
-    FROM read_parquet('{storage_path}/**/*.parquet')
+    FROM read_parquet('{storage_path}/**/*.parquet', hive_partitioning = true)
+    WHERE 1=1
+    {filter_clause}
 ) AS source
 ON target.id = source.id
 

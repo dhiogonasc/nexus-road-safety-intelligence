@@ -42,10 +42,10 @@ def dimension_ingestion_flow(
     settings: Optional[BucketSettings] = None,
 ):
     upsert_dimension_table.map(
+        table_name=DIMENSION_TABLES,
+        catalog_name=catalog_name,
         conn_fn=conn_fn,
         settings=settings,
-        catalog_name=catalog_name,
-        table_name=DIMENSION_TABLES,
     ).result()
 
 
@@ -59,10 +59,10 @@ def fact_ingestion_flow(
     settings: Optional[BucketSettings] = None,
 ):
     upsert_fact_table.map(
+        table_name=FACT_TABLES,
+        catalog_name=catalog_name,
         conn_fn=conn_fn,
         settings=settings,
-        catalog_name=catalog_name,
-        table_name=FACT_TABLES,
     ).result()
 
 
@@ -76,10 +76,10 @@ def aggregation_ingestion_flow(
     settings: Optional[BucketSettings] = None,
 ):
     upsert_aggregation_table.map(
+        table_name=AGGREGATION_TABLES,
+        catalog_name=catalog_name,
         conn_fn=conn_fn,
         settings=settings,
-        catalog_name=catalog_name,
-        table_name=AGGREGATION_TABLES,
     ).result()
 
 
