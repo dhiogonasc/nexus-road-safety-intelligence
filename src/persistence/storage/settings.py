@@ -20,4 +20,4 @@ class BucketSettings(BaseSettings):
         extra="ignore",
     )
 
-settings = BucketSettings()
+bucket_settings = BucketSettings()

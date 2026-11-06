@@ -11,7 +11,8 @@ def _get_storage_base_path(
 ) -> str:
     if settings:
         bucket = f"s3://{settings.STORAGE_BUCKET}"
-        return Path(bucket, base_path).as_posix()
+        clean_base = base_path.lstrip("/")
+        return f"{bucket}/{clean_base}"
 
     path = Path(DB_DIR, base_path)
     path.mkdir(parents=True, exist_ok=True)

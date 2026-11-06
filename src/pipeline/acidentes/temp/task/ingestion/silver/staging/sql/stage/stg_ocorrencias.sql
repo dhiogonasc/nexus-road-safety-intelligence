@@ -1,15 +1,14 @@
 CREATE OR REPLACE MACRO normalize_value(str) AS  
     CASE  
-        WHEN str 
-            IS NULL 
-            OR LOWER(TRIM(str :: VARCHAR)) IN ('na', 'n/a', 'nan', 'null', 'none', '-', '') 
-                THEN 'não informado'
+        WHEN str IS NULL 
+             OR LOWER(TRIM(str :: VARCHAR)) IN ('na', 'n/a', 'nan', 'null', 'none', '-', '')  
+            THEN 'não informado'
         ELSE  
             REGEXP_REPLACE(
-            REGEXP_REPLACE(
-                LOWER(TRIM(str :: VARCHAR)),  
-                '[\s\-_/,]+', ' ', 'g'
-            ),  
+                REGEXP_REPLACE(
+                    strip_accents(LOWER(TRIM(str :: VARCHAR))),  
+                    '[\s\-_/,]+', ' ', 'g'
+                ),  
                 '[^\p{{L}}\p{{N}}\s]', '', 'g'
             )
     END;
@@ -43,9 +42,9 @@ SELECT
     normalize_value(sentido_via) AS sentido,
     normalize_value(municipio) AS municipio,
     CASE 
-        WHEN normalize_value(uso_solo) = 'não' THEN 'rural'
+        WHEN normalize_value(uso_solo) = 'nao' THEN 'rural'
         WHEN normalize_value(uso_solo) = 'sim' THEN 'urbano'
-        ELSE 'não informado'
+        ELSE 'nao informado'
     END AS tipo_area,
 
     -- dim_clima

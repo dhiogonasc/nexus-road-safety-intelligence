@@ -4,7 +4,7 @@ from typing import Callable, ContextManager, Optional
 import duckdb
 from prefect import flow
 
-from src.persistence.storage.settings import BucketSettings
+from src.persistence.storage.settings import BucketSettings, bucket_settings
 from src.persistence.database.settings import settings_temp
 from src.persistence.database.operation import (
     load_extensions,
@@ -58,4 +58,6 @@ if __name__ == "__main__":
         ),
     )
 
-    ingestion_flow(conn_fn=conn_fn)
+    ingestion_flow(
+        conn_fn=conn_fn,
+    )

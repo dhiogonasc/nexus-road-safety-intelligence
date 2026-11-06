@@ -2,7 +2,7 @@ from functools import partial
 from typing import Callable, ContextManager, Optional
 
 import duckdb
-from prefect import flow, task
+from prefect import flow, task, unmapped
 
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.settings import settings_temp
@@ -174,8 +174,8 @@ def staging_ingestion_flow(
     _staging_ingestion_flow_factory.map(
         table_name=table_name_list,
         source_table=source_table_list,
-        conn_fn=conn_fn,
-        settings=settings,
+        conn_fn=unmapped(conn_fn),
+        settings=unmapped(settings),
     ).result()
 
 
@@ -189,8 +189,8 @@ def dimension_ingestion_flow(
 ):
     _dimension_ingestion_flow_factory.map(
         table_name=DIMENSION_TABLES,
-        conn_fn=conn_fn,
-        settings=settings,
+        conn_fn=unmapped(conn_fn),
+        settings=unmapped(settings),
     ).result()
 
 
@@ -208,8 +208,8 @@ def fact_ingestion_flow(
     _fact_ingestion_flow_factory.map(
         table_name=table_name_list,
         source_table=source_table_list,
-        conn_fn=conn_fn,
-        settings=settings,
+        conn_fn=unmapped(conn_fn),
+        settings=unmapped(settings),
     ).result()
 
 

@@ -2,7 +2,7 @@ from functools import partial
 from typing import Callable, ContextManager, List, Optional
 
 import duckdb
-from prefect import flow, task
+from prefect import flow, task, unmapped
 
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.settings import settings_temp
@@ -75,11 +75,11 @@ def ingestion_flow(
     source_dimension_tables_lists = [item["source_dimension_tables"] for item in TABLES]
 
     futures = _ingestion_flow_factory.map(
-        conn_fn=conn_fn,
         table_name=table_name_list,
         source_fact_table=source_fact_table_list,
         source_dimension_tables=source_dimension_tables_lists,
-        settings=settings,
+        conn_fn=unmapped(conn_fn),
+        settings=unmapped(settings),
     )
 
     for future in futures:
