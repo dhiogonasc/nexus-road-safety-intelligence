@@ -1,23 +1,22 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
-from constants import ROOT
 
-ENV_FILE = ROOT / ".env"
-env_file = ENV_FILE if ENV_FILE.exists() else None
-
-class BucketSettings(BaseSettings):
-    """Configuração S3 Bucket"""
-
-    STORAGE_BUCKET: str = "rsi-bucket"
+class StorageSettings(BaseSettings):
+    STORAGE_BUCKET: str = "bucket"
     STORAGE_ENDPOINT: str = "http://localhost:3900"
-    STORAGE_ACCESS_KEY_ID: str
-    STORAGE_SECRET_ACCESS_KEY: str
-    STORAGE_REGION: str = "nexus"
+    STORAGE_REGION: str = "region"
+    STORAGE_ACCESS_KEY_ID: str = ""
+    STORAGE_SECRET_ACCESS_KEY: str = ""
 
-    model_config = SettingsConfigDict(
-        env_file=env_file,
-        env_file_encoding="utf-8",
-        extra="ignore",
-    )
+    @property
+    def conn_config(self) -> str:
+        return (
+            f"ENDPOINT '{self.STORAGE_ENDPOINT}', \n"
+            f"KEY_ID '{self.STORAGE_ACCESS_KEY_ID}', \n"
+            f"SECRET '{self.STORAGE_SECRET_ACCESS_KEY}', \n"
+            f"REGION '{self.STORAGE_REGION}', \n"
+        )
 
-settings = BucketSettings()
+    @property
+    def base_uri(self) -> str:
+        return f"s3://{self.STORAGE_BUCKET}"

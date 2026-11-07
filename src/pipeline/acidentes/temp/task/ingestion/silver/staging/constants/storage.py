@@ -1,7 +1,3 @@
 from pathlib import Path
 
-BASE_PATH = Path(
-    "acidentes",
-    "silver",
-    "staging",
-).as_posix()
+BASE_PATH = Path("silver", "staging").as_posix()

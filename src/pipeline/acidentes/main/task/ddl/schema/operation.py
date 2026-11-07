@@ -3,7 +3,7 @@ from typing import Callable, ContextManager
 import duckdb
 from prefect import task
 
-from src.persistence.database.operation import execute
+from persistence.database.provider import execute
 from .constants.sql import QUERIES_SQL
 
 

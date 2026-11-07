@@ -1,54 +1,48 @@
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings
+from typing import Dict, Literal
 
-from constants import ROOT, DB_DIR
-
-@dataclass
-class DuckDBSettings:
-    """Configuração DuckDB"""
-
-    DIRECTORY: str = Path(DB_DIR).as_posix()
-
-    def database(self, name: str, db_dir: Optional[str] = None) -> str:
-        """Chave de conexão"""
-        if db_dir:
-            Path(self.DIRECTORY, db_dir).mkdir(parents=True, exist_ok=True)
-            return Path(self.DIRECTORY, db_dir, f"{name}.db").as_posix()
-        return Path(self.DIRECTORY, f"{name}.db").as_posix()
+from constants import DB_DIR
 
 
-settings_temp = DuckDBSettings()
+class DuckDBSettings(BaseModel):
+    name: str = "default"
+    directory: str = Path(DB_DIR).as_posix()
+    max_memory: str = "4GB"
+    enable_object_cache: bool = False
 
-from typing import Literal
-from pydantic_settings import (
-    BaseSettings,
-    SettingsConfigDict,
-)
+    @property
+    def database(self) -> str:
+        filename = f"{self.name}.db"
+        return Path(self.directory, filename).as_posix()
 
-ENV_FILE = ROOT / ".env"
-env_file = ENV_FILE if ENV_FILE.exists() else None
+    @property
+    def config(self) -> Dict[str, str]:
+        return {
+            "max_memory": self.max_memory,
+            "enable_object_cache": self.enable_object_cache,
+        }
 
-class PostgresSettings(BaseSettings):
-    """Configura Postgres"""
 
+class DatabaseAttachConfig(BaseModel):
+    conn_string: str
+    conn_alias: str
+    conn_type: str
+
+
+class DatabaseSettings(BaseSettings):
     ENV: Literal["dev", "prod"] = "dev"
+
     DB_NAME: str
     DB_USER: str
     DB_PASSWORD: str
     DB_HOST: str
     DB_PORT: int
-    ENV: Literal["dev", "prod"] = "dev"
-
-    model_config = SettingsConfigDict(
-        env_file=env_file,
-        env_file_encoding="utf-8",
-        extra="ignore",
-    )
 
     @property
     def conn_string(self) -> str:
-        sslmode = "require" if self.ENV == "prod" else "prefer"
+        sslmode = "prefer" if self.ENV == "dev" else "require"
 
         return (
             f"dbname={self.DB_NAME} "
@@ -62,18 +56,15 @@ class PostgresSettings(BaseSettings):
     @property
     def conn_alias(self) -> str:
         return self.DB_NAME
-    
-    @property
-    def conn_option(self) -> str:
-        return "(TYPE POSTGRES)"
 
     @property
-    def attach_config(self) -> str:
-        return {
-            "string": self.conn_string,
-            "alias": self.conn_alias,
-            "option": self.conn_option,
-        }
+    def conn_type(self) -> str:
+        return "POSTGRES"
 
-
-settings_main = PostgresSettings()
+    @property
+    def attach_config(self) -> DatabaseAttachConfig:
+        return DatabaseAttachConfig(
+            conn_string=self.conn_string,
+            conn_alias=self.conn_alias,
+            conn_type=self.conn_type,
+        )

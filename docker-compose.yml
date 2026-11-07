@@ -1,12 +1,13 @@
 services:
-  postgres:
+  rsi-db:
     image: postgres:16-alpine
-    container_name: pg_rsi_pei6
+    container_name: db
     restart: always
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      ENV: "dev"
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${DB_PORT}:5432"
     volumes:
@@ -17,9 +18,9 @@ services:
       timeout: 5s
       retries: 5
 
-  pgadmin:
+  rsi-db-ui:
     image: dpage/pgadmin4:latest
-    container_name: pgadmin_rsi_pei6
+    container_name: db-ui
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com

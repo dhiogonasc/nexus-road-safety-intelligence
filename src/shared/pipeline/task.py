@@ -4,7 +4,7 @@ from typing import Callable
 from prefect import flow, task
 from prefect.task_runners import ConcurrentTaskRunner
 
-from src.persistence.database.operation import load_extensions
+from persistence.database.provider import load_extensions
 from src.shared.model.pipeline import Catalog, Layer, Routine
 
 @task(

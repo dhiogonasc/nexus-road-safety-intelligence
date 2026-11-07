@@ -1,1 +1,0 @@
-from .registry import create_bucket_secret

@@ -4,7 +4,7 @@ import duckdb
 from prefect import task
 
 from src.persistence.storage.utils import get_log_path
-from src.persistence.database.operation import execute
+from persistence.database.provider import execute
 from src.persistence.storage.settings import BucketSettings
 from .constants.sql import SHARED_QUERIES_SQL
 

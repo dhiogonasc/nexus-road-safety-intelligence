@@ -3,8 +3,8 @@ import uuid
 import duckdb
 
 from src.shared.system.file import load_module_queries
-from src.persistence.database.operation import execute_query
-from ..settings import BucketSettings
+from persistence.database.provider import execute_query
+from .settings import BucketSettings
 
 QUERIES = load_module_queries(current_file=__file__)
 

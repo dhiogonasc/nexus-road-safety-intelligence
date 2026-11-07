@@ -5,7 +5,7 @@ from prefect import task
 
 from src.persistence.storage.utils import get_storage_path
 from src.persistence.storage.settings import BucketSettings
-from src.persistence.database.operation import execute
+from persistence.database.provider import execute
 from .constants.sql import QUERIES_SQL
 from .constants.storage import BASE_PATH
 from .shared.operation import fetch_table_partitions

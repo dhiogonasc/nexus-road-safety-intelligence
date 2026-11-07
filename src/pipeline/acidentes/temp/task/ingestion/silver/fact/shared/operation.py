@@ -1,36 +1,25 @@
-from typing import Callable, ContextManager, Optional
-
-import duckdb
 from prefect import task
 
-from src.persistence.storage.utils import get_log_path
-from src.persistence.database.operation import execute
-from src.persistence.storage.settings import BucketSettings
 from .constants.sql import SHARED_QUERIES_SQL
+from src.persistence.database.provider import DuckDBProvider
+from src.persistence.storage.provider import StorageProvider
 
 
 @task(
     name="fetch_table_partitions",
-    task_run_name="fetch_table_partitions: {source_table}",
+    task_run_name="fetch_table_partitions",
 )
 def fetch_table_partitions(
-    source_table: str,
-    source_base_path: str,
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    settings: Optional[BucketSettings] = None,
+    duckdb: DuckDBProvider,
+    source_storage: StorageProvider,
 ):
-    with conn_fn() as conn:
-        result = execute(
-            conn=conn,
-            query=SHARED_QUERIES_SQL["fetch_partitions"],
-            source_log_path=get_log_path(
-                table_name=source_table,
-                base_path=source_base_path,
-                settings=settings,
-            ),
-        )
+    print(f"source_storage logs: {source_storage.get_log_path()}")
+    result = duckdb.execute_query(
+        sql=SHARED_QUERIES_SQL["fetch_partitions"],
+        source_log_path=source_storage.get_log_path(),
+    )
 
-        keys = [desc[0] for desc in result.description]
-        values = dict.fromkeys(result.fetchall()).keys()
-    
+    keys = [desc[0] for desc in result.description]
+    values = dict.fromkeys(result.fetchall()).keys()
+
     return [dict(zip(keys, values_row)) for values_row in values]

@@ -6,7 +6,7 @@ from prefect import flow, task
 
 from src.persistence.storage.settings import BucketSettings
 from src.persistence.database.settings import settings_temp
-from src.persistence.database.operation import (
+from persistence.database.provider import (
     load_extensions,
     create_connection,
 )

@@ -1,10 +1,8 @@
-from typing import Callable, ContextManager
-
-import duckdb
 from prefect import task
 
-from src.persistence.database.operation import execute
+from src.persistence.database.provider import DuckDBProvider
 from .constants.sql import QUERIES_SQL
+
 
 @task(
     name="create_schema",
@@ -12,12 +10,9 @@ from .constants.sql import QUERIES_SQL
 )
 def create_schema(
     schema_name: str,
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
+    duckdb: DuckDBProvider,
 ):
-    """Delega a execução do script create_schema.sql"""
-    with conn_fn() as conn:
-        execute(
-            conn=conn,
-            query=QUERIES_SQL["create_schema"],
-            schema_name=schema_name,
-        )
+    duckdb.execute_query(
+        sql=QUERIES_SQL["create_schema"],
+        schema_name=schema_name,
+    )
