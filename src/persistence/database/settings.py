@@ -1,6 +1,6 @@
 from pathlib import Path
 from pydantic import BaseModel
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Dict, Literal
 
 from constants import DB_DIR
@@ -40,8 +40,18 @@ class DatabaseSettings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
     @property
-    def conn_string(self) -> str:
+    def conn_alias(self) -> str:
+        return self.DB_NAME
+
+    @property
+    def _conn_string(self) -> str:
         sslmode = "prefer" if self.ENV == "dev" else "require"
 
         return (
@@ -54,17 +64,16 @@ class DatabaseSettings(BaseSettings):
         )
 
     @property
-    def conn_alias(self) -> str:
-        return self.DB_NAME
-
-    @property
-    def conn_type(self) -> str:
+    def _conn_type(self) -> str:
         return "POSTGRES"
 
     @property
     def attach_config(self) -> DatabaseAttachConfig:
         return DatabaseAttachConfig(
-            conn_string=self.conn_string,
             conn_alias=self.conn_alias,
-            conn_type=self.conn_type,
+            conn_string=self._conn_string,
+            conn_type=self._conn_type,
         )
+
+
+settings = DatabaseSettings()
