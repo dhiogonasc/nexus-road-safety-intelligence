@@ -7,24 +7,22 @@ from .constants.sql import (
     CREATE_QUERIES_SQL,
     UPSERT_QUERIES_SQL,
 )
-from .constants.storage import BASE_PATH
+from .constants.summary import SilverDimensionTable
 from src.persistence.database.provider import DuckDBProvider
-from src.persistence.storage.provider import StorageProvider
 
 
 @task(
     name="bootstrap_table",
-    task_run_name="bootstrap_table: {table}",
+    task_run_name="bootstrap_table: {table.name}",
 )
 def bootstrap_table(
-    table: str,
+    table: SilverDimensionTable,
     duckdb: DuckDBProvider,
-    storage: StorageProvider,
 ):
     try:
         return duckdb.execute_query(
-            sql=BOOTSTRAP_QUERIES_SQL[table],
-            storage_path=storage.get_storage_path(),
+            sql=BOOTSTRAP_QUERIES_SQL[table.name],
+            storage_path=table.storage.get_storage_path(),
         )
     except IOException:
         pass
@@ -32,47 +30,42 @@ def bootstrap_table(
 
 @task(
     name="copy_table_to_parquet",
-    task_run_name="copy_table_to_parquet: {table}",
+    task_run_name="copy_table_to_parquet: {table.name}",
 )
 def copy_table_to_parquet(
-    table: str,
+    table: SilverDimensionTable,
     duckdb: DuckDBProvider,
-    storage: StorageProvider,
 ):
     return duckdb.execute_query(
-        sql=COPY_TO_PARQUET_QUERIES_SQL[table],
-        storage_path=storage.get_storage_path(),
+        sql=COPY_TO_PARQUET_QUERIES_SQL[table.name],
+        storage_path=table.storage.get_storage_path(),
     )
 
 
 @task(
     name="create_table",
-    task_run_name="create_table: {table}",
+    task_run_name="create_table: {table.name}",
 )
 def create_table(
-    table: str,
+    table: SilverDimensionTable,
     duckdb: DuckDBProvider,
 ):
-    return duckdb.execute_query(sql=CREATE_QUERIES_SQL[table])
-
-
-@task(
-    name="dimension_storage_factory",
-    task_run_name="dimension_storage_factory: {table}",
-)
-def dimension_storage_factory(table: str):
-    return StorageProvider(
-        table_name=table,
-        base_path=BASE_PATH,
-    )
+    return duckdb.execute_query(sql=CREATE_QUERIES_SQL[table.name])
 
 
 @task(
     name="upsert_table",
-    task_run_name="upsert_table: {table}",
+    task_run_name="upsert_table: {table.name}",
 )
 def upsert_table(
-    table: str,
+    table: SilverDimensionTable,
     duckdb: DuckDBProvider,
 ):
-    return duckdb.execute_query(sql=UPSERT_QUERIES_SQL[table])
+    source_path = {
+        f"{table.source.table_name}_storage_path": table.source.get_storage_path()
+    }
+
+    return duckdb.execute_query(
+        sql=UPSERT_QUERIES_SQL[table.name],
+        **source_path,
+    )

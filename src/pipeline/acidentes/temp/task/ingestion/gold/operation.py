@@ -86,7 +86,7 @@ def upsert_table_by_partitions(
 
     partitions = fetch_table_partitions.submit(
         duckdb=duckdb,
-        source=table.source.fact,
+        source=table.fact,
     ).result()
 
     filter_clauses = []

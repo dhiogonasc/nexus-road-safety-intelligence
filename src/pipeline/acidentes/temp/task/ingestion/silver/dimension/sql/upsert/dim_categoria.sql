@@ -9,7 +9,7 @@ USING (
         tipo,
         causa,
         classificacao
-    FROM "silver"."stg_ocorrencias"
+    FROM read_parquet('{stg_ocorrencias_storage_path}/**/*.parquet')
 ) AS source 
     ON target.tipo = source.tipo
     AND target.causa = source.causa

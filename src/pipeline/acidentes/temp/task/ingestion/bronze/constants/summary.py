@@ -1,21 +1,27 @@
 from pathlib import Path
 from typing import List
-
 from pydantic import BaseModel
 
-from constants import OCORRENCIAS_DIR
+from constants import SOURCE_OCORRENCIAS
+from src.persistence.storage.provider import StorageProvider
 
 
 class BronzeTable(BaseModel):
     name: str
-    source_data_path: str
+    source: str
+
+    @property
+    def storage(self):
+        base_path = Path("bronze").as_posix()
+        return StorageProvider(
+            table_name=self.name,
+            base_path=base_path,
+        )
 
 
 raw_ocorrencias = BronzeTable(
     name="raw_ocorrencias",
-    source_data_path=Path(OCORRENCIAS_DIR, "*.csv").as_posix(),
+    source=SOURCE_OCORRENCIAS,
 )
 
-TABLES: List[BronzeTable] = [
-    raw_ocorrencias,
-]
+TABLES: List[BronzeTable] = [raw_ocorrencias]

@@ -6,7 +6,7 @@ SELECT setval(
 MERGE INTO "silver"."dim_clima" AS target 
 USING (
     SELECT DISTINCT condicao_metereologica AS condicao
-    FROM "silver"."stg_ocorrencias"
+    FROM read_parquet('{stg_ocorrencias_storage_path}/**/*.parquet')
 ) AS source 
     ON target.condicao = source.condicao
 

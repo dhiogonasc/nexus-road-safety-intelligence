@@ -8,10 +8,9 @@ from .constants.sql import (
     COPY_TO_PARQUET_QUERIES_SQL,
     UPSERT_BY_PARTITIONS_QUERIES_SQL,
 )
-from .constants.storage import BASE_PATH
-from .constants.summary import GoldTable
+
+from .constants.summary import SilveFactTable
 from src.persistence.database.provider import DuckDBProvider
-from src.persistence.storage.provider import StorageProvider
 from .shared.operation import fetch_table_partitions
 
 
@@ -20,14 +19,13 @@ from .shared.operation import fetch_table_partitions
     task_run_name="bootstrap_table: {table.name}",
 )
 def bootstrap_table(
-    table: GoldTable,
+    table: SilveFactTable,
     duckdb: DuckDBProvider,
-    storage: StorageProvider,
 ):
     try:
         return duckdb.execute_query(
             sql=BOOTSTRAP_QUERIES_SQL[table.name],
-            storage_path=storage.get_storage_path(),
+            storage_path=table.storage.get_storage_path(),
         )
     except IOException:
         pass
@@ -38,13 +36,12 @@ def bootstrap_table(
     task_run_name="copy_table_to_parquet: {table.name}",
 )
 def copy_table_to_parquet(
-    table: GoldTable,
+    table: SilveFactTable,
     duckdb: DuckDBProvider,
-    storage: StorageProvider,
 ):
     return duckdb.execute_query(
         sql=COPY_TO_PARQUET_QUERIES_SQL[table.name],
-        storage_path=storage.get_storage_path(),
+        storage_path=table.storage.get_storage_path(),
     )
 
 
@@ -53,7 +50,7 @@ def copy_table_to_parquet(
     task_run_name="create_table: {table.name}",
 )
 def create_table(
-    table: GoldTable,
+    table: SilveFactTable,
     duckdb: DuckDBProvider,
 ):
     return duckdb.execute_query(sql=CREATE_QUERIES_SQL[table.name])
@@ -64,13 +61,12 @@ def create_table(
     task_run_name="log_table_charge: {table.name}",
 )
 def log_table_charge(
-    table: GoldTable,
+    table: SilveFactTable,
     duckdb: DuckDBProvider,
-    storage: StorageProvider,
 ):
     return duckdb.execute_query(
         sql=LOG_CHARGE_QUERIES_SQL[table.name],
-        log_path=storage.get_log_path(),
+        log_path=table.storage.get_log_path(),
     )
 
 
@@ -79,15 +75,19 @@ def log_table_charge(
     task_run_name="_upsert_partition: {filter_clause}",
 )
 def _upsert_partition(
-    table: GoldTable,
+    table: SilveFactTable,
     filter_clause: str,
     duckdb: DuckDBProvider,
-    source_storage: StorageProvider,
 ):
+    source_storage_path = {
+        f"{source.table_name}_storage_path": source.get_storage_path()
+        for source in table.all_sources
+    }
+
     return duckdb.execute_query(
         sql=UPSERT_BY_PARTITIONS_QUERIES_SQL[table.name],
         filter_clause=filter_clause,
-        source_storage_path=source_storage.get_storage_path(),
+        **source_storage_path,
     )
 
 
@@ -96,13 +96,12 @@ def _upsert_partition(
     task_run_name="upsert_table_by_partitions: {table.name}",
 )
 def upsert_table_by_partitions(
-    table: GoldTable,
+    table: SilveFactTable,
     duckdb: DuckDBProvider,
-    source_storage: StorageProvider,
 ):
     partitions = fetch_table_partitions.submit(
         duckdb=duckdb,
-        source_storage=source_storage,
+        source_storage=table.staging,
     ).result()
 
     filter_clauses = []
@@ -119,18 +118,4 @@ def upsert_table_by_partitions(
             table=table,
             filter_clause=filter_clause,
             duckdb=duckdb,
-            source_storage=source_storage,
         )
-
-
-@task(
-    name="fact_storage_factory",
-    task_run_name="fact_storage_factory: {table.name}",
-)
-def fact_storage_factory(
-    table: GoldTable,
-):
-    return StorageProvider(
-        table_name=table.name,
-        base_path=BASE_PATH,
-    )

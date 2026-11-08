@@ -14,7 +14,7 @@ USING (
         mes_str, 
         dia_semana_str, 
         fase_dia_str
-    FROM "silver"."stg_ocorrencias"
+    FROM read_parquet('{stg_ocorrencias_storage_path}/**/*.parquet')
 ) AS source 
     ON target.ano = source.ano 
     AND target.mes = source.mes 

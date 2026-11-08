@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE "bronze"."raw_ocorrencias" AS
+CREATE OR REPLACE TABLE "raw_ocorrencias" AS
 SELECT
     strftime(CURRENT_TIMESTAMP, '%Y-%m-%d_%H-%M-%S') AS data_carga,
     *

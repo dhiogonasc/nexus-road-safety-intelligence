@@ -1,59 +1,41 @@
+from pathlib import Path
 from typing import List
 from pydantic import BaseModel
 
 from src.persistence.storage.provider import StorageProvider
-from src.pipeline.acidentes.temp.task.ingestion.silver.dimension.constants.storage import (
-    BASE_PATH as DIMENSION_PATH,
-)
-from src.pipeline.acidentes.temp.task.ingestion.silver.fact.constants.storage import (
-    BASE_PATH as FACT_PATH,
-)
-from src.pipeline.acidentes.temp.task.ingestion.gold.constants.storage import BASE_PATH
-
-
-class GoldSource(BaseModel):
-    fact: StorageProvider
-    dimension: List[StorageProvider]
+from ...silver.fact.constants.summary import ft_ocorrencia
+from ...silver.dimension.constants.summary import dim_local, dim_categoria
 
 
 class GoldTable(BaseModel):
     name: str
-    storage: StorageProvider
-    source: GoldSource
+    fact: StorageProvider
+    dimension: List[StorageProvider]
+
+    @property
+    def storage(self):
+        base_path = Path("gold").as_posix()
+        return StorageProvider(
+            table_name=self.name,
+            base_path=base_path,
+        )
 
     @property
     def all_sources(self):
         return [
-            self.source.fact,
-            *self.source.dimension,
+            self.fact,
+            *self.dimension,
         ]
 
 
 agg_categorizacao_local = GoldTable(
     name="agg_categorizacao_local",
-    storage=StorageProvider(
-        table_name="agg_categorizacao_local",
-        base_path=BASE_PATH,
-    ),
-    source=GoldSource(
-        fact=StorageProvider(
-            table_name="ft_ocorrencia",
-            base_path=FACT_PATH,
-        ),
-        dimension=[
-            StorageProvider(
-                table_name="dim_local",
-                base_path=DIMENSION_PATH,
-            ),
-            StorageProvider(
-                table_name="dim_categoria",
-                base_path=DIMENSION_PATH,
-            ),
-        ],
-    ),
+    fact=ft_ocorrencia.storage,
+    dimension=[
+        dim_local.storage,
+        dim_categoria.storage,
+    ],
 )
 
 
-TABLES = [
-    agg_categorizacao_local,
-]
+TABLES: List[GoldTable] = [agg_categorizacao_local]

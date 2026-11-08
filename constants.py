@@ -9,4 +9,4 @@ RAW_DIR = DATA_DIR / "raw"
 DB_DIR = DATA_DIR / "db"
 
 ACIDENTES_DIR = RAW_DIR / "acidentes"
-OCORRENCIAS_DIR = ACIDENTES_DIR / "ocorrencias"
+SOURCE_OCORRENCIAS = Path(ACIDENTES_DIR, "ocorrencias", "*.csv").as_posix()

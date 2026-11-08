@@ -25,12 +25,15 @@ USING (
         fato.uf
     FROM (
         SELECT *
-        FROM read_parquet('{source_storage_path}/**/*.parquet', hive_partitioning = true)
+        FROM read_parquet('{stg_ocorrencias_storage_path}/**/*.parquet', hive_partitioning = true)
         WHERE 1=1
         {filter_clause}
     ) AS fato
 
-    LEFT JOIN "silver"."dim_local" AS local 
+    LEFT JOIN (
+        SELECT *
+        FROM read_parquet('{dim_local_storage_path}/**/*.parquet')
+    ) AS local 
         ON fato.uf = local.uf 
         AND fato.br = local.br 
         AND fato.km = local.km
@@ -38,17 +41,26 @@ USING (
         AND fato.tipo_area = local.tipo_area
         AND fato.municipio = local.municipio 
 
-    LEFT JOIN "silver"."dim_tempo" AS tempo 
+    LEFT JOIN (
+        SELECT *
+        FROM read_parquet('{dim_tempo_storage_path}/**/*.parquet')
+    ) AS tempo 
         ON fato.ano = tempo.ano
         AND fato.mes = tempo.mes
         AND fato.semana = tempo.semana
         AND fato.dia_semana = tempo.dia_semana
         AND fato.fase_dia = tempo.fase_dia
 
-    LEFT JOIN "silver"."dim_clima" AS clima
+    LEFT JOIN (
+        SELECT *
+        FROM read_parquet('{dim_clima_storage_path}/**/*.parquet')
+    ) AS clima
         ON fato.condicao_metereologica = clima.condicao
 
-    LEFT JOIN "silver"."dim_categoria" AS categoria 
+    LEFT JOIN (
+        SELECT *
+        FROM read_parquet('{dim_categoria_storage_path}/**/*.parquet')
+    ) AS categoria 
         ON fato.tipo = categoria.tipo
         AND fato.causa = categoria.causa 
         AND fato.classificacao = categoria.classificacao

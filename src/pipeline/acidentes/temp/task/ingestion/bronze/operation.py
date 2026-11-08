@@ -6,10 +6,36 @@ from .constants.sql import (
     LOG_CHARGE_QUERIES_SQL,
     COPY_TO_PARQUET_QUERIES_SQL,
 )
-from .constants.storage import BASE_PATH
 from .constants.summary import BronzeTable
 from src.persistence.database.provider import DuckDBProvider
-from src.persistence.storage.provider import StorageProvider
+
+
+@task(
+    name="copy_table_to_parquet",
+    task_run_name="copy_table_to_parquet: {table.name}",
+)
+def copy_table_to_parquet(
+    table: BronzeTable,
+    duckdb: DuckDBProvider,
+):
+    duckdb.execute_query(
+        sql=COPY_TO_PARQUET_QUERIES_SQL[table.name],
+        storage_path=table.storage.get_storage_path(),
+    )
+
+
+@task(
+    name="log_table_charge",
+    task_run_name="log_table_charge: {table.name}",
+)
+def log_table_charge(
+    table: BronzeTable,
+    duckdb: DuckDBProvider,
+):
+    duckdb.execute_query(
+        sql=LOG_CHARGE_QUERIES_SQL[table.name],
+        log_path=table.storage.get_log_path(),
+    )
 
 
 @task(
@@ -24,50 +50,7 @@ def stage_table(
 ):
     duckdb.execute_query(
         sql=STAGE_QUERIES_SQL[table.name],
-        source_data_path=table.source_data_path,
+        source_data_path=table.source,
         delim=delim,
         encoding=encoding,
-    )
-
-
-@task(
-    name="copy_table_to_parquet",
-    task_run_name="copy_table_to_parquet: {table.name}",
-)
-def copy_table_to_parquet(
-    table: BronzeTable,
-    duckdb: DuckDBProvider,
-    storage: StorageProvider,
-):
-    duckdb.execute_query(
-        sql=COPY_TO_PARQUET_QUERIES_SQL[table.name],
-        storage_path=storage.get_storage_path(),
-    )
-
-
-@task(
-    name="log_table_charge",
-    task_run_name="log_table_charge: {table.name}",
-)
-def log_table_charge(
-    table: BronzeTable,
-    duckdb: DuckDBProvider,
-    storage: StorageProvider,
-):
-    duckdb.execute_query(
-        sql=LOG_CHARGE_QUERIES_SQL[table.name],
-        log_path=storage.get_log_path(),
-    )
-
-
-@task(
-    name="bronze_storage_factory",
-    task_run_name="bronze_storage_factory: {table.name}",
-)
-def bronze_storage_factory(
-    table: BronzeTable,
-):
-    return StorageProvider(
-        table_name=table.name,
-        base_path=BASE_PATH,
     )

@@ -15,7 +15,6 @@ from src.persistence.database.provider import DuckDBProvider
     flow_run_name="gold_ingestion_flow",
 )
 def ingestion_flow(duckdb: DuckDBProvider):
-
     create_table.map(
         table=TABLES,
         duckdb=unmapped(duckdb),

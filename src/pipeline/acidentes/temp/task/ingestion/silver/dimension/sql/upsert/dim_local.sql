@@ -12,7 +12,7 @@ USING (
         sentido, 
         tipo_area,
         municipio 
-    FROM "silver"."stg_ocorrencias"
+    FROM read_parquet('{stg_ocorrencias_storage_path}/**/*.parquet')
 ) AS source 
     ON target.uf = source.uf 
     AND target.br = source.br 

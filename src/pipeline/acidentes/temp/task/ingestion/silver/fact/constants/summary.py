@@ -1,23 +1,44 @@
+from pathlib import Path
 from typing import List
 
 from pydantic import BaseModel
 
-from ....silver.staging.constants.summary import (
-    StagingTable,
-    stg_ocorrencias,
+from src.persistence.storage.provider import StorageProvider
+
+from ....silver.dimension.constants.summary import (
+    STG_OCORRENCIAS_STORAGE,
+    ocorrencia_dimension,
 )
 
 
-class GoldTable(BaseModel):
+class SilveFactTable(BaseModel):
     name: str
-    source: StagingTable
+    staging: StorageProvider
+    dimension: List[StorageProvider]
+
+    @property
+    def storage(self):
+        base_path = Path(
+            "silver",
+            "fact",
+        ).as_posix()
+        return StorageProvider(
+            table_name=self.name,
+            base_path=base_path,
+        )
+
+    @property
+    def all_sources(self):
+        return [
+            self.staging,
+            *self.dimension,
+        ]
 
 
-ft_ocorrencia = GoldTable(
+ft_ocorrencia = SilveFactTable(
     name="ft_ocorrencia",
-    source=stg_ocorrencias,
+    staging=STG_OCORRENCIAS_STORAGE,
+    dimension=[table.storage for table in ocorrencia_dimension],
 )
 
-TABLES: List[GoldTable] = [
-    ft_ocorrencia,
-]
+TABLES: List[SilveFactTable] = [ft_ocorrencia]

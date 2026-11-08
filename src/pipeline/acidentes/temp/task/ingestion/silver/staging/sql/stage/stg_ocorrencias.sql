@@ -68,9 +68,9 @@ SELECT
     COALESCE(TRY_CAST(veiculos AS INTEGER), 0) AS veiculos
 FROM (
     SELECT * 
-    FROM read_parquet('{source_storage_path}/**/*.parquet', hive_partitioning = true)
+    FROM read_parquet('{raw_ocorrencias_storage_path}/**/*.parquet', hive_partitioning = true)
     WHERE data_carga = (
         SELECT * 
-        FROM read_parquet('{source_log_path}/**/*.parquet')
+        FROM read_parquet('{raw_ocorrencias_log_path}/**/*.parquet')
     )
 );
