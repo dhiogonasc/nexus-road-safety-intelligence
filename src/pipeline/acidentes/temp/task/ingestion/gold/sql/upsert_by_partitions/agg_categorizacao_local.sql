@@ -35,7 +35,7 @@ USING (
     FROM (
         SELECT *
         FROM read_parquet(
-            '{source_storage_path}/**/*.parquet', 
+            '{ft_ocorrencia_storage_path}/**/*.parquet', 
             hive_partitioning = true
         )
     ) AS fato

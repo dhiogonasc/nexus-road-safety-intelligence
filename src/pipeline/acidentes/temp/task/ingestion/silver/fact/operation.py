@@ -105,13 +105,14 @@ def upsert_table_by_partitions(
         source_storage=source_storage,
     ).result()
 
-    filter_clauses = [
-        " ".join(
-            f"AND {k} = {f"'{v}'" if isinstance(v, str) else v}"
-            for k, v in partition.items()
-        )
-        for partition in partitions
-    ]
+    filter_clauses = []
+    for partition in partitions:
+        conditions = []
+        for k, v in partition.items():
+            formatted_val = f"'{v}'" if isinstance(v, str) else v
+            conditions.append(f"AND {k} = {formatted_val}")
+
+        filter_clauses.append(" ".join(conditions))
 
     for filter_clause in filter_clauses:
         _upsert_partition(

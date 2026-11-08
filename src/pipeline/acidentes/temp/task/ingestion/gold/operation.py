@@ -1,152 +1,105 @@
-from typing import Callable, ContextManager, Dict, List, Optional
-
-import duckdb
+from duckdb import IOException
 from prefect import task
 
-from src.persistence.storage.utils import get_storage_path
-from persistence.database.provider import execute
-from src.persistence.storage.settings import BucketSettings
 from .constants.sql import (
     CREATE_QUERIES_SQL,
     BOOTSTRAP_QUERIES_SQL,
     COPY_TO_PARQUET_QUERIES_SQL,
     UPSERT_BY_PARTITIONS_QUERIES_SQL,
 )
-from .constants.storage import BASE_PATH
-from ..silver.fact.constants.storage import BASE_PATH as SOURCE_BASE_PATH
-from ..silver.dimension.constants.storage import (
-    BASE_PATH as SOURCE_DIMENSION_BASE_PATH,
-)
+from .constants.summary import GoldTable
 from .shared.operation import fetch_table_partitions
-
-
-@task(
-    name="create_table",
-    task_run_name="create_table: {table_name}",
-)
-def create_table(
-    table_name: str,
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-):
-    with conn_fn() as conn:
-        execute(
-            conn=conn,
-            query=CREATE_QUERIES_SQL[table_name],
-        )
+from src.persistence.database.provider import DuckDBProvider
 
 
 @task(
     name="bootstrap_table",
-    task_run_name="bootstrap_table: {table_name}",
+    task_run_name="bootstrap_table: {table.name}",
 )
 def bootstrap_table(
-    table_name: str,
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    settings: Optional[BucketSettings] = None,
+    table: GoldTable,
+    duckdb: DuckDBProvider,
 ):
-    with conn_fn() as conn:
-        try:
-            execute(
-                conn=conn,
-                query=BOOTSTRAP_QUERIES_SQL[table_name],
-                storage_path=get_storage_path(
-                    table_name=table_name,
-                    base_path=BASE_PATH,
-                    settings=settings,
-                ),
-            )
-        except duckdb.IOException:
-            pass
+    try:
+        duckdb.execute_query(
+            sql=BOOTSTRAP_QUERIES_SQL[table.name],
+            storage_path=table.storage.get_storage_path(),
+        )
+    except IOException:
+        pass
 
 
 @task(
     name="copy_table_to_parquet",
-    task_run_name="copy_table_to_parquet: {table_name}",
+    task_run_name="copy_table_to_parquet: {table.name}",
 )
 def copy_table_to_parquet(
-    table_name: str,
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    settings: Optional[BucketSettings] = None,
+    table: GoldTable,
+    duckdb: DuckDBProvider,
 ):
-    with conn_fn() as conn:
-        execute(
-            conn=conn,
-            query=COPY_TO_PARQUET_QUERIES_SQL[table_name],
-            storage_path=get_storage_path(
-                table_name=table_name,
-                base_path=BASE_PATH,
-                settings=settings,
-            ),
-        )
+    duckdb.execute_query(
+        sql=COPY_TO_PARQUET_QUERIES_SQL[table.name],
+        storage_path=table.storage.get_storage_path(),
+    )
 
 
 @task(
-    name="_upsert_table",
-    task_run_name="_upsert_table: {filter_clause}",
+    name="create_table",
+    task_run_name="create_table: {table.name}",
 )
-def _upsert_table(
-    table_name: str,
-    source_fact_table: str,
-    source_dimension_storage_path: Dict[str, str],
-    filter_clause: str,
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    settings: Optional[BucketSettings] = None,
+def create_table(
+    table: GoldTable,
+    duckdb: DuckDBProvider,
 ):
-    with conn_fn() as conn:
-        execute(
-            conn=conn,
-            query=UPSERT_BY_PARTITIONS_QUERIES_SQL[table_name],
-            filter_clause=filter_clause,
-            source_storage_path=get_storage_path(
-                table_name=source_fact_table,
-                base_path=SOURCE_BASE_PATH,
-                settings=settings,
-            ),
-            **source_dimension_storage_path,
-        )
+    duckdb.execute_query(sql=CREATE_QUERIES_SQL[table.name])
+
+
+@task(
+    name="_upsert_partition",
+    task_run_name="_upsert_partition: {filter_clause}",
+)
+def _upsert_partition(
+    table: GoldTable,
+    filter_clause: str,
+    duckdb: DuckDBProvider,
+):
+    source_storage_path = {
+        f"{source.table_name}_storage_path": source.get_storage_path()
+        for source in table.all_sources
+    }
+
+    duckdb.execute_query(
+        sql=UPSERT_BY_PARTITIONS_QUERIES_SQL[table.name],
+        filter_clause=filter_clause,
+        **source_storage_path,
+    )
+
 
 @task(
     name="upsert_table_by_partitions",
-    task_run_name="upsert_table_by_partitions: {table_name}",
+    task_run_name="upsert_table_by_partitions: {table.name}",
 )
 def upsert_table_by_partitions(
-    table_name: str,
-    source_fact_table: str,
-    source_dimension_tables: List[str],
-    conn_fn: Callable[[], ContextManager[duckdb.DuckDBPyConnection]],
-    settings: Optional[BucketSettings] = None,
+    table: GoldTable,
+    duckdb: DuckDBProvider,
 ):
 
-    source_dimension_storage_path = {
-        f"{dim}_storage_path": get_storage_path(
-            table_name=dim,
-            base_path=SOURCE_DIMENSION_BASE_PATH,
-            settings=settings,
-        )
-        for dim in source_dimension_tables
-    }
-
     partitions = fetch_table_partitions.submit(
-        source_table=source_fact_table,
-        source_base_path=SOURCE_BASE_PATH,
-        conn_fn=conn_fn,
-        settings=settings,
+        duckdb=duckdb,
+        source=table.source.fact,
     ).result()
 
-    filter_clauses = [
-        " ".join(
-            f"AND fato.{k} = {f"'{v}'" if isinstance(v, str) else v}"
-            for k, v in partition.items()
-        )
-        for partition in partitions
-    ]
+    filter_clauses = []
+    for partition in partitions:
+        conditions = []
+        for k, v in partition.items():
+            formatted_val = f"'{v}'" if isinstance(v, str) else v
+            conditions.append(f"AND fato.{k} = {formatted_val}")
+        filter_clauses.append(" ".join(conditions))
 
     for filter_clause in filter_clauses:
-        _upsert_table(
-            table_name=table_name,
-            source_fact_table=source_fact_table,
-            source_dimension_storage_path=source_dimension_storage_path,
+        _upsert_partition(
+            table=table,
             filter_clause=filter_clause,
-            conn_fn=conn_fn,
-            settings=settings,
+            duckdb=duckdb,
         )

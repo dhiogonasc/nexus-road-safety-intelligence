@@ -13,13 +13,7 @@ def fetch_table_partitions(
     duckdb: DuckDBProvider,
     source_storage: StorageProvider,
 ):
-    print(f"source_storage logs: {source_storage.get_log_path()}")
-    result = duckdb.execute_query(
+    return duckdb.fecth_df(
         sql=SHARED_QUERIES_SQL["fetch_partitions"],
         source_log_path=source_storage.get_log_path(),
-    )
-
-    keys = [desc[0] for desc in result.description]
-    values = dict.fromkeys(result.fetchall()).keys()
-
-    return [dict(zip(keys, values_row)) for values_row in values]
+    ).to_dict(orient="records")
