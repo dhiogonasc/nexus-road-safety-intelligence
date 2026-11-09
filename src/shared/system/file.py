@@ -11,7 +11,7 @@ def load_module(module: Union[str, ModuleType]) -> Dict[str, str]:
             for file_path in resources.files(module).iterdir()
             if file_path.is_file()
         }
-    except Exception as e:
+    except Exception:
         pass
 
     return module_dict

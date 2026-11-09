@@ -25,12 +25,15 @@ USING (
         fato.uf
     FROM (
         SELECT *
-        FROM read_parquet('{stg_ocorrencias_storage_path}/**/*.parquet', hive_partitioning = true)
+        FROM read_parquet(
+            '{stg_ocorrencias_storage_path}/**/*.parquet', 
+            hive_partitioning = true
+        )
         WHERE 1=1
         {filter_clause}
     ) AS fato
 
-    LEFT JOIN (
+    JOIN (
         SELECT *
         FROM read_parquet('{dim_local_storage_path}/**/*.parquet')
     ) AS local 
@@ -41,7 +44,7 @@ USING (
         AND fato.tipo_area = local.tipo_area
         AND fato.municipio = local.municipio 
 
-    LEFT JOIN (
+    JOIN (
         SELECT *
         FROM read_parquet('{dim_tempo_storage_path}/**/*.parquet')
     ) AS tempo 
@@ -51,13 +54,13 @@ USING (
         AND fato.dia_semana = tempo.dia_semana
         AND fato.fase_dia = tempo.fase_dia
 
-    LEFT JOIN (
+    JOIN (
         SELECT *
         FROM read_parquet('{dim_clima_storage_path}/**/*.parquet')
     ) AS clima
         ON fato.condicao_metereologica = clima.condicao
 
-    LEFT JOIN (
+    JOIN (
         SELECT *
         FROM read_parquet('{dim_categoria_storage_path}/**/*.parquet')
     ) AS categoria 

@@ -38,17 +38,22 @@ USING (
             '{fct_ocorrencia_storage_path}/**/*.parquet', 
             hive_partitioning = true
         )
+        WHERE 1=1
+        {filter_clause}
     ) AS fato
+
     JOIN (
         SELECT *
         FROM read_parquet('{dim_local_storage_path}/**/*.parquet')
-    ) AS local ON fato.sk_local = local.id
+    ) AS local 
+        ON fato.sk_local = local.id
+
     JOIN (
         SELECT *
         FROM read_parquet('{dim_categoria_storage_path}/**/*.parquet')
-    ) AS categoria ON fato.sk_categoria = categoria.id
-    WHERE 1=1
-    {filter_clause}
+    ) AS categoria 
+        ON fato.sk_categoria = categoria.id
+
     GROUP BY
         local.uf, 
         local.br, 

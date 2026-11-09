@@ -8,6 +8,7 @@ from . import (
     stage,
     upsert,
     upsert_by_partitions,
+    shared,
 )
 
 BOOTSTRAP_SQL = load_module(module=bootstrap)
@@ -17,3 +18,4 @@ LOG_CHARGE_SQL = load_module(module=log_charge)
 STAGE_SQL = load_module(module=stage)
 UPSERT_SQL = load_module(module=upsert)
 UPSERT_BY_PARTITIONS_SQL = load_module(module=upsert_by_partitions)
+SHARED_SQL = load_module(module=shared)
