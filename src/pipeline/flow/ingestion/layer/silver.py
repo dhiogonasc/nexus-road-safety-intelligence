@@ -32,51 +32,6 @@ from src.pipeline.temp.task.ingestion.silver.fact.operation import (
 )
 
 
-@flow(
-    name="staging_ingestion_flow",
-    flow_run_name="staging_ingestion_flow",
-)
-def staging_ingestion_flow(duckdb: DuckDBProvider):
-    stage_table.map(
-        table=STAGING_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
-    copy_table_to_parquet.map(
-        table=STAGING_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
-    log_table_charge.map(
-        table=STAGING_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
-
-@flow(
-    name="dimension_ingestion_flow",
-    flow_run_name="dimension_ingestion_flow",
-)
-def dimension_ingestion_flow(duckdb: DuckDBProvider):
-    create_dimension_table.map(
-        table=DIMENSION_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
-    bootstrap_dimension_table.map(
-        table=DIMENSION_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
-    upsert_dimension_table.map(
-        table=DIMENSION_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
-    copy_dimension_table_to_parquet.map(
-        table=DIMENSION_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
 
 
 @flow(

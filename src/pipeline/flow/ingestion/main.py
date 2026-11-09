@@ -5,7 +5,7 @@ from .layer import (
 )
 from src.persistence.database.provider import DuckDBProvider
 
-from .layer import bronze
+from .layer import raw
 from .layer import gold
 
 
@@ -14,7 +14,7 @@ from .layer import gold
     flow_run_name="ingestion_flow",
 )
 def ingestion_flow(duckdb: DuckDBProvider):
-    bronze.ingestion_flow(duckdb=duckdb)
+    raw.ingestion_flow(duckdb=duckdb)
     silver.ingestion_flow(duckdb=duckdb)
     gold.ingestion_flow(duckdb=duckdb)
 
