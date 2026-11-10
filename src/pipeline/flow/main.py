@@ -1,5 +1,9 @@
+from tempfile import TemporaryDirectory
+
 from prefect import flow
 
+from src.persistence.database.connector import DuckDBConnector
+from src.persistence.database.settings import DuckDBSettings
 from src.persistence.database.provider import DuckDBProvider
 from .ddl.main import ddl_flow
 from .ingestion.main import ingestion_flow
@@ -15,4 +19,9 @@ def main_flow(duckdb: DuckDBProvider):
 
 
 if __name__ == "__main__":
-    main_flow(duckdb=DuckDBProvider())
+    with TemporaryDirectory() as temp_dir:
+        settings = DuckDBSettings(directory=temp_dir)
+        connector = DuckDBConnector(settings=settings)
+        provider = DuckDBProvider(connector=connector)
+
+        main_flow(duckdb=provider)

@@ -18,20 +18,27 @@ services:
       timeout: 5s
       retries: 5
 
-  rsi-db-ui:
-    image: dpage/pgadmin4:latest
-    container_name: db-ui
+  rsi-metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${DB_NAME}
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${DB_USER}
+      MB_DB_PASS: ${DB_PASSWORD}
+      MB_DB_HOST: rsi-db
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - metabase-data:/metabase-data
+    depends_on:
+      rsi-db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
     driver: local
-  pgadmin_data:
+  metabase-data:
     driver: local

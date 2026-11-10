@@ -74,6 +74,3 @@ class DatabaseSettings(BaseSettings):
             conn_string=self._conn_string,
             conn_type=self._conn_type,
         )
-
-
-settings = DatabaseSettings()
