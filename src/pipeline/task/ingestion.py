@@ -1,7 +1,7 @@
 from duckdb import IOException
 from prefect import task
 
-from ..sql import *
+from ..sql.ingestion import *
 from ..model import BaseTable
 from src.persistence.database.provider import DuckDBProvider
 
@@ -90,17 +90,6 @@ def bootstrap_table(
         )
     except IOException:
         pass
-
-
-@task(
-    name="create_table",
-    task_run_name="create_table: {table.name}",
-)
-def create_table(
-    table: BaseTable,
-    duckdb: DuckDBProvider,
-):
-    return duckdb.execute_query(sql=CREATE_SQL[table.name])
 
 
 @task(

@@ -64,6 +64,12 @@ agg_categorizacao_local = AggregationTable(
     ),
 )
 
+SCHEMAS: List[str] = [
+    "bronze",
+    "silver",
+    "gold",
+]
+
 RAW_TABLES: List[RawTable] = [
     raw_ocorrencias,
 ]
@@ -84,8 +90,6 @@ AGG_TABLES: List[AggregationTable] = [
 ]
 
 ALL_TABLES: List[BaseTable] = [
-    *RAW_TABLES,
-    *STG_TABLES,
     *DIM_TABLES,
     *FCT_TABLES,
     *AGG_TABLES,

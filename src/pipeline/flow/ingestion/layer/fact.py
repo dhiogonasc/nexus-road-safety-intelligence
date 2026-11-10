@@ -3,7 +3,6 @@ from prefect import flow, unmapped
 from src.persistence.database.provider import DuckDBProvider
 from src.pipeline.model import FCT_TABLES
 from src.pipeline.task.ingestion import (
-    create_table,
     bootstrap_table,
     upsert_table_by_partitions,
     copy_table_to_parquet,
@@ -16,11 +15,6 @@ from src.pipeline.task.ingestion import (
     flow_run_name="fact_ingestion_flow",
 )
 def ingestion_flow(duckdb: DuckDBProvider):
-    create_table.map(
-        table=FCT_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
     bootstrap_table.map(
         table=FCT_TABLES,
         duckdb=unmapped(duckdb),

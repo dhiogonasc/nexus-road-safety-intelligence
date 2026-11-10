@@ -1,15 +1,16 @@
 from prefect import flow, unmapped
 
+from src.pipeline.model import SCHEMAS
+from src.pipeline.task.ddl import create_schema
 from src.persistence.database.provider import DuckDBProvider
-from src.pipeline.temp.task.ddl.schema.operation import create_schema
-from src.pipeline.temp.task.ddl.schema.constants.summary import SCHEMAS
+
 
 
 @flow(
     name="schema_ddl_flow",
     flow_run_name="schema_ddl_flow",
 )
-def schema_ddl_flow(duckdb: DuckDBProvider):
+def ddl_flow(duckdb: DuckDBProvider):
     create_schema.map(
         schema_name=SCHEMAS,
         duckdb=unmapped(duckdb),
@@ -17,4 +18,4 @@ def schema_ddl_flow(duckdb: DuckDBProvider):
 
 
 if __name__ == "__main__":
-    schema_ddl_flow(duckdb=DuckDBProvider())
+    ddl_flow(duckdb=DuckDBProvider())
