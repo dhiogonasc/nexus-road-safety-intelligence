@@ -1,5 +1,0 @@
-SCHEMAS = [
-    "bronze",
-    "silver",
-    "gold",
-]

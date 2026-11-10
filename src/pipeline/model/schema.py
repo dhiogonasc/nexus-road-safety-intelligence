@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from pydantic import BaseModel, Field
 
 from src.persistence.storage.provider import StorageProvider
@@ -22,32 +22,48 @@ class TableSource(BaseModel):
 
 class BaseTable(BaseModel):
     name: str
-    _base_path: str = Field(..., exclude=True)
-    source: TableSource
+    base_path: str = Field(..., exclude=True)
+    source: Union[str, TableSource]
 
     @property
     def storage(self):
         return StorageProvider(
             table_name=self.name,
-            base_path=self._base_path,
+            base_path=self.base_path,
         )
 
 
 class RawTable(BaseTable):
-    _base_path = RAW_BASE_PATH
+    base_path: str = Field(
+        default=RAW_BASE_PATH,
+        exclude=True,
+    )
     source: str
 
+
 class StagingTable(BaseTable):
-    _base_path = STG_BASE_PATH
+    base_path: str = Field(
+        default=STG_BASE_PATH,
+        exclude=True,
+    )
 
 
 class DimensionTable(BaseTable):
-    _base_path = DIM_BASE_PATH
+    base_path: str = Field(
+        default=DIM_BASE_PATH,
+        exclude=True,
+    )
 
 
 class FactTable(BaseTable):
-    _base_path = FCT_BASE_PATH
+    base_path: str = Field(
+        default=FCT_BASE_PATH,
+        exclude=True,
+    )
 
 
 class AggregationTable(BaseTable):
-    _base_path = AGG_BASE_PATH
+    base_path: str = Field(
+        default=AGG_BASE_PATH,
+        exclude=True,
+    )

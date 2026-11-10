@@ -32,11 +32,12 @@ def stage_table(
     table: BaseTable,
     duckdb: DuckDBProvider,
 ):
+    base_source = table.source.base
     source_path = {
         key: value
         for key, value in {
-            f"{table.source.table_name}_storage_path": table.source.get_storage_path(),
-            f"{table.source.table_name}_log_path": table.source.get_log_path(),
+            f"{base_source.table_name}_storage_path": base_source.get_storage_path(),
+            f"{base_source.table_name}_log_path": base_source.get_log_path(),
         }.items()
     }
 
@@ -110,8 +111,9 @@ def upsert_table(
     table: BaseTable,
     duckdb: DuckDBProvider,
 ):
+    base_source = table.source.base
     source_path = {
-        f"{table.source.table_name}_storage_path": table.source.get_storage_path()
+        f"{base_source.table_name}_storage_path": base_source.get_storage_path()
     }
 
     return duckdb.execute_query(
@@ -128,9 +130,10 @@ def _fetch_table_partitions(
     table: BaseTable,
     duckdb: DuckDBProvider,
 ):
+    base_source = table.source.base
     return duckdb.fecth_df(
         sql=SHARED_SQL["fetch_partitions"],
-        source_log_path=table.source.base.get_log_path(),
+        source_log_path=base_source.get_log_path(),
     ).to_dict(orient="records")
 
 
@@ -145,7 +148,7 @@ def _upsert_partition(
 ):
     source_storage_path = {
         f"{source.table_name}_storage_path": source.get_storage_path()
-        for source in table.all_sources
+        for source in table.source.all
     }
 
     return duckdb.execute_query(
