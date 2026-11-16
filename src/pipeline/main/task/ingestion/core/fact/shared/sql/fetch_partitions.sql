@@ -1,1 +1,0 @@
-SELECT * FROM read_parquet('{source_log_path}/**/*.parquet');

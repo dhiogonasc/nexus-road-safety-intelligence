@@ -1,3 +1,0 @@
-TABLES = [
-    "ft_ocorrencia",
-]

@@ -1,1 +1,0 @@
-CREATE SCHEMA IF NOT EXISTS "{catalog_name}"."{schema_name}";

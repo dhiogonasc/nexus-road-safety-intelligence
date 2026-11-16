@@ -1,4 +1,0 @@
-SCHEMAS = [
-    "core",
-    "analytics",
-]

@@ -1,4 +1,0 @@
-from src.shared.system.file import load_module
-from ...schema import sql
-
-QUERIES_SQL = load_module(module=sql)
