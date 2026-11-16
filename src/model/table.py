@@ -1,14 +1,14 @@
-from typing import List, Optional, Union
+from pathlib import Path
 from pydantic import BaseModel, Field
+from typing import List, Optional, Union
 
 from src.persistence.storage import StorageProvider
-from .path import (
-    AGG_BASE_PATH,
-    DIM_BASE_PATH,
-    FCT_BASE_PATH,
-    RAW_BASE_PATH,
-    STG_BASE_PATH,
-)
+
+RAW_BASE_PATH = Path("raw").as_posix()
+STG_BASE_PATH = Path("stg").as_posix()
+DIM_BASE_PATH = Path("dim").as_posix()
+FCT_BASE_PATH = Path("fct").as_posix()
+AGG_BASE_PATH = Path("agg").as_posix()
 
 
 class TableSource(BaseModel):

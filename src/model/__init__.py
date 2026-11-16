@@ -1,7 +1,7 @@
 from typing import List
 
 from constants import SOURCE_OCORRENCIAS
-from .schema import (
+from .table import (
     BaseTable,
     TableSource,
     RawTable,
