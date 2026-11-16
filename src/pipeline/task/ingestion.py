@@ -1,9 +1,9 @@
 from duckdb import IOException
 from prefect import task
 
-from ..sql.ingestion import *
-from ..model import BaseTable
+from src.model import BaseTable
 from src.persistence.database.provider import DuckDBProvider
+from src.sql.ingestion import *
 
 
 @task(

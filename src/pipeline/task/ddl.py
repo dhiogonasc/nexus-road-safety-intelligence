@@ -1,8 +1,8 @@
 from prefect import task
 
-from ..sql.ddl import *
-from ..model import BaseTable
+from src.model import BaseTable
 from src.persistence.database.provider import DuckDBProvider
+from src.sql.ddl import *
 
 
 @task(

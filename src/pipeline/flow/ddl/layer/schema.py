@@ -1,6 +1,6 @@
 from prefect import flow, unmapped
 
-from src.pipeline.model import SCHEMAS
+from src.model import SCHEMAS
 from src.pipeline.task.ddl import create_schema
 from src.persistence.database.provider import DuckDBProvider
 

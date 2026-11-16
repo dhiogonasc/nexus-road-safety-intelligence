@@ -1,6 +1,6 @@
 from prefect import flow, unmapped
 
-from src.pipeline.model import ALL_TABLES
+from src.model import ALL_TABLES
 from src.pipeline.task.ddl import create_table
 from src.persistence.database.provider import DuckDBProvider
 
