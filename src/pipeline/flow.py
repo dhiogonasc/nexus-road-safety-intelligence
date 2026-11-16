@@ -8,7 +8,7 @@ from src.model import (
     STG_TABLES,
     SCHEMAS,
 )
-from src.persistence.database.provider import DuckDBProvider
+from src.persistence.database import DuckDBProvider
 from .task import (
     create_schema,
     create_table,

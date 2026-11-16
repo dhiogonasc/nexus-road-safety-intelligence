@@ -2,7 +2,7 @@ from prefect import task
 from duckdb import IOException
 
 from src.model import BaseTable
-from src.persistence.database.provider import DuckDBProvider
+from src.persistence.database import DuckDBProvider
 from src.sql.ddl import *
 from src.sql.ingestion import *
 
