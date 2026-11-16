@@ -2,7 +2,7 @@ from prefect import flow, unmapped
 
 from src.model import FCT_TABLES
 from src.persistence.database.provider import DuckDBProvider
-from src.pipeline.task.ingestion import (
+from src.pipeline.temp.task.ingestion import (
     bootstrap_table,
     upsert_table_by_partitions,
     copy_table_to_parquet,

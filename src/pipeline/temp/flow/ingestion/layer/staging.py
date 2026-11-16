@@ -2,7 +2,7 @@ from prefect import flow, unmapped
 
 from src.model import STG_TABLES
 from src.persistence.database.provider import DuckDBProvider
-from src.pipeline.task.ingestion import (
+from src.pipeline.temp.task.ingestion import (
     copy_table_to_parquet,
     log_table_charge,
     stage_table,

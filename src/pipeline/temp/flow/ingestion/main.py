@@ -2,11 +2,11 @@ from prefect import flow
 
 from src.persistence.database.provider import DuckDBProvider
 from .layer import (
-    raw,
-    staging,
+    aggregation,
     dimension,
     fact,
-    aggregation,
+    raw,
+    staging,
 )
 
 

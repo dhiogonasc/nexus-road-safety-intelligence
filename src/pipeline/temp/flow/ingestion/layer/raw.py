@@ -1,31 +1,31 @@
 from prefect import flow, unmapped
 
-from src.model import DIM_TABLES
+from src.model import RAW_TABLES
 from src.persistence.database.provider import DuckDBProvider
-from src.pipeline.task.ingestion import (
-    bootstrap_table,
-    upsert_table,
+from src.pipeline.temp.task.ingestion import (
     copy_table_to_parquet,
+    log_table_charge,
+    stage_raw,
 )
 
 
 @flow(
-    name="dimension_ingestion_flow",
-    flow_run_name="dimension_ingestion_flow",
+    name="raw_ingestion_flow",
+    flow_run_name="raw_ingestion_flow",
 )
 def ingestion_flow(duckdb: DuckDBProvider):
-    bootstrap_table.map(
-        table=DIM_TABLES,
-        duckdb=unmapped(duckdb),
-    ).result()
-
-    upsert_table.map(
-        table=DIM_TABLES,
+    stage_raw.map(
+        table=RAW_TABLES,
         duckdb=unmapped(duckdb),
     ).result()
 
     copy_table_to_parquet.map(
-        table=DIM_TABLES,
+        table=RAW_TABLES,
+        duckdb=unmapped(duckdb),
+    ).result()
+
+    log_table_charge.map(
+        table=RAW_TABLES,
         duckdb=unmapped(duckdb),
     ).result()
 

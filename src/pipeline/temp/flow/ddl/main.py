@@ -1,7 +1,8 @@
 from prefect import flow
 
 from src.persistence.database.provider import DuckDBProvider
-from .layer import schema, table
+from .layer import table
+from .layer import schema
 
 
 @flow(
