@@ -7,7 +7,6 @@ from typing import Dict, Generator, List, Literal
 
 import duckdb
 
-
 from constants import DB_DIR
 
 

@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 from pydantic import BaseModel, Field
 
-from src.persistence.storage.provider import StorageProvider
+from src.persistence.storage import StorageProvider
 from .path import (
     AGG_BASE_PATH,
     DIM_BASE_PATH,
