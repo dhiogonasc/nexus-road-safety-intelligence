@@ -8,13 +8,13 @@ model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
 seed-paths: ["seeds"]
-macro-paths: ["macros"]
+macro-paths: ["macros/common", "macros/utils", "macros/ocorrencias"]
 snapshot-paths: ["snapshots"]
 
 target-path: "target" 
 clean-targets:
-- "target"
-- "data/db"
+  - "target"
+  - "data/db"
 
 vars:
   raw_ocorrencias_csv_path: "data/raw/acidentes/ocorrencias/*.csv"
@@ -22,10 +22,17 @@ vars:
 models:
   road_safety_intelligence:
     staging:
+      +database: "temp_{{ env_var('DB_NAME') }}"
+      +tags: ['bronze', 'staging']
+
       ocorrencias:
         +materialized: table
       
     dimension:
+      +database: "pg_{{ env_var('DB_NAME') }}"
+      +schema: "core"
+      +tags: ['silver', 'core', 'dimension']
+
       categoria:
         +materialized: incremental
       clima:
@@ -36,9 +43,17 @@ models:
         +materialized: incremental
       
     fact:
+      +database: "pg_{{ env_var('DB_NAME') }}"
+      +schema: "core"
+      +tags: ['silver', 'core', 'fact']
+
       ocorrencia:
         +materialized: incremental
 
     aggregation:
+      +database: "pg_{{ env_var('DB_NAME') }}"
+      +schema: "analytics"
+      +tags: ['gold', 'analytics']
+
       categorizacao_espacial:
         +materialized: incremental

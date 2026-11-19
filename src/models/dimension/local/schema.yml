@@ -2,10 +2,42 @@ version: 2
 
 models:
   - name: dim_local
-    description: "Dimensão de local - Ocorrencias."
+    description: "Dimensão de local - Ocorrencias"
     columns:
       - name: sk_local
-        description: "Chave de substituição."
+        description: "Chave de substituição"
         tests:
           - not_null
           - unique
+
+      - name: uf_sigla
+        description: "Unidade Federativa (Sigla)"
+        tests:
+          - accepted_values:
+              values: [
+                'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 
+                'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi', 
+                'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to',
+                'não informado'
+              ]
+
+      - name: uf_nome
+        description: "Unidade Federativa (Nome)"
+        tests:
+          - accepted_values:
+              values: [
+                'acre', 'alagoas', 'amapá', 'amazonas', 'bahia', 'ceará', 
+                'distrito federal', 'espírito santo', 'goiás', 'maranhão', 
+                'mato grosso', 'mato grosso do sul', 'minas gerais', 'pará', 
+                'paraíba', 'paraná', 'pernambuco', 'piauí', 'rio de janeiro', 
+                'rio grande do norte', 'rio grande do sul', 'rondônia', 
+                'roraima', 'santa catarina', 'são paulo', 'sergipe', 'tocantins',
+                'não informado'
+              ]
+
+      - name: tipo_area
+        description: "Tipo de area"
+        tests:
+          - accepted_values:
+              values: ['rural', 'urbana', 'não informado']
+    

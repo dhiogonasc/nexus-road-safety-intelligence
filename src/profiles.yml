@@ -1,13 +1,13 @@
 src:
+  target: environment
   outputs:
-    dev:
+    environment:
       type: duckdb
-      path: data/db/rsi-dev.duckdb
-      threads: 1
-
-    prod:
-      type: duckdb
-      path: data/db/rsi-prod.duckdb
-      threads: 4
-
-  target: dev
+      path: data/db/temp_{{ env_var('DB_NAME') }}.duckdb
+      threads: "{{ env_var('THREADS') | int }}"
+      extensions:
+        - postgres
+      attach:
+        - path: "postgresql://{{ env_var('DB_USER') }}:{{ env_var('DB_PASSWORD') }}@{{ env_var('DB_HOST') }}:{{ env_var('DB_PORT') }}/{{ env_var('DB_NAME') }}"
+          alias: "pg_{{ env_var('DB_NAME') }}"
+          type: postgres

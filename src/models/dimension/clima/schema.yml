@@ -2,10 +2,10 @@ version: 2
 
 models:
   - name: dim_clima
-    description: "Dimensão de clima - Ocorrencias."
+    description: "Dimensão de clima - Ocorrencias"
     columns:
       - name: sk_clima
-        description: "Chave de substituição."
+        description: "Chave de substituição"
         tests:
           - not_null
           - unique

@@ -2,11 +2,10 @@ version: 2
 
 models:
   - name: fct_ocorrencia
-    description: "Fato - Ocorrencias."
+    description: "Fato - Ocorrencias"
     columns:
-
       - name: sk_categoria
-        description: "Referência de Categoria - Chave de substituição."
+        description: "Referência de Categoria - Chave de substituição"
         tests:
           - not_null
           - relationships:
@@ -15,7 +14,7 @@ models:
                 field: sk_categoria
 
       - name: sk_clima
-        description: "Referência de Clima - Chave de substituição."
+        description: "Referência de Clima - Chave de substituição"
         tests:
           - not_null
           - relationships:
@@ -24,7 +23,7 @@ models:
                 field: sk_clima
 
       - name: sk_local
-        description: "Referência de Local - Chave de substituição."
+        description: "Referência de Local - Chave de substituição"
         tests:
           - not_null
           - relationships:
@@ -33,7 +32,7 @@ models:
                 field: sk_local
 
       - name: sk_tempo
-        description: "Referência de Tempo - Chave de substituição."
+        description: "Referência de Tempo - Chave de substituição"
         tests:
           - not_null
           - relationships:

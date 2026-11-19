@@ -2,10 +2,60 @@ version: 2
 
 models:
   - name: dim_tempo
-    description: "Dimensão de tempo - Ocorrencias."
+    description: "Dimensão de tempo - Ocorrencias"
     columns:
       - name: sk_tempo
-        description: "Chave de substituição."
+        description: "Chave de substituição"
         tests:
           - not_null
           - unique
+
+      - name: mes
+        description: "Mes (Numérico)"
+        tests:
+          - accepted_values:
+              values: [
+                1, 2, 3, 4, 5, 6, 
+                7, 8, 9, 10, 11, 12
+              ]
+      - name: mes_txt
+        description: "Mes (Nome)"
+        tests:
+          - accepted_values:
+              values: [
+                'janeiro', 'fevereiro', 'março', 'abril', 'maio', 
+                'junho', 'julho', 'agosto', 'setembro', 'outubro',
+                'novembro', 'dezembro', 'não informado'
+              ]
+
+      - name: dia_semana
+        description: "Dia da semana (Numérico)"
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7]
+
+      - name: dia_semana_txt
+        description: "Dia da semana (Nome)"
+        tests:
+          - accepted_values:
+              values: [
+                'segunda-feira', 'terça-feira', 'quarta-feira',
+                'quinta-feira', 'sexta-feira', 'sábado', 'domingo',
+                'não informado'
+              ]
+
+      - name: fase_dia
+        description: "Fase do dia (Numérico)"
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+
+      - name: fase_dia_txt
+        description: "Fase do dia (Nome)"
+        tests:
+          - accepted_values:
+              values: [
+                'amanhecer', 'pleno dia', 
+                'anoitecer', 'plena noite', 
+                'não informado'
+              ]

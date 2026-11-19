@@ -2,20 +2,20 @@ version: 2
 
 models:
   - name: agg_categorizacao_espacial
-    description: "Tabela agregada de acidentes combinando local e categoria com métricas consolidadas."
+    description: "Categorização espacial - Ocorrências"
     columns:
       - name: id
-        description: "Chave primária única gerada por hash MD5."
+        description: "Referência primária."
         tests:
           - unique
           - not_null
 
-      - name: taxa_mortalidade_por_envolvido
-        description: "Taxa de mortalidade calculada por pessoa envolvida."
+      - name: taxa_mortalidade_envolvido
+        description: "Taxa de mortalidade por pessoa envolvida."
         tests:
           - not_null
 
-      - name: taxa_mortalidade_por_ocorrencia
-        description: "Taxa de mortalidade calculada por ocorrência."
+      - name: taxa_mortalidade_ocorrencia
+        description: "Taxa de mortalidade por ocorrência."
         tests:
           - not_null

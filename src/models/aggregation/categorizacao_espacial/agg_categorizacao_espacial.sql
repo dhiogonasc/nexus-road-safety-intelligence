@@ -38,12 +38,12 @@ with aggregation as (
 
         round(
             cast(sum(fato.total_mortos) as decimal(5, 2)) 
-            / nullif(cast(sum(fato.total_pessoas_envolvidas) as decimal(5, 2)), 0), 4
-        ) as taxa_mortalidade_por_envolvido,
+            / nullif(cast(sum(fato.total_pessoas_envolvidas) as decimal(5, 2)), 0), 2
+        ) as taxa_mortalidade_envolvido,
         round(
             cast(sum(fato.total_mortos) as decimal(5, 2)) 
-            / nullif(cast(count(fato.id) as decimal(5, 2)), 0), 4
-        ) as taxa_mortalidade_por_ocorrencia
+            / nullif(cast(count(fato.id) as decimal(5, 2)), 0), 2
+        ) as taxa_mortalidade_ocorrencia
 
     from {{ ref('fct_ocorrencia') }} fato
 

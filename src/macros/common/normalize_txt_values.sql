@@ -3,7 +3,7 @@
         when {{ value }} 
             is null 
             or lower(trim(cast({{ value }} as varchar))) in ('na', 'n/a', 'nan', 'null', 'none', '-', '') 
-                then 'nao informado'
+                then 'não informado'
         else  
             regexp_replace(
                 regexp_replace(

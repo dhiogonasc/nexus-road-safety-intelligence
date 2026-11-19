@@ -12,6 +12,6 @@
         when 10 then 'outubro'
         when 11 then 'novembro'
         when 12 then 'dezembro'
-        else 'nao informado'
+        else 'não informado'
     end
 {% endmacro %}

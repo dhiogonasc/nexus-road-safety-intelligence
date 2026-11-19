@@ -1,4 +1,4 @@
-{{ config(materialized='view') }}
+{{ config(materialized='table') }}
 
 with source_data as (
     select * 
@@ -22,7 +22,7 @@ normalized as (
         isodow(try_cast(data_inversa as date)) as dia_semana,
         {{ classify_day_period('fase_dia') }}as fase_dia,
         {{ transcript_month_number("extract(month from try_cast(data_inversa as date))") }} as mes_txt,
-        {{ transcript_weekday_number("extract(week from try_cast(data_inversa as date))") }} as dia_semana_txt,
+        {{ transcript_weekday_number("isodow(try_cast(data_inversa as date))") }} as dia_semana_txt,
         {{ normalize_txt_value('fase_dia') }} as fase_dia_txt,
 
         -- dim_local
