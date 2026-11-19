@@ -2,7 +2,7 @@
     case {{ number }}
         when 1 then 'janeiro'
         when 2 then 'fevereiro'
-        when 3 then 'marco'
+        when 3 then 'março'
         when 4 then 'abril'
         when 5 then 'maio'
         when 6 then 'junho'

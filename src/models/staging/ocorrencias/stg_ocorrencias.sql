@@ -6,7 +6,8 @@ with source_data as (
         '{{ var("raw_ocorrencias_csv_path") }}', 
         header = true, 
         delim = ';', 
-        encoding = 'latin1'
+        encoding='ISO-8859-1',
+        all_varchar=true
     )
 ),
 

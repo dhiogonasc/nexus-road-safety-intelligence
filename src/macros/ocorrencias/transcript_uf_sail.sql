@@ -7,7 +7,7 @@
         when 'ba' then 'bahia'
         when 'ce' then 'ceará'
         when 'df' then 'distrito federal'
-        when 'es' then 'espirito santo'
+        when 'es' then 'espírito santo'
         when 'go' then 'goiás'
         when 'ma' then 'maranhão'
         when 'mt' then 'mato grosso'
