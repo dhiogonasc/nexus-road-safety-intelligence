@@ -1,0 +1,13 @@
+src:
+  outputs:
+    dev:
+      type: duckdb
+      path: data/db/rsi-dev.duckdb
+      threads: 1
+
+    prod:
+      type: duckdb
+      path: data/db/rsi-prod.duckdb
+      threads: 4
+
+  target: dev

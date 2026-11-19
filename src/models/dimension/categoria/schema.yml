@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: dim_categoria
+    description: "Dimensão de categoria - Ocorrencias."
+    columns:
+      - name: sk_categoria
+        description: "Chave de substituição."
+        tests:
+          - not_null
+          - unique

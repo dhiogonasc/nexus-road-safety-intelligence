@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: dim_local
+    description: "Dimensão de local - Ocorrencias."
+    columns:
+      - name: sk_local
+        description: "Chave de substituição."
+        tests:
+          - not_null
+          - unique

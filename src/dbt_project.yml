@@ -1,0 +1,44 @@
+name: 'road_safety_intelligence'
+version: '1.0.0'
+config-version: 2
+
+profile: 'src'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target" 
+clean-targets:
+- "target"
+- "data/db"
+
+vars:
+  raw_ocorrencias_csv_path: "data/raw/acidentes/ocorrencias/*.csv"
+
+models:
+  road_safety_intelligence:
+    staging:
+      ocorrencias:
+        +materialized: table
+      
+    dimension:
+      categoria:
+        +materialized: incremental
+      clima:
+        +materialized: incremental
+      local:
+        +materialized: incremental
+      tempo:
+        +materialized: incremental
+      
+    fact:
+      ocorrencia:
+        +materialized: incremental
+
+    aggregation:
+      categorizacao_espacial:
+        +materialized: incremental

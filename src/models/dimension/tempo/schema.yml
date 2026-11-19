@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: dim_tempo
+    description: "Dimensão de tempo - Ocorrencias."
+    columns:
+      - name: sk_tempo
+        description: "Chave de substituição."
+        tests:
+          - not_null
+          - unique
