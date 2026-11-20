@@ -2,10 +2,25 @@ version: 2
 
 models:
   - name: dim_categoria
-    description: "Dimensão de categoria - Ocorrencias"
+  
+    config:
+      contract:
+        enforced: true 
+
     columns:
       - name: sk_categoria
-        description: "Chave de substituição"
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
         tests:
-          - not_null
           - unique
+
+      - name: tipo_acidente
+        data_type: varchar
+
+      - name: causa_acidente
+        data_type: varchar
+
+      - name: classificacao_acidente
+        data_type: varchar

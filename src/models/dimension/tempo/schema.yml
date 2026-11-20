@@ -2,16 +2,28 @@ version: 2
 
 models:
   - name: dim_tempo
-    description: "Dimensão de tempo - Ocorrencias"
+  
+    config:
+      contract:
+        enforced: true 
+
     columns:
       - name: sk_tempo
-        description: "Chave de substituição"
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
         tests:
-          - not_null
           - unique
 
+      - name: data
+        data_type: date
+
+      - name: ano
+        data_type: integer
+
       - name: mes
-        description: "Mes (Numérico)"
+        data_type: integer
         tests:
           - accepted_values:
               arguments:
@@ -20,8 +32,25 @@ models:
                   7, 8, 9, 10, 11, 12
                 ]
 
-      - name: mes_txt
-        description: "Mes (Nome)"
+      - name: semana
+        data_type: integer
+
+      - name: dia_semana
+        data_type: integer
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+
+      - name: fase_dia
+        data_type: integer
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+
+      - name: mes_nome
+        data_type: varchar
         tests:
           - accepted_values:
               arguments:
@@ -31,15 +60,8 @@ models:
                   'novembro', 'dezembro', 'não informado'
                 ]
 
-      - name: dia_semana
-        description: "Dia da semana (Numérico)"
-        tests:
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4, 5, 6, 7]
-
-      - name: dia_semana_txt
-        description: "Dia da semana (Nome)"
+      - name: dia_semana_nome
+        data_type: varchar
         tests:
           - accepted_values:
               arguments:
@@ -49,15 +71,8 @@ models:
                   'não informado'
                 ]
 
-      - name: fase_dia
-        description: "Fase do dia (Numérico)"
-        tests:
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4, 5]
-
-      - name: fase_dia_txt
-        description: "Fase do dia (Nome)"
+      - name: fase_dia_desc
+        data_type: varchar
         tests:
           - accepted_values:
               arguments:

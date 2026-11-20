@@ -14,9 +14,9 @@ with dimension as (
         semana,
         dia_semana,
         fase_dia,
-        mes_txt,
-        dia_semana_txt,
-        fase_dia_txt
+        mes_nome,
+        dia_semana_nome,
+        fase_dia_desc
     from {{ ref('stg_ocorrencias') }}
     where data is not null
 )

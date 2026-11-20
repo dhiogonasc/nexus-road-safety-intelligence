@@ -2,16 +2,31 @@ version: 2
 
 models:
   - name: dim_local
-    description: "Dimensão de local - Ocorrencias"
+
+    config:
+      contract:
+        enforced: true 
+
     columns:
       - name: sk_local
-        description: "Chave de substituição"
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
         tests:
-          - not_null
           - unique
 
+      - name: br
+        data_type: integer
+
+      - name: km
+        data_type: decimal(13, 3)
+
+      - name: sentido
+        data_type: varchar
+      
       - name: uf_sigla
-        description: "Unidade Federativa (Sigla)"
+        data_type: varchar
         tests:
           - accepted_values:
               arguments:
@@ -23,7 +38,7 @@ models:
                 ]
 
       - name: uf_nome
-        description: "Unidade Federativa (Nome)"
+        data_type: varchar
         tests:
           - accepted_values:
               arguments:
@@ -37,10 +52,12 @@ models:
                   'não informado'
                 ]
 
+      - name: municipio
+        data_type: varchar
+
       - name: tipo_area
-        description: "Tipo de area"
+        data_type: varchar
         tests:
           - accepted_values:
               arguments:
                 values: ['rural', 'urbano', 'não informado']
-    

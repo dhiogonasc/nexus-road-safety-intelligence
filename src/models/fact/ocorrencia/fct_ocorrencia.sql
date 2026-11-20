@@ -6,16 +6,16 @@
 }}
 
 with fact as (
-    select
-        staging.id_ocorrencia as id,
+    select distinct
+        md5(cast(staging.id_ocorrencia as varchar)) as id,
         
         categoria.sk_categoria,
         clima.sk_clima,
         local.sk_local,
         tempo.sk_tempo,
 
-        staging.total_veiculos_envolvidos,
-        staging.total_pessoas_envolvidas,
+        staging.total_veiculos,
+        staging.total_envolvidos,
         staging.total_mortos,
         staging.total_feridos,
         staging.total_ilesos

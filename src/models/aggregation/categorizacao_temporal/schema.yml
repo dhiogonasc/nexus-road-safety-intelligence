@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: agg_categorizacao_temporal
+
+    config:
+      contract:
+        enforced: true 
+
+    columns:
+      - name: id
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
+        tests:
+          - unique
+
+      - name: mes
+        data_type: integer
+
+      - name: dia_semana
+        data_type: integer
+
+      - name: fase_dia
+        data_type: integer
+
+      - name: mes_nome
+        data_type: varchar
+
+      - name: dia_semana_nome
+        data_type: varchar
+
+      - name: fase_dia_desc
+        data_type: varchar
+
+      - name: tipo_acidente
+        data_type: varchar
+
+      - name: causa_acidente
+        data_type: varchar
+
+      - name: classificacao_acidente
+        data_type: varchar
+
+
+      - name: total_envolvidos
+        data_type: bigint
+
+      - name: total_mortos
+        data_type: bigint
+
+      - name: total_ocorrencias
+        data_type: bigint
+
+      - name: taxa_mortalidade
+        data_type: decimal(5, 2)
+        tests:
+          - not_null
+
+      - name: media_mortalidade
+        data_type: decimal(5, 2)
+        tests:
+          - not_null

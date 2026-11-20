@@ -2,10 +2,19 @@ version: 2
 
 models:
   - name: dim_clima
-    description: "Dimensão de clima - Ocorrencias"
+
+    config:
+      contract:
+        enforced: true 
+
     columns:
       - name: sk_clima
-        description: "Chave de substituição"
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
         tests:
-          - not_null
           - unique
+
+      - name: condicao_metereologica
+        data_type: varchar

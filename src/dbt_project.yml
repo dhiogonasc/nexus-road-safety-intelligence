@@ -23,7 +23,7 @@ models:
   road_safety_intelligence:
     staging:
       +database: "temp_{{ env_var('DB_NAME') }}"
-      +tags: ['bronze', 'staging']
+      +tags: ['staging']
 
       ocorrencias:
         +materialized: table
@@ -31,29 +31,42 @@ models:
     dimension:
       +database: "pg_{{ env_var('DB_NAME') }}"
       +schema: "core"
-      +tags: ['silver', 'core', 'dimension']
+      +tags: ['core', 'dimension']
 
       categoria:
         +materialized: incremental
+        +on_schema_change: 'fail'
+
       clima:
         +materialized: incremental
+        +on_schema_change: 'fail'
+
       local:
         +materialized: incremental
+        +on_schema_change: 'fail'
+
       tempo:
         +materialized: incremental
+        +on_schema_change: 'fail'
       
     fact:
       +database: "pg_{{ env_var('DB_NAME') }}"
       +schema: "core"
-      +tags: ['silver', 'core', 'fact']
+      +tags: ['core', 'fact']
 
       ocorrencia:
         +materialized: incremental
-
+        +on_schema_change: 'fail'
+        
     aggregation:
       +database: "pg_{{ env_var('DB_NAME') }}"
       +schema: "analytics"
-      +tags: ['gold', 'analytics']
+      +tags: ['analytics']
 
       categorizacao_espacial:
         +materialized: incremental
+        +on_schema_change: 'fail'
+
+      categorizacao_temporal:
+        +materialized: incremental
+        +on_schema_change: 'fail'

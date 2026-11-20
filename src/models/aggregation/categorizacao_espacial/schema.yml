@@ -2,20 +2,67 @@ version: 2
 
 models:
   - name: agg_categorizacao_espacial
-    description: "Categorização espacial - Ocorrências"
+
+    config:
+      contract:
+        enforced: true 
+
     columns:
       - name: id
-        description: "Referência primária."
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
         tests:
           - unique
-          - not_null
 
-      - name: taxa_mortalidade_envolvido
-        description: "Taxa de mortalidade por pessoa envolvida."
+      - name: br
+        data_type: integer
+
+      - name: km
+        data_type: decimal(13, 3)
+
+      - name: sentido
+        data_type: varchar
+
+      - name: uf_sigla
+        data_type: varchar
+
+      - name: uf_nome
+        data_type: varchar
+
+      - name: municipio
+        data_type: varchar
+
+      - name: tipo_area
+        data_type: varchar
+
+
+      - name: tipo_acidente
+        data_type: varchar
+
+      - name: causa_acidente
+        data_type: varchar
+
+      - name: classificacao_acidente
+        data_type: varchar
+
+
+      - name: total_mortos
+        data_type: bigint
+
+      - name: total_envolvidos
+        data_type: bigint
+
+      - name: total_ocorrencias
+        data_type: bigint
+
+      - name: taxa_mortalidade
+        data_type: decimal(5, 2)
         tests:
           - not_null
 
-      - name: taxa_mortalidade_ocorrencia
-        description: "Taxa de mortalidade por ocorrência."
+      - name: media_mortalidade
+        data_type: decimal(5, 2)
         tests:
           - not_null

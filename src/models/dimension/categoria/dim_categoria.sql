@@ -1,23 +1,20 @@
 {{
     config(
         materialized='incremental',
-        unique_key='sk_categoria'
+        unique_key='sk_categoria',
     )
 }}
 
 with dimension as (
     select distinct
-
         md5(
-            tipo_acidente   || '-' || 
-            causa_acidente  || '-' || 
+            tipo_acidente           || '-' || 
+            causa_acidente          || '-' || 
             classificacao_acidente
         ) as sk_categoria,
-
         tipo_acidente,
         causa_acidente,
         classificacao_acidente
-
     from {{ ref('stg_ocorrencias') }}
 )
 

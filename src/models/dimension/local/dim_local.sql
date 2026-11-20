@@ -19,9 +19,9 @@ with dimension as (
         km,
         sentido,
         uf_sigla,
-        uf_nome,
         municipio,
-        tipo_area
+        tipo_area,
+        uf_nome
     from {{ ref('stg_ocorrencias') }}
 )
 

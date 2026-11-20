@@ -2,139 +2,113 @@ version: 2
 
 models:
   - name: stg_ocorrencias
-    description: "Staging de ocorrencias"
+  
     columns:
       - name: id_ocorrencia
-        description: "Identificador"
         tests:
           - unique
           - not_null
 
       - name: data
-        description: "Data"
         tests:
           - not_null
 
       - name: ano
-        description: "Ano"
         tests:
           - not_null
 
       - name: mes
-        description: "Mes"
         tests:
           - not_null
 
       - name: semana
-        description: "Semana"
         tests:
           - not_null
 
       - name: dia_semana
-        description: "Dia da semana"
         tests:
           - not_null
 
       - name: fase_dia
-        description: "Fase do dia"
         tests:
           - not_null
 
-      - name: mes_txt
-        description: "Mes (Nome)"
+      - name: mes_nome
         tests:
           - not_null
 
-      - name: dia_semana_txt
-        description: "Dia da semana (Nome)"
+      - name: dia_semana_nome
         tests:
           - not_null
 
-      - name: fase_dia_txt
-        description: "Fase do dia (Nome)"
+      - name: fase_dia_desc
         tests:
           - not_null
 
 
       - name: br
-        description: "Número da rodovia federal (BR)"
         tests:
           - not_null
 
       - name: km
-        description: "Quilômetro da via"
         tests:
           - not_null
 
       - name: sentido
-        description: "Sentido da via"
         tests:
           - not_null
 
       - name: uf_sigla
-        description: "Unidade Federativa (Sigla)"
         tests:
           - not_null
   
       - name: uf_nome
-        description: "Unidade Federativa (Nome))"
         tests:
           - not_null
 
       - name: municipio
-        description: "Município"
         tests:
           - not_null
 
       - name: tipo_area
-        description: "Tipo de área"
         tests:
           - not_null
 
 
       - name: condicao_metereologica
-        description: "Condição meteorológica"
         tests:
           - not_null
 
 
       - name: tipo_acidente
-        description: "Tipo do acidente"
         tests:
           - not_null
 
       - name: causa_acidente
-        description: "Causa do acidente"
         tests:
           - not_null
 
       - name: classificacao_acidente
-        description: "Classificação do acidente"
         tests:
           - not_null
 
 
-      - name: total_veiculos_envolvidos
-        description: "Número total de veículos envolvidos"
+      - name: total_veiculos
         tests:
           - not_null
 
-      - name: total_pessoas_envolvidas
-        description: "Total de pessoas envolvidas"
+      - name: total_envolvidos
         tests:
           - not_null
           
       - name: total_mortos
-        description: "Número total de mortos"
         tests:
           - not_null
           
       - name: total_feridos
-        description: "Número total de feridos"
         tests:
           - not_null
 
       - name: total_ilesos
-        description: "Número total de pessoas ilesas"
         tests:
           - not_null
