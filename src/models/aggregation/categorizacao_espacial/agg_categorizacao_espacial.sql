@@ -40,7 +40,11 @@ aggregation as (
         cast(
             round(sum(fato.total_mortos) / nullif(count(fato.id), 0), 2)
             as decimal(5, 2)
-        ) as media_mortalidade
+        ) as indice_mortalidade_ocorrencia,
+        cast(
+            round(sum(fato.total_envolvidos) / nullif(count(fato.id), 0), 2)
+            as decimal(5, 2)
+        ) as indice_envolvimento_ocorrencia
 
     from {{ ref('fct_ocorrencia') }} fato
     join local on fato.sk_local = local.sk_local
@@ -65,11 +69,12 @@ description as (
         categoria.causa_acidente,
         categoria.classificacao_acidente,
 
-        total_mortos,
         total_envolvidos,
+        total_mortos,
         total_ocorrencias,
         taxa_mortalidade,
-        media_mortalidade
+        indice_mortalidade_ocorrencia,
+        indice_envolvimento_ocorrencia
         
     from aggregation
     join local on aggregation.sk_local = local.sk_local

@@ -38,7 +38,11 @@ aggregation as (
         cast(
             round(sum(fato.total_mortos) / nullif(count(fato.id), 0), 2)
             as decimal(5, 2)
-        ) as media_mortalidade
+        ) as indice_mortalidade_ocorrencia,
+        cast(
+            round(sum(fato.total_envolvidos) / nullif(count(fato.id), 0), 2)
+            as decimal(5, 2)
+        ) as indice_envolvimento_ocorrencia
 
     from {{ ref('fct_ocorrencia') }} fato
     join tempo on fato.sk_tempo = tempo.sk_tempo
@@ -67,7 +71,8 @@ description as (
         total_mortos,
         total_ocorrencias,
         taxa_mortalidade,
-        media_mortalidade
+        indice_mortalidade_ocorrencia,
+        indice_envolvimento_ocorrencia
 
     from aggregation
     join tempo on aggregation.sk_tempo = tempo.sk_tempo

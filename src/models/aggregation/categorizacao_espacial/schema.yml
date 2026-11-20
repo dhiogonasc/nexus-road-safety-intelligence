@@ -48,10 +48,10 @@ models:
         data_type: varchar
 
 
-      - name: total_mortos
+      - name: total_envolvidos
         data_type: bigint
 
-      - name: total_envolvidos
+      - name: total_mortos
         data_type: bigint
 
       - name: total_ocorrencias
@@ -62,7 +62,12 @@ models:
         tests:
           - not_null
 
-      - name: media_mortalidade
+      - name: indice_mortalidade_ocorrencia
+        data_type: decimal(5, 2)
+        tests:
+          - not_null
+
+      - name: indice_envolvimento_ocorrencia
         data_type: decimal(5, 2)
         tests:
           - not_null
