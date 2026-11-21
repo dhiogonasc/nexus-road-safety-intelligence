@@ -18,26 +18,19 @@ models:
 
       - name: br
         data_type: integer
-
-      - name: km
-        data_type: decimal(13, 3)
-
-      - name: sentido
-        data_type: varchar
       
-      - name: uf_sigla
+      - name: regiao
         data_type: varchar
         tests:
           - accepted_values:
               arguments:
                 values: [
-                  'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go', 
-                  'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi', 
-                  'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to',
+                  'centro-oeste', 'nordeste', 
+                  'norte', 'sudeste', 'sul', 
                   'não informado'
                 ]
 
-      - name: uf_nome
+      - name: estado
         data_type: varchar
         tests:
           - accepted_values:
@@ -52,10 +45,7 @@ models:
                   'não informado'
                 ]
 
-      - name: municipio
-        data_type: varchar
-
-      - name: tipo_area
+      - name: zona
         data_type: varchar
         tests:
           - accepted_values:

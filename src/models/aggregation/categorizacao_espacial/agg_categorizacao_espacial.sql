@@ -7,85 +7,71 @@
 
 with 
 
-local as (
-    select
+staging as (
+    select distinct
         sk_local,
-        br, 
-        km, 
-        sentido,
-        uf_sigla, 
-        uf_nome, 
-        municipio,
-        tipo_area
-    from {{ ref('dim_local') }}
-),
+        sk_categoria,
 
-categoria as (
-    select * from {{ ref('dim_categoria') }}
-),
-
-aggregation as (
-    select
-        local.sk_local,
-        categoria.sk_categoria,
-
-        cast(count(fato.id) as bigint) as total_ocorrencias,
-        cast(sum(fato.total_mortos) as bigint) as total_mortos,
-        cast(sum(fato.total_envolvidos) as bigint) as total_envolvidos,
+        cast(count(id) as bigint) as total_ocorrencias,
+        cast(sum(total_mortos) as bigint) as total_mortos,
+        cast(sum(total_envolvidos) as bigint) as total_envolvidos,
 
         cast(
-            round(sum(fato.total_mortos)/ nullif(sum(fato.total_envolvidos), 0), 2) 
+            round(sum(total_mortos)/ nullif(sum(total_envolvidos), 0), 2) 
             as decimal(5, 2)
         ) as taxa_mortalidade,
         cast(
-            round(sum(fato.total_mortos) / nullif(count(fato.id), 0), 2)
+            round(sum(total_mortos) / nullif(count(id), 0), 2)
             as decimal(5, 2)
         ) as indice_mortalidade_ocorrencia,
         cast(
-            round(sum(fato.total_envolvidos) / nullif(count(fato.id), 0), 2)
+            round(sum(total_envolvidos) / nullif(count(id), 0), 2)
             as decimal(5, 2)
         ) as indice_envolvimento_ocorrencia
 
     from {{ ref('fct_ocorrencia') }} fato
-    join local on fato.sk_local = local.sk_local
-    join categoria on fato.sk_categoria = categoria.sk_categoria
 
     group by
-        local.sk_local,
-        categoria.sk_categoria
+        sk_local,
+        sk_categoria
 ),
-description as (
-    select 
-        md5(aggregation.sk_local || '-' || aggregation.sk_categoria) as id,
+
+aggregation as (
+    select
+        md5(
+            cast(staging.sk_local as varchar) || '-' || 
+            cast(staging.sk_categoria as varchar)
+        ) as id,
 
         local.br,
-        local.km,
-        local.sentido,
-        local.uf_sigla,
-        local.uf_nome,
-        local.municipio,
-        local.tipo_area,
+        local.regiao,
+        local.estado,
+        local.zona,
+
         categoria.tipo_acidente,
         categoria.causa_acidente,
         categoria.classificacao_acidente,
 
-        total_envolvidos,
-        total_mortos,
-        total_ocorrencias,
-        taxa_mortalidade,
-        indice_mortalidade_ocorrencia,
-        indice_envolvimento_ocorrencia
-        
-    from aggregation
-    join local on aggregation.sk_local = local.sk_local
-    join categoria on aggregation.sk_categoria = categoria.sk_categoria
+        staging.total_envolvidos,
+        staging.total_mortos,
+        staging.total_ocorrencias,
+        staging.taxa_mortalidade,
+        staging.indice_mortalidade_ocorrencia,
+        staging.indice_envolvimento_ocorrencia
+    from staging
+
+    inner join {{ ref('dim_local') }} as local
+        on staging.sk_local = local.sk_local
+
+    inner join {{ ref('dim_categoria') }} as categoria
+        on staging.sk_categoria = categoria.sk_categoria
 )
 
-select * from description
+select * from aggregation
 
 {% if is_incremental() %}
     where not exists (
-        select 1 from {{ this }} 
-        where {{ this }}.id = description.id
+        select 1 from {{ this }} as this
+        where this.id = aggregation.id
     )
 {% endif %}

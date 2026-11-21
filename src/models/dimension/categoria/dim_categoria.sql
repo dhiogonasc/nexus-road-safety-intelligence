@@ -5,24 +5,31 @@
     )
 }}
 
-with dimension as (
+with 
+
+staging as (
     select distinct
-        md5(
-            tipo_acidente           || '-' || 
-            causa_acidente          || '-' || 
-            classificacao_acidente
-        ) as sk_categoria,
         tipo_acidente,
         causa_acidente,
         classificacao_acidente
     from {{ ref('stg_ocorrencias') }}
+),
+
+dimension as (
+    select
+        md5(
+            tipo_acidente           || '-' || 
+            causa_acidente          || '-' || 
+            classificacao_acidente
+        ) as sk_categoria, *
+    from staging
 )
 
 select * from dimension
 
 {% if is_incremental() %}
     where not exists (
-        select 1 from {{ this }} 
-        where {{ this }}.sk_categoria = dimension.sk_categoria
+        select 1 from {{ this }} as this
+        where this.sk_categoria = dimension.sk_categoria
     )
 {% endif %}

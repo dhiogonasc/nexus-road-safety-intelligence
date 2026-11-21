@@ -5,18 +5,27 @@
     )
 }}
 
-with dimension as (
+with 
+
+staging as (
     select distinct
-        md5(condicao_metereologica) as sk_clima,
         condicao_metereologica
     from {{ ref('stg_ocorrencias') }}
+),
+
+dimension as (
+    select
+        md5(
+            condicao_metereologica
+        ) as sk_clima, *
+    from staging
 )
 
 select * from dimension
 
 {% if is_incremental() %}
     where not exists (
-        select 1 from {{ this }} 
-        where {{ this }}.sk_clima = dimension.sk_clima
+        select 1 from {{ this }} as this
+        where this.sk_clima = dimension.sk_clima
     )
 {% endif %}

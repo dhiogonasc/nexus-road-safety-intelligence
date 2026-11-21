@@ -33,6 +33,7 @@ models:
 
       - name: fase_dia_desc
         data_type: varchar
+        
 
       - name: tipo_acidente
         data_type: varchar

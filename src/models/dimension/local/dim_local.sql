@@ -5,31 +5,33 @@
     )
 }}
 
-with dimension as (
+with
+
+staging as (
     select distinct
+        br,
+        zona,
+        regiao,
+        estado
+    from {{ ref('stg_ocorrencias') }}
+),
+
+dimension as (
+    select
         md5(
             cast(br as varchar) || '-' || 
-            cast(km as varchar) || '-' || 
-            sentido             || '-' ||
-            uf_sigla            || '-' || 
-            municipio           || '-' || 
-            tipo_area
-        ) as sk_local,
-        br,
-        km,
-        sentido,
-        uf_sigla,
-        municipio,
-        tipo_area,
-        uf_nome
-    from {{ ref('stg_ocorrencias') }}
+            regiao              || '-' || 
+            estado              || '-' || 
+            zona
+        ) as sk_local, *
+    from staging
 )
 
 select * from dimension
 
 {% if is_incremental() %}
     where not exists (
-        select 1 from {{ this }} 
-        where {{ this }}.sk_local = dimension.sk_local
+        select 1 from {{ this }} as this
+        where this.sk_local = dimension.sk_local
     )
 {% endif %}

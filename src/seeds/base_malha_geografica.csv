@@ -1,0 +1,29 @@
+uf,regiao,estado
+df,centro-oeste,distrito federal
+go,centro-oeste,goiás
+mt,centro-oeste,mato grosso
+ms,centro-oeste,mato grosso do sul
+al,nordeste,alagoas
+ba,nordeste,bahia
+ce,nordeste,ceará
+ma,nordeste,maranhão
+pb,nordeste,paraíba
+pe,nordeste,pernambuco
+pi,nordeste,piauí
+rn,nordeste,rio grande do norte
+se,nordeste,sergipe
+ac,norte,acre
+ap,norte,amapá
+am,norte,amazonas
+pa,norte,pará
+ro,norte,rondônia
+rr,norte,roraima
+to,norte,tocantins
+es,sudeste,espírito santo
+mg,sudeste,minas gerais
+rj,sudeste,rio de janeiro
+sp,sudeste,são paulo
+pr,sul,paraná
+rs,sul,rio grande do sul
+sc,sul,santa catarina
+não informado,não informado,não informado

@@ -41,6 +41,8 @@ htmlcov/
 .env.*
 !.env.example
 
+*/dbt_packages/*
+
 # --- Bancos de Dados / DuckDB ---
 */db/*
 *.duckdb

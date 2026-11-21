@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-with source_data as (
+with base_ocorrencias as (
     select * 
     from read_csv_auto(
         '{{ var("raw_ocorrencias_csv_path") }}', 
@@ -11,7 +11,7 @@ with source_data as (
     )
 ),
 
-normalized as (
+normalized_ocorrencias as (
     select
         try_cast(id as bigint) as id_ocorrencia,
         
@@ -22,12 +22,8 @@ normalized as (
         {{ normalize_txt_value('condicao_metereologica') }} as condicao_metereologica,
 
         try_cast(coalesce(br, '0') as integer) as br,
-        try_cast(coalesce(replace(cast(km as varchar), ',', '.'), '0') as decimal(13, 3)) as km,
-        {{ normalize_txt_value('sentido_via') }} as sentido,
-        {{ normalize_txt_value('uf') }} as uf_sigla,
-        {{ transcript_uf_sail('uf') }} as uf_nome,
-        {{ normalize_txt_value('municipio') }} as municipio,
-        {{ classify_area_type('uso_solo') }} as tipo_area,
+        {{ classify_zone('uso_solo') }} as zona,
+        {{ normalize_txt_value('uf') }} as uf,
 
         try_cast(data_inversa as date) as data,
         try_cast(extract(year from try_cast(data_inversa as date)) as integer) as ano,
@@ -44,7 +40,20 @@ normalized as (
         try_cast(coalesce(mortos, '0') as integer) as total_mortos,
         try_cast(coalesce(feridos, '0') as integer) as total_feridos,
         try_cast(coalesce(ilesos, '0') as integer) as total_ilesos
-    from source_data
+    from base_ocorrencias
+),
+
+malha as (
+    select * from {{ ref('base_malha_geografica') }}
+),
+
+staging as (
+    select 
+        ocorrencias.* exclude(uf),
+        malha.regiao,
+        malha.estado
+    from normalized_ocorrencias as ocorrencias
+    join malha on ocorrencias.uf = malha.uf
 )
 
-select * from normalized
+select * from staging

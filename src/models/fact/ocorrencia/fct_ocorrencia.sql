@@ -5,10 +5,52 @@
     )
 }}
 
-with fact as (
+with 
+
+raw_staging as (
+    select * from {{ ref('stg_ocorrencias') }} 
+),
+
+staging as (
     select distinct
-        md5(cast(staging.id_ocorrencia as varchar)) as id,
-        
+        id_ocorrencia,
+
+        md5(
+            tipo_acidente           || '-' || 
+            causa_acidente          || '-' || 
+            classificacao_acidente
+        ) as sk_categoria,
+
+        md5(
+            cast(br as varchar)     || '-' ||
+            regiao                  || '-' || 
+            estado                  || '-' || 
+            zona
+        ) as sk_local,
+
+        md5(
+            cast(data as varchar)   || '-' || 
+            fase_dia
+        ) as sk_tempo,
+
+        md5(
+            condicao_metereologica
+        ) as sk_clima,
+
+        total_veiculos,
+        total_envolvidos,
+        total_mortos,
+        total_feridos,
+        total_ilesos
+    from raw_staging
+),
+
+fact as (
+    select
+        md5(
+            cast(staging.id_ocorrencia as varchar)
+        ) as id,
+
         categoria.sk_categoria,
         clima.sk_clima,
         local.sk_local,
@@ -20,42 +62,26 @@ with fact as (
         staging.total_feridos,
         staging.total_ilesos
 
-    from {{ ref('stg_ocorrencias') }} staging
+    from staging as staging
 
-    left join {{ ref('dim_categoria') }} categoria
-        on md5(
-            staging.tipo_acidente           || '-' || 
-            staging.causa_acidente          || '-' || 
-            staging.classificacao_acidente
-        ) = categoria.sk_categoria
+    inner join {{ ref('dim_categoria') }} as categoria 
+        on staging.sk_categoria = categoria.sk_categoria
 
-    left join {{ ref('dim_clima') }} clima
-        on md5(
-            staging.condicao_metereologica
-        ) = clima.sk_clima
+    inner join {{ ref('dim_clima') }} as clima 
+        on staging.sk_clima = clima.sk_clima
 
-    left join {{ ref('dim_local') }} local 
-        on md5(
-            cast(staging.br as varchar)     || '-' || 
-            cast(staging.km as varchar)     || '-' || 
-            staging.sentido                 || '-' ||
-            staging.uf_sigla                || '-' || 
-            staging.municipio               || '-' || 
-            staging.tipo_area
-        ) = local.sk_local
+    inner join {{ ref('dim_local') }} as local 
+        on staging.sk_local = local.sk_local
 
-    left join {{ ref('dim_tempo') }} tempo 
-        on md5(
-            cast(staging.data as varchar)   || '-' || 
-            staging.fase_dia
-        ) = tempo.sk_tempo
+    inner join {{ ref('dim_tempo') }} as tempo 
+        on staging.sk_tempo = tempo.sk_tempo
 )
 
 select * from fact
 
 {% if is_incremental() %}
     where not exists (
-        select 1 from {{ this }} 
-        where {{ this }}.id = fact.id
+        select 1 from {{ this }} as this
+        where this.id = fact.id
     )
 {% endif %}

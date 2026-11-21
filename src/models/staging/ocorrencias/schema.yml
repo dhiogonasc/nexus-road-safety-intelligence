@@ -50,27 +50,15 @@ models:
         tests:
           - not_null
 
-      - name: km
+      - name: regiao
         tests:
           - not_null
 
-      - name: sentido
+      - name: estado
         tests:
           - not_null
 
-      - name: uf_sigla
-        tests:
-          - not_null
-  
-      - name: uf_nome
-        tests:
-          - not_null
-
-      - name: municipio
-        tests:
-          - not_null
-
-      - name: tipo_area
+      - name: zona
         tests:
           - not_null
 

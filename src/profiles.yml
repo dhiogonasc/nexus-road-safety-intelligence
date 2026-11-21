@@ -3,7 +3,7 @@ src:
   outputs:
     environment:
       type: duckdb
-      path: data/db/temp_{{ env_var('DB_NAME') }}.duckdb
+      path: target/temp_{{ env_var('DB_NAME') }}.duckdb
       threads: "{{ env_var('THREADS') | int }}"
       extensions:
         - postgres

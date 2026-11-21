@@ -5,9 +5,10 @@
     )
 }}
 
-with dimension as (
+with 
+
+staging as (
     select distinct
-        md5(cast(data as varchar) || '-' || fase_dia) as sk_tempo,
         data,
         ano,
         mes,
@@ -18,14 +19,22 @@ with dimension as (
         dia_semana_nome,
         fase_dia_desc
     from {{ ref('stg_ocorrencias') }}
-    where data is not null
+),
+
+dimension as (
+    select
+        md5(
+            cast(data as varchar) || '-' || 
+            fase_dia
+        ) as sk_tempo, *
+    from staging
 )
 
 select * from dimension
 
 {% if is_incremental() %}
     where not exists (
-        select 1 from {{ this }} 
-        where {{ this }}.sk_tempo = dimension.sk_tempo
+        select 1 from {{ this }} as this
+        where this.sk_tempo = dimension.sk_tempo
     )
 {% endif %}

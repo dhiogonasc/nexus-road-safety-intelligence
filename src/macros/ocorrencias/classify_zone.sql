@@ -1,5 +1,5 @@
-{% macro classify_area_type(type) %}
-    case {{ normalize_txt_value(type) }}
+{% macro classify_zone(used_ground) %}
+    case {{ normalize_txt_value(used_ground) }}
         when 'não' then 'rural'
         when 'sim' then 'urbano'
         else 'não informado'

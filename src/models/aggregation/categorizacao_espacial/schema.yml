@@ -19,22 +19,13 @@ models:
       - name: br
         data_type: integer
 
-      - name: km
-        data_type: decimal(13, 3)
-
-      - name: sentido
+      - name: regiao
         data_type: varchar
 
-      - name: uf_sigla
+      - name: estado
         data_type: varchar
 
-      - name: uf_nome
-        data_type: varchar
-
-      - name: municipio
-        data_type: varchar
-
-      - name: tipo_area
+      - name: zona
         data_type: varchar
 
 
