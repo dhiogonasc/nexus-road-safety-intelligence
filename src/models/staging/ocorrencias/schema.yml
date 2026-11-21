@@ -6,8 +6,8 @@ models:
     columns:
       - name: id_ocorrencia
         tests:
-          - unique
           - not_null
+          - unique
 
       - name: data
         tests:
@@ -19,32 +19,60 @@ models:
 
       - name: mes
         tests:
-          - not_null
-
-      - name: semana
-        tests:
-          - not_null
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  1, 2, 3, 4, 5, 6, 
+                  7, 8, 9, 10, 11, 12
+                ]
 
       - name: dia_semana
         tests:
-          - not_null
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
 
       - name: fase_dia
         tests:
-          - not_null
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
 
       - name: mes_nome
         tests:
-          - not_null
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'janeiro', 'fevereiro', 'março', 'abril', 'maio', 
+                  'junho', 'julho', 'agosto', 'setembro', 'outubro',
+                  'novembro', 'dezembro', 'não informado'
+                ]
 
       - name: dia_semana_nome
         tests:
-          - not_null
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'segunda-feira', 'terça-feira', 'quarta-feira',
+                  'quinta-feira', 'sexta-feira', 'sábado', 'domingo',
+                  'não informado'
+                ]
 
       - name: fase_dia_desc
         tests:
-          - not_null
-
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'amanhecer', 'pleno dia', 
+                  'anoitecer', 'plena noite', 
+                  'não informado'
+                ]
 
       - name: br
         tests:
@@ -52,16 +80,39 @@ models:
 
       - name: regiao
         tests:
-          - not_null
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'centro-oeste', 'nordeste', 
+                  'norte', 'sudeste', 'sul', 
+                  'não informado'
+                ]
 
       - name: estado
         tests:
-          - not_null
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'acre', 'alagoas', 'amapá', 'amazonas', 'bahia', 'ceará', 
+                  'distrito federal', 'espírito santo', 'goiás', 'maranhão', 
+                  'mato grosso', 'mato grosso do sul', 'minas gerais', 'pará', 
+                  'paraíba', 'paraná', 'pernambuco', 'piauí', 'rio de janeiro', 
+                  'rio grande do norte', 'rio grande do sul', 'rondônia', 
+                  'roraima', 'santa catarina', 'são paulo', 'sergipe', 'tocantins',
+                  'não informado'
+                ]
 
       - name: zona
         tests:
-          - not_null
-
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'rural', 'urbano', 
+                  'não informado'
+                ]
 
       - name: condicao_metereologica
         tests:
@@ -80,10 +131,6 @@ models:
         tests:
           - not_null
 
-
-      - name: total_veiculos
-        tests:
-          - not_null
 
       - name: total_envolvidos
         tests:

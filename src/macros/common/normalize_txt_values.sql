@@ -2,7 +2,7 @@
     case  
         when {{ value }} 
             is null 
-            or lower(trim(cast({{ value }} as varchar))) in ('na', 'n/a', 'nan', 'null', 'none', '-', '') 
+            or lower(trim(cast({{ value }} as varchar))) in ('na', 'n/a', 'nan', 'null', '(null)', 'none', '-', '') 
                 then 'não informado'
         else  
             regexp_replace(

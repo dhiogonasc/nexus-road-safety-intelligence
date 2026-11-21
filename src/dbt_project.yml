@@ -22,11 +22,12 @@ models:
   road_safety_intelligence:
     staging:
       +database: "temp_{{ env_var('DB_NAME') }}"
+      +schema: "staging" 
       +tags: ['staging']
 
       ocorrencias:
         +materialized: table
-      
+          
     dimension:
       +database: "pg_{{ env_var('DB_NAME') }}"
       +schema: "core"

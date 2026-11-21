@@ -1,17 +1,33 @@
 {{ config(materialized='table') }}
 
-with base_ocorrencias as (
+with raw as (
     select * 
     from read_csv_auto(
         '{{ var("raw_ocorrencias_csv_path") }}', 
-        header = true, 
         delim = ';', 
         encoding='ISO-8859-1',
-        all_varchar=true
+        header = true, 
+        all_varchar=true,
+        union_by_name=true,
     )
 ),
 
-normalized_ocorrencias as (
+base_malha_geografica as ( 
+    select * from {{ ref('base_malha_geografica') }}
+),
+
+normalized_time as (
+    select
+        coalesce(
+            try_strptime(data_inversa, '%d/%m/%Y'),
+            try_strptime(data_inversa, '%Y-%m-%d'),
+            try_cast(data_inversa as date)
+        ) as data,
+        * exclude (data_inversa)
+    from raw
+),
+
+staging as (
     select
         try_cast(id as bigint) as id_ocorrencia,
         
@@ -21,39 +37,44 @@ normalized_ocorrencias as (
 
         {{ normalize_txt_value('condicao_metereologica') }} as condicao_metereologica,
 
-        try_cast(coalesce(br, '0') as integer) as br,
-        {{ classify_zone('uso_solo') }} as zona,
+        {{ normalize_txt_value('br') }} as br,
         {{ normalize_txt_value('uf') }} as uf,
+        {{ classify_zone('uso_solo') }} as zona,
 
-        try_cast(data_inversa as date) as data,
-        try_cast(extract(year from try_cast(data_inversa as date)) as integer) as ano,
-        try_cast(extract(month from try_cast(data_inversa as date)) as integer) as mes,
-        try_cast(extract(week from try_cast(data_inversa as date)) as integer ) as semana,
-        try_cast(isodow(try_cast(data_inversa as date)) as integer ) as dia_semana,
+        cast(data as date) as data,
+        try_cast(extract(year from data) as integer) as ano,
+        try_cast(extract(month from data) as integer) as mes,
+        try_cast(extract(week from data) as integer ) as semana,
+        try_cast(isodow(data) as integer ) as dia_semana,
         try_cast({{ enumerate_day_period('fase_dia') }} as integer ) as fase_dia,
-        {{ transcript_month_number("extract(month from try_cast(data_inversa as date))") }} as mes_nome,
-        {{ transcript_weekday_number("isodow(try_cast(data_inversa as date))") }} as dia_semana_nome,
+        
+        {{ transcript_month_number("extract(month from data)") }} as mes_nome,
+        {{ transcript_weekday_number("isodow(data)") }} as dia_semana_nome,
         {{ normalize_txt_value('fase_dia') }} as fase_dia_desc,
         
-        try_cast(coalesce(veiculos, '0') as integer) as total_veiculos,
         try_cast(coalesce(pessoas, '0') as integer) as total_envolvidos,
+        try_cast(coalesce(ilesos, '0') as integer) as total_ilesos,
         try_cast(coalesce(mortos, '0') as integer) as total_mortos,
-        try_cast(coalesce(feridos, '0') as integer) as total_feridos,
-        try_cast(coalesce(ilesos, '0') as integer) as total_ilesos
-    from base_ocorrencias
+        try_cast(coalesce(feridos, '0') as integer) as total_feridos
+    from normalized_time
 ),
 
-malha as (
-    select * from {{ ref('base_malha_geografica') }}
-),
-
-staging as (
+enriched_staging as (
     select 
-        ocorrencias.* exclude(uf),
+        staging.* exclude(uf),
         malha.regiao,
         malha.estado
-    from normalized_ocorrencias as ocorrencias
-    join malha on ocorrencias.uf = malha.uf
+    from staging as staging
+    
+    left join base_malha_geografica as malha 
+        on staging.uf = malha.uf
+
+    qualify row_number() over (
+        partition by id_ocorrencia
+        order by 
+            total_mortos desc, 
+            total_envolvidos desc
+    ) = 1
 )
 
-select * from staging
+select * from enriched_staging

@@ -68,8 +68,6 @@ models:
                 to: ref('dim_tempo')
                 field: sk_tempo
 
-      - name: total_veiculos
-        data_type: integer
 
       - name: total_envolvidos
         data_type: integer

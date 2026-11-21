@@ -19,9 +19,9 @@ staging as (
 dimension as (
     select
         md5(
-            cast(br as varchar) || '-' || 
-            regiao              || '-' || 
-            estado              || '-' || 
+            br      || '-' || 
+            regiao  || '-' || 
+            estado  || '-' || 
             zona
         ) as sk_local, *
     from staging

@@ -17,7 +17,7 @@ models:
           - unique
 
       - name: br
-        data_type: integer
+        data_type: varchar
 
       - name: regiao
         data_type: varchar

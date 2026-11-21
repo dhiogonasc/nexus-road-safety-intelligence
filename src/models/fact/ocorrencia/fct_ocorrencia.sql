@@ -37,7 +37,6 @@ staging as (
             condicao_metereologica
         ) as sk_clima,
 
-        total_veiculos,
         total_envolvidos,
         total_mortos,
         total_feridos,
@@ -56,7 +55,6 @@ fact as (
         local.sk_local,
         tempo.sk_tempo,
 
-        staging.total_veiculos,
         staging.total_envolvidos,
         staging.total_mortos,
         staging.total_feridos,
