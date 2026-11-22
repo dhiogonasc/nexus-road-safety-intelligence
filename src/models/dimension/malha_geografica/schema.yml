@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: dim_malha_geografica
+
+    config:
+      contract:
+        enforced: true 
+
+    columns:
+      - name: sk_malha_geografica
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
+        tests:
+          - unique
+
+
+      - name: regiao
+        data_type: varchar
+        tests:
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'centro-oeste', 'nordeste', 
+                  'norte', 'sudeste', 'sul', 
+                  'não informado'
+                ]
+
+      - name: estado
+        data_type: varchar
+        tests:
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'acre', 'alagoas', 'amapá', 'amazonas', 'bahia', 'ceará', 
+                  'distrito federal', 'espírito santo', 'goiás', 'maranhão', 
+                  'mato grosso', 'mato grosso do sul', 'minas gerais', 'pará', 
+                  'paraíba', 'paraná', 'pernambuco', 'piauí', 'rio de janeiro', 
+                  'rio grande do norte', 'rio grande do sul', 'rondônia', 
+                  'roraima', 'santa catarina', 'são paulo', 'sergipe', 'tocantins',
+                  'não informado'
+                ]
+
+      - name: tipo_area
+        data_type: varchar
+        tests:
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'rural', 'urbano', 
+                  'não informado'
+                ]

@@ -48,7 +48,7 @@ aggregation as (
         tempo.fase_dia,
         tempo.mes_nome,
         tempo.dia_semana_nome,
-        tempo.fase_dia_desc,
+        tempo.fase_dia_nome,
 
         categoria.tipo_acidente,
         categoria.causa_acidente,

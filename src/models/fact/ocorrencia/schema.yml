@@ -42,18 +42,31 @@ models:
                 to: ref('dim_clima')
                 field: sk_clima
 
-      - name: sk_local
+      - name: sk_malha_geografica
         data_type: varchar
         constraints:
           - type: foreign_key
-            to: ref('dim_local')
-            to_columns: [sk_local]
+            to: ref('dim_malha_geografica')
+            to_columns: [sk_malha_geografica]
           - type: not_null
         tests:
           - relationships:
               arguments:
-                to: ref('dim_local')
-                field: sk_local
+                to: ref('dim_malha_geografica')
+                field: sk_malha_geografica
+
+      - name: sk_malha_rodoviaria
+        data_type: varchar
+        constraints:
+          - type: foreign_key
+            to: ref('dim_malha_rodoviaria')
+            to_columns: [sk_malha_rodoviaria]
+          - type: not_null
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_malha_rodoviaria')
+                field: sk_malha_rodoviaria
 
       - name: sk_tempo
         data_type: varchar

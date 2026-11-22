@@ -12,21 +12,6 @@ with raw as (
     )
 ),
 
-base_malha_geografica as ( 
-    select * from {{ ref('base_malha_geografica') }}
-),
-
-normalized_time as (
-    select
-        coalesce(
-            try_strptime(data_inversa, '%d/%m/%Y'),
-            try_strptime(data_inversa, '%Y-%m-%d'),
-            try_cast(data_inversa as date)
-        ) as data,
-        * exclude (data_inversa)
-    from raw
-),
-
 staging as (
     select
         try_cast(id as bigint) as id_ocorrencia,
@@ -37,37 +22,27 @@ staging as (
 
         {{ normalize_txt_value('condicao_metereologica') }} as condicao_metereologica,
 
-        {{ normalize_txt_value('br') }} as br,
-        {{ normalize_txt_value('uf') }} as uf,
-        {{ classify_zone('uso_solo') }} as zona,
+        {{ transcript_br('br') }} as br,
+        {{ normalize_km('km') }} as km,
+        {{ normalize_txt_value('sentido_via') }} as sentido_via,
+        {{ normalize_txt_value('tracado_via') }} as tracado_via,
+        {{ normalize_txt_value('tipo_pista') }} as tipo_pista,
 
-        cast(data as date) as data,
-        try_cast(extract(year from data) as integer) as ano,
-        try_cast(extract(month from data) as integer) as mes,
-        try_cast(extract(week from data) as integer ) as semana,
-        try_cast(isodow(data) as integer ) as dia_semana,
-        try_cast({{ enumerate_day_period('fase_dia') }} as integer ) as fase_dia,
-        
-        {{ transcript_month_number("extract(month from data)") }} as mes_nome,
-        {{ transcript_weekday_number("isodow(data)") }} as dia_semana_nome,
-        {{ normalize_txt_value('fase_dia') }} as fase_dia_desc,
+        {{ normalize_txt_value('uf') }} as uf,
+        {{ classify_zone('uso_solo') }} as tipo_area,
+
+        coalesce(
+            try_cast(try_strptime(data_inversa, '%d/%m/%Y') as date),
+            try_cast(try_strptime(data_inversa, '%Y-%m-%d') as date),
+            try_cast(data_inversa as date)
+        ) as data,
+        {{ normalize_txt_value('fase_dia') }} as fase_dia,
         
         try_cast(coalesce(pessoas, '0') as integer) as total_envolvidos,
         try_cast(coalesce(ilesos, '0') as integer) as total_ilesos,
         try_cast(coalesce(mortos, '0') as integer) as total_mortos,
         try_cast(coalesce(feridos, '0') as integer) as total_feridos
-    from normalized_time
-),
-
-enriched_staging as (
-    select 
-        staging.* exclude(uf),
-        malha.regiao,
-        malha.estado
-    from staging as staging
-    
-    left join base_malha_geografica as malha 
-        on staging.uf = malha.uf
+    from raw
 
     qualify row_number() over (
         partition by id_ocorrencia
@@ -77,4 +52,4 @@ enriched_staging as (
     ) = 1
 )
 
-select * from enriched_staging
+select * from staging

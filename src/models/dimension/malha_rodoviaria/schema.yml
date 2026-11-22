@@ -1,14 +1,14 @@
 version: 2
 
 models:
-  - name: dim_local
+  - name: dim_malha_rodoviaria
 
     config:
       contract:
         enforced: true 
 
     columns:
-      - name: sk_local
+      - name: sk_malha_rodoviaria
         data_type: varchar
         constraints:
           - type: primary_key
@@ -19,11 +19,14 @@ models:
       - name: br
         data_type: varchar
       
-      - name: regiao
+      - name: km
+        data_type: decimal(8, 3)
+
+      - name: sentido_via
         data_type: varchar
 
-      - name: estado
+      - name: tracado_via
         data_type: varchar
 
-      - name: zona
+      - name: tipo_pista
         data_type: varchar

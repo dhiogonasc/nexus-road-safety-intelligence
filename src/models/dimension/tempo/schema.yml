@@ -24,21 +24,61 @@ models:
 
       - name: mes
         data_type: integer
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
       - name: semana
         data_type: integer
 
       - name: dia_semana
         data_type: integer
+        tests:    
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
 
       - name: fase_dia
         data_type: integer
+        tests:  
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
 
       - name: mes_nome
         data_type: varchar
+        tests:
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'janeiro', 'fevereiro', 'março', 'abril', 'maio', 
+                  'junho', 'julho', 'agosto', 'setembro', 'outubro',
+                  'novembro', 'dezembro', 
+                  'não informado'
+                ]
 
       - name: dia_semana_nome
         data_type: varchar
+        tests:
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'segunda-feira', 'terça-feira', 'quarta-feira',
+                  'quinta-feira', 'sexta-feira', 'sábado', 'domingo',
+                  'não informado'
+                ]
 
-      - name: fase_dia_desc
+      - name: fase_dia_nome
         data_type: varchar
+        tests:
+          - not_null        
+          - accepted_values:
+              arguments:
+                values: [
+                  'amanhecer', 'pleno dia', 
+                  'anoitecer', 'plena noite', 
+                  'não informado'
+                ]

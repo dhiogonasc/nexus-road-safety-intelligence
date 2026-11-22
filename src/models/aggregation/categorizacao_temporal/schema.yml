@@ -31,7 +31,7 @@ models:
       - name: dia_semana_nome
         data_type: varchar
 
-      - name: fase_dia_desc
+      - name: fase_dia_nome
         data_type: varchar
         
 

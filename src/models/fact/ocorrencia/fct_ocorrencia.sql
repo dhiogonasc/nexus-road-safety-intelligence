@@ -22,11 +22,17 @@ staging as (
         ) as sk_categoria,
 
         md5(
-            cast(br as varchar)     || '-' ||
-            regiao                  || '-' || 
-            estado                  || '-' || 
-            zona
-        ) as sk_local,
+            uf                      || '-' || 
+            tipo_area
+        ) as sk_malha_geografica,
+
+        md5(
+            br                      || '-' ||
+            cast(km as varchar)     || '-' || 
+            sentido_via             || '-' || 
+            tracado_via             || '-' || 
+            tipo_pista
+        ) as sk_malha_rodoviaria,
 
         md5(
             cast(data as varchar)   || '-' || 
@@ -52,7 +58,8 @@ fact as (
 
         categoria.sk_categoria,
         clima.sk_clima,
-        local.sk_local,
+        malha_geografica.sk_malha_geografica,
+        malha_rodoviaria.sk_malha_rodoviaria,
         tempo.sk_tempo,
 
         staging.total_envolvidos,
@@ -68,8 +75,11 @@ fact as (
     inner join {{ ref('dim_clima') }} as clima 
         on staging.sk_clima = clima.sk_clima
 
-    inner join {{ ref('dim_local') }} as local 
-        on staging.sk_local = local.sk_local
+    inner join {{ ref('dim_malha_geografica') }} as malha_geografica 
+        on staging.sk_malha_geografica = malha_geografica.sk_malha_geografica
+
+    inner join {{ ref('dim_malha_rodoviaria') }} as malha_rodoviaria 
+        on staging.sk_malha_rodoviaria = malha_rodoviaria.sk_malha_rodoviaria
 
     inner join {{ ref('dim_tempo') }} as tempo 
         on staging.sk_tempo = tempo.sk_tempo
