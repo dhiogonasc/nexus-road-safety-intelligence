@@ -14,19 +14,17 @@ staging as (
         sk_categoria,
 
         cast(count(id) as bigint) as total_ocorrencias,
-        cast(sum(total_mortos) as bigint) as total_mortos,
-        cast(sum(total_envolvidos) as bigint) as total_envolvidos,
 
         cast(
-            round(sum(total_mortos)/ nullif(sum(total_envolvidos), 0), 2) 
+            round(sum(total_mortos)::decimal / nullif(sum(total_envolvidos), 0), 2) 
             as decimal(5, 2)
         ) as taxa_mortalidade,
         cast(
-            round(sum(total_mortos) / nullif(count(id), 0), 2)
+            round(sum(total_mortos)::decimal / nullif(count(id), 0), 2)
             as decimal(5, 2)
         ) as indice_mortalidade_ocorrencia,
         cast(
-            round(sum(total_envolvidos) / nullif(count(id), 0), 2)
+            round(sum(total_envolvidos)::decimal / nullif(count(id), 0), 2)
             as decimal(5, 2)
         ) as indice_envolvimento_ocorrencia
 
@@ -57,9 +55,7 @@ aggregation as (
         categoria.tipo_acidente,
         categoria.causa_acidente,
         categoria.classificacao_acidente,
-
-        staging.total_envolvidos,
-        staging.total_mortos,
+        
         staging.total_ocorrencias,
         staging.taxa_mortalidade,
         staging.indice_mortalidade_ocorrencia,
