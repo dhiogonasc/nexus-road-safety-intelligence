@@ -1,5 +1,5 @@
-{% macro transcript_month_number(number) %}
-    case {{ number }}
+{% macro transcript_month_number(date_column) %}
+    case extract(month from {{ date_column }})
         when 1 then 'janeiro'
         when 2 then 'fevereiro'
         when 3 then 'março'

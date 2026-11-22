@@ -1,5 +1,5 @@
-{% macro transcript_weekday_number(number) %}
-    case {{ number }}
+{% macro transcript_weekday_number(date_column) %}
+    case isodow({{ date_column }})
         when 1 then 'segunda-feira'
         when 2 then 'terça-feira'
         when 3 then 'quarta-feira'

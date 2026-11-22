@@ -28,8 +28,8 @@ extraction as (
 
 description as (
     select *,
-        {{ transcript_month_number("extract(month from data)") }} as mes_nome,
-        {{ transcript_weekday_number("isodow(data)") }} as dia_semana_nome
+        {{ transcript_month_number('data') }} as mes_nome,
+        {{ transcript_weekday_number('data') }} as dia_semana_nome
     from extraction
 ),
 
