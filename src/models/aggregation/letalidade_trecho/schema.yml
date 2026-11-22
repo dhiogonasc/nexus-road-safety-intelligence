@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: letalidade_trecho
+
+    config:
+      contract:
+        enforced: true 
+
+    columns:
+      - name: id
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
+        tests:
+          - unique
+
+      - name: regiao
+        data_type: varchar
+      
+      - name: estado
+        data_type: varchar
+
+      - name: tipo_area
+        data_type: varchar
+
+      - name: br
+        data_type: varchar
+      
+      - name: tipo_pista
+        data_type: varchar
+
+      - name: tracado_via
+        data_type: varchar 
+        
+
+      - name: total_ocorrencias
+        data_type: bigint
+        tests:
+          - not_null
+
+      - name: taxa_mortalidade
+        data_type: decimal(5, 2)
+        tests:
+          - not_null
+
+      - name: indice_mortalidade_ocorrencia
+        data_type: decimal(5, 2)
+        tests:
+          - not_null

@@ -79,3 +79,7 @@ models:
       letalidade_geo_climatica:
         +materialized: incremental
         +on_schema_change: 'fail'
+
+      letalidade_trecho:
+        +materialized: incremental
+        +on_schema_change: 'fail'
