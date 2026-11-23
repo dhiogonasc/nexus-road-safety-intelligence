@@ -58,10 +58,10 @@ aggregation as (
         staging.indice_envolvimento_ocorrencia
     from staging
 
-    inner join {{ ref('dim_tempo') }} as tempo
+    join {{ ref('dim_tempo') }} as tempo
         on staging.sk_tempo = tempo.sk_tempo
 
-    inner join {{ ref('dim_categoria') }} as categoria
+    join {{ ref('dim_categoria') }} as categoria
         on staging.sk_categoria = categoria.sk_categoria
 )
 

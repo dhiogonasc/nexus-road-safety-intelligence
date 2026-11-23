@@ -55,16 +55,16 @@ aggregation as (
 
     from staging
 
-    inner join {{ ref('dim_tempo') }} as tempo
+    join {{ ref('dim_tempo') }} as tempo
         on staging.sk_tempo = tempo.sk_tempo
 
-    inner join {{ ref('dim_clima') }} as clima
+    join {{ ref('dim_clima') }} as clima
         on staging.sk_clima = clima.sk_clima
 
-    inner join {{ ref('dim_malha_geografica') }} as malha_geografica
+    join {{ ref('dim_malha_geografica') }} as malha_geografica
         on staging.sk_malha_geografica = malha_geografica.sk_malha_geografica
 
-    inner join {{ ref('dim_categoria') }} as categoria
+    join {{ ref('dim_categoria') }} as categoria
         on staging.sk_categoria = categoria.sk_categoria
 
     where categoria.classificacao_acidente = 'com vítimas fatais'
