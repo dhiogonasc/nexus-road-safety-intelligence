@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: letalidade_geo_climatica
+  - name: agg_letalidade_geo_climatica
 
     config:
       contract:

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: letalidade_trecho
+  - name: agg_letalidade_trecho
 
     config:
       contract:
