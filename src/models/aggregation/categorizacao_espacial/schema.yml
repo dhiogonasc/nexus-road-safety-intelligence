@@ -15,6 +15,10 @@ models:
           - type: not_null
         tests:
           - unique
+          
+
+      - name: br
+        data_type: varchar
 
       - name: regiao
         data_type: varchar
@@ -24,16 +28,7 @@ models:
 
       - name: tipo_area
         data_type: varchar
-
-      - name: br
-        data_type: varchar
         
-
-      - name: tipo_acidente
-        data_type: varchar
-
-      - name: causa_acidente
-        data_type: varchar
 
       - name: classificacao_acidente
         data_type: varchar

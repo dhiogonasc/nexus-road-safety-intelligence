@@ -8,9 +8,7 @@
 with 
 
 staging as (
-    select distinct
-        data,
-        fase_dia
+    select distinct data
     from {{ ref('stg_ocorrencias') }}
 ),
 
@@ -20,9 +18,7 @@ extraction as (
         cast(extract(year from data) as integer) as ano,
         cast(extract(month from data) as integer) as mes,
         cast(extract(week from data) as integer ) as semana,
-        cast(isodow(data) as integer ) as dia_semana,
-        cast({{ enumerate_day_period('fase_dia') }} as integer ) as fase_dia,
-        fase_dia as fase_dia_nome
+        cast(isodow(data) as integer ) as dia_semana
     from staging
 ),
 
@@ -34,11 +30,7 @@ description as (
 ),
 
 dimension as (
-    select
-        md5(
-            cast(data as varchar) || '-' || 
-            fase_dia
-        ) as sk_tempo, *
+    select md5(cast(data as varchar)) as sk_tempo, *
     from description
 )
 

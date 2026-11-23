@@ -16,11 +16,5 @@ models:
         tests:
           - unique
 
-      - name: tipo_acidente
-        data_type: varchar
-
-      - name: causa_acidente
-        data_type: varchar
-
       - name: classificacao_acidente
         data_type: varchar

@@ -8,16 +8,17 @@
 with 
 
 staging as (
-    select distinct
-        condicao_metereologica
+    select distinct 
+        case
+            when condicao_metereologica in ('céu claro', 'ceu claro') then 'céu claro'
+            when condicao_metereologica in ('ignorado', 'ignorada') then 'ignorado'
+            else condicao_metereologica
+        end as condicao_metereologica
     from {{ ref('stg_ocorrencias') }}
 ),
 
 dimension as (
-    select
-        md5(
-            condicao_metereologica
-        ) as sk_clima, *
+    select md5(condicao_metereologica) as sk_clima, *
     from staging
 )
 

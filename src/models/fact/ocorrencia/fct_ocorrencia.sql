@@ -5,83 +5,48 @@
     )
 }}
 
-with 
-
-raw_staging as (
-    select * from {{ ref('stg_ocorrencias') }} 
-),
-
-staging as (
+with staging as (
     select distinct
         id_ocorrencia,
 
-        md5(
-            tipo_acidente           || '-' || 
-            causa_acidente          || '-' || 
-            classificacao_acidente
-        ) as sk_categoria,
-
-        md5(
-            uf                      || '-' || 
-            tipo_area
-        ) as sk_malha_geografica,
-
-        md5(
-            br                      || '-' ||
-            cast(km as varchar)     || '-' || 
-            sentido_via             || '-' ||
-            tipo_pista
-        ) as sk_malha_rodoviaria,
-
-        md5(
-            cast(data as varchar)   || '-' || 
-            fase_dia
-        ) as sk_tempo,
-
-        md5(
-            condicao_metereologica
-        ) as sk_clima,
+        classificacao_acidente,
+        condicao_metereologica,
+        uf, 
+        br,
+        tipo_area,
+        data,
 
         total_envolvidos,
-        total_mortos,
-        total_feridos,
-        total_ilesos
-    from raw_staging
+        total_mortos
+    from {{ ref('stg_ocorrencias') }} 
 ),
 
 fact as (
     select
-        md5(
-            cast(staging.id_ocorrencia as varchar)
-        ) as id,
+        md5(cast(staging.id_ocorrencia as varchar)) as id,
 
         categoria.sk_categoria,
         clima.sk_clima,
-        malha_geografica.sk_malha_geografica,
-        malha_rodoviaria.sk_malha_rodoviaria,
+        local.sk_local,
         tempo.sk_tempo,
-
+        
         staging.total_envolvidos,
-        staging.total_mortos,
-        staging.total_feridos,
-        staging.total_ilesos
-
+        staging.total_mortos
     from staging
 
     join {{ ref('dim_categoria') }} as categoria 
-        on staging.sk_categoria = categoria.sk_categoria
+        on staging.classificacao_acidente = categoria.classificacao_acidente
 
     join {{ ref('dim_clima') }} as clima 
-        on staging.sk_clima = clima.sk_clima
+        on staging.condicao_metereologica = clima.condicao_metereologica
 
-    join {{ ref('dim_malha_geografica') }} as malha_geografica 
-        on staging.sk_malha_geografica = malha_geografica.sk_malha_geografica
-
-    join {{ ref('dim_malha_rodoviaria') }} as malha_rodoviaria 
-        on staging.sk_malha_rodoviaria = malha_rodoviaria.sk_malha_rodoviaria
+    join {{ ref('dim_local') }} as local 
+        on staging.uf = local.uf
+       and staging.br = local.br
+       and staging.tipo_area = local.tipo_area
 
     join {{ ref('dim_tempo') }} as tempo 
-        on staging.sk_tempo = tempo.sk_tempo
+        on staging.data = tempo.data
 )
 
 select * from fact

@@ -9,15 +9,6 @@ models:
           - not_null
           - unique    
 
-
-      - name: tipo_acidente
-        tests:
-          - not_null
-
-      - name: causa_acidente
-        tests:
-          - not_null
-
       - name: classificacao_acidente
         tests:
           - not_null
@@ -32,19 +23,6 @@ models:
         tests:
           - not_null
 
-      - name: km
-        tests:
-          - not_null
-
-      - name: tipo_pista
-        tests:
-          - not_null
-
-      - name: sentido_via
-        tests:
-          - not_null
-          
-
       - name: uf
         tests:
           - not_null
@@ -58,23 +36,11 @@ models:
         tests:
           - not_null
 
-      - name: fase_dia
-        tests:
-          - not_null    
-
 
       - name: total_envolvidos
         tests:
           - not_null
           
       - name: total_mortos
-        tests:
-          - not_null
-          
-      - name: total_feridos
-        tests:
-          - not_null
-
-      - name: total_ilesos
         tests:
           - not_null

@@ -1,14 +1,14 @@
 version: 2
 
 models:
-  - name: dim_malha_geografica
+  - name: dim_local
 
     config:
       contract:
         enforced: true 
 
     columns:
-      - name: sk_malha_geografica
+      - name: sk_local
         data_type: varchar
         constraints:
           - type: primary_key
@@ -16,6 +16,11 @@ models:
         tests:
           - unique
 
+      - name: uf
+        data_type: varchar
+
+      - name: br
+        data_type: varchar
 
       - name: regiao
         data_type: varchar

@@ -22,13 +22,14 @@ models:
       - name: mes_nome
         data_type: varchar
 
+
       - name: regiao
         data_type: varchar
 
       - name: estado
         data_type: varchar
 
-      - name: condicao_climatica
+      - name: condicao_metereologica
         data_type: varchar
         
 

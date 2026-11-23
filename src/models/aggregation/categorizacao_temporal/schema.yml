@@ -22,24 +22,12 @@ models:
       - name: dia_semana
         data_type: integer
 
-      - name: fase_dia
-        data_type: integer
-
       - name: mes_nome
         data_type: varchar
 
       - name: dia_semana_nome
         data_type: varchar
-
-      - name: fase_dia_nome
-        data_type: varchar
         
-
-      - name: tipo_acidente
-        data_type: varchar
-
-      - name: causa_acidente
-        data_type: varchar
 
       - name: classificacao_acidente
         data_type: varchar

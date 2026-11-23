@@ -39,13 +39,6 @@ models:
               arguments:
                 values: [1, 2, 3, 4, 5, 6, 7]
 
-      - name: fase_dia
-        data_type: integer
-        tests:  
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4, 5]
-
       - name: mes_nome
         data_type: varchar
         tests:
@@ -70,15 +63,4 @@ models:
                   'quinta-feira', 'sexta-feira', 'sábado', 'domingo',
                   'não informado'
                 ]
-
-      - name: fase_dia_nome
-        data_type: varchar
-        tests:
-          - not_null        
-          - accepted_values:
-              arguments:
-                values: [
-                  'amanhecer', 'pleno dia', 
-                  'anoitecer', 'plena noite', 
-                  'não informado'
-                ]
+                

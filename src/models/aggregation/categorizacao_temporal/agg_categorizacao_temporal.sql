@@ -42,14 +42,10 @@ aggregation as (
         ) as id, 
 
         tempo.mes,
-        tempo.dia_semana,
-        tempo.fase_dia,
         tempo.mes_nome,
+        tempo.dia_semana,
         tempo.dia_semana_nome,
-        tempo.fase_dia_nome,
 
-        categoria.tipo_acidente,
-        categoria.causa_acidente,
         categoria.classificacao_acidente,
 
         staging.total_ocorrencias,

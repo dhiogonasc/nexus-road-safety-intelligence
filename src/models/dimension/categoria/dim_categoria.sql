@@ -8,20 +8,12 @@
 with 
 
 staging as (
-    select distinct
-        tipo_acidente,
-        causa_acidente,
-        classificacao_acidente
+    select distinct classificacao_acidente
     from {{ ref('stg_ocorrencias') }}
 ),
 
 dimension as (
-    select
-        md5(
-            tipo_acidente           || '-' || 
-            causa_acidente          || '-' || 
-            classificacao_acidente
-        ) as sk_categoria, *
+    select md5(classificacao_acidente) as sk_categoria, *
     from staging
 )
 

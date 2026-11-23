@@ -5,13 +5,11 @@
     )
 }}
 
-with 
-
-staging as (
+with staging as (
     select distinct
         sk_tempo,
         sk_clima,
-        sk_malha_geografica,
+        sk_local,
         sk_categoria,
 
         cast(count(id) as bigint) as total_ocorrencias,
@@ -30,24 +28,26 @@ staging as (
     group by
         sk_tempo,
         sk_clima,
-        sk_malha_geografica,
+        sk_local,
         sk_categoria
 ),
 
 aggregation as (
     select
         md5(
-            staging.sk_tempo            || '-' || 
-            staging.sk_clima            || '-' || 
-            staging.sk_malha_geografica || '-' ||
+            staging.sk_tempo || '-' || 
+            staging.sk_clima || '-' || 
+            staging.sk_local || '-' ||
             staging.sk_categoria
         ) as id, 
 
         tempo.mes,
         tempo.mes_nome,
-        malha_geografica.regiao,
-        malha_geografica.estado,
-        clima.condicao_metereologica as condicao_climatica,
+
+        local.regiao,
+        local.estado,
+
+        clima.condicao_metereologica,
 
         staging.total_ocorrencias,
         staging.taxa_mortalidade,
@@ -61,8 +61,8 @@ aggregation as (
     join {{ ref('dim_clima') }} as clima
         on staging.sk_clima = clima.sk_clima
 
-    join {{ ref('dim_malha_geografica') }} as malha_geografica
-        on staging.sk_malha_geografica = malha_geografica.sk_malha_geografica
+    join {{ ref('dim_local') }} as local
+        on staging.sk_local = local.sk_local
 
     join {{ ref('dim_categoria') }} as categoria
         on staging.sk_categoria = categoria.sk_categoria

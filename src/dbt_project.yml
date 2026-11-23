@@ -42,11 +42,7 @@ models:
         +materialized: incremental
         +on_schema_change: 'fail'
 
-      malha_geografica:
-        +materialized: incremental
-        +on_schema_change: 'fail'
-
-      malha_rodoviaria:
+      local:
         +materialized: incremental
         +on_schema_change: 'fail'
 
@@ -77,9 +73,5 @@ models:
         +on_schema_change: 'fail'
 
       letalidade_geo_climatica:
-        +materialized: incremental
-        +on_schema_change: 'fail'
-
-      letalidade_trecho:
         +materialized: incremental
         +on_schema_change: 'fail'
