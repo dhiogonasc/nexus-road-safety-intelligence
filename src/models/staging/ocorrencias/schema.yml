@@ -40,10 +40,6 @@ models:
         tests:
           - not_null
 
-      - name: tracado_via
-        tests:
-          - not_null
-
       - name: sentido_via
         tests:
           - not_null

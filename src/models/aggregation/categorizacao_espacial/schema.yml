@@ -25,16 +25,9 @@ models:
       - name: tipo_area
         data_type: varchar
 
-  
       - name: br
         data_type: varchar
-
-      - name: km
-        data_type: decimal(8, 3)
-
-      - name: sentido_via
-        data_type: varchar
-
+        
 
       - name: tipo_acidente
         data_type: varchar

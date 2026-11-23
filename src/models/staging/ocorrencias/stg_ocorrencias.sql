@@ -25,7 +25,6 @@ staging as (
         {{ transcript_br('br') }} as br,
         {{ normalize_km('km') }} as km,
         {{ normalize_txt_value('sentido_via') }} as sentido_via,
-        {{ normalize_txt_value('tracado_via') }} as tracado_via,
         {{ normalize_txt_value('tipo_pista') }} as tipo_pista,
 
         {{ normalize_txt_value('uf') }} as uf,

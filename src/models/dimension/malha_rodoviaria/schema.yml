@@ -25,8 +25,5 @@ models:
       - name: sentido_via
         data_type: varchar
 
-      - name: tracado_via
-        data_type: varchar
-
       - name: tipo_pista
         data_type: varchar

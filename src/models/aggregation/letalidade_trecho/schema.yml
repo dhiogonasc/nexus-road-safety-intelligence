@@ -28,11 +28,14 @@ models:
       - name: br
         data_type: varchar
       
+      - name: km
+        data_type: decimal(8, 3)
+      
+      - name: sentido_via
+        data_type: varchar
+        
       - name: tipo_pista
         data_type: varchar
-
-      - name: tracado_via
-        data_type: varchar 
         
 
       - name: total_ocorrencias

@@ -71,17 +71,11 @@ aggregation as (
         or categoria.classificacao_acidente = 'com vítimas feridas'
 ),
 
-filtered as (
-    select * from aggregation
+select * from aggregation
 
-    {% if is_incremental() %}
-    where not exists (
-        select 1 from {{ this }} as this
-        where this.id = aggregation.id
-    )
-    {% endif %}
+{% if is_incremental() %}
+where not exists (
+    select 1 from {{ this }} as this
+    where this.id = aggregation.id
 )
-
-select * 
-from filtered 
-order by taxa_mortalidade desc
+{% endif %}

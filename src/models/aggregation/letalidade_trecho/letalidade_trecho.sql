@@ -45,8 +45,9 @@ aggregation as (
         malha_geografica.tipo_area,
         
         malha_rodoviaria.br,
+        malha_rodoviaria.km,
+        malha_rodoviaria.sentido_via,
         malha_rodoviaria.tipo_pista,
-        malha_rodoviaria.tracado_via,
 
         staging.total_ocorrencias,
         staging.taxa_mortalidade,
@@ -67,17 +68,11 @@ aggregation as (
         or categoria.classificacao_acidente = 'com vítimas feridas'
 ),
 
-filtered as (
-    select * from aggregation
+select * from aggregation
 
-    {% if is_incremental() %}
-    where not exists (
-        select 1 from {{ this }} as this
-        where this.id = aggregation.id
-    )
-    {% endif %}
+{% if is_incremental() %}
+where not exists (
+    select 1 from {{ this }} as this
+    where this.id = aggregation.id
 )
-
-select * 
-from filtered 
-order by taxa_mortalidade desc
+{% endif %}

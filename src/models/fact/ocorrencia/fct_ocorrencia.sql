@@ -29,8 +29,7 @@ staging as (
         md5(
             br                      || '-' ||
             cast(km as varchar)     || '-' || 
-            sentido_via             || '-' || 
-            tracado_via             || '-' || 
+            sentido_via             || '-' ||
             tipo_pista
         ) as sk_malha_rodoviaria,
 

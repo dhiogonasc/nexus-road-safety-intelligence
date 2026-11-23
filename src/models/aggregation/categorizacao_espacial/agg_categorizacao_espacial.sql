@@ -47,10 +47,7 @@ aggregation as (
         malha_geografica.regiao,
         malha_geografica.estado,
         malha_geografica.tipo_area,
-
         malha_rodoviaria.br,
-        malha_rodoviaria.km,
-        malha_rodoviaria.sentido_via,
 
         categoria.tipo_acidente,
         categoria.causa_acidente,
