@@ -36,6 +36,34 @@ services:
       timeout: 5s
       retries: 5
 
+  rsi-dbt-build:
+    image: python:3.11-slim
+    container_name: dbt-build
+    volumes:
+      - ./:/usr/app
+    working_dir: /usr/app
+    command: >
+      sh -c "pip install --no-cache-dir dbt-duckdb && dbt build"
+    environment:
+      DBT_PROFILES_DIR: /usr/app
+      DBT_PORT: 5432
+
+      DBT_USER_CORE: admin-rsi-core
+      DBT_PASS_CORE: admin-rsi-core
+      DBT_NAME_CORE: rsi-core
+      DBT_HOST_CORE: rsi-db-core
+
+      DBT_USER_ANALYTICS: admin-rsi-analytics
+      DBT_PASS_ANALYTICS: admin-rsi-analytics
+      DBT_NAME_ANALYTICS: rsi-analytics
+      DBT_HOST_ANALYTICS: rsi-db-analytics
+    restart: "no"
+    depends_on:
+      rsi-db-core:
+        condition: service_healthy
+      rsi-db-analytics:
+        condition: service_healthy
+
   rsi-db-metabase:
     image: postgres:16-alpine
     container_name: db-metabase
@@ -71,12 +99,6 @@ services:
     depends_on:
       rsi-db-metabase:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
   rsi-app-pgadmin:
     image: dpage/pgadmin4

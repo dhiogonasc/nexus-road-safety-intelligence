@@ -28,7 +28,10 @@ aggregation as (
         tempo.mes_nome,
         tempo.dia_semana,
         tempo.dia_semana_nome,
-        tempo.semana
+        tempo.semana,
+
+        staging.total_envolvidos,
+        staging.total_mortos
     from staging
 
     join {{ ref('dim_categoria') }} as categoria

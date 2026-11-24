@@ -8,11 +8,11 @@ src:
       extensions:
         - postgres
       attach:
-        - path: "postgresql://admin-rsi-core:admin-rsi-core@localhost:5432/rsi-core"
+        - path: "postgresql://{{ env_var('DBT_USER_CORE', 'admin-rsi-core') }}:{{ env_var('DBT_PASS_CORE', 'admin-rsi-core') }}@{{ env_var('DBT_HOST_CORE', 'localhost') }}:{{ env_var('DBT_PORT', 5432) }}/{{ env_var('DBT_NAME_CORE', 'rsi-core') }}"
           alias: "pg_core"
           type: postgres
 
-        - path: "postgresql://admin-rsi-analytics:admin-rsi-analytics@localhost:5433/rsi-analytics"
+        - path: "postgresql://{{ env_var('DBT_USER_ANALYTICS', 'admin-rsi-analytics') }}:{{ env_var('DBT_PASS_ANALYTICS', 'admin-rsi-analytics') }}@{{ env_var('DBT_HOST_ANALYTICS', 'localhost') }}:{{ env_var('DBT_PORT', 5433) }}/{{ env_var('DBT_NAME_ANALYTICS', 'rsi-analytics') }}"
           alias: "pg_analytics"
           type: postgres
 
@@ -23,9 +23,10 @@ src:
       extensions:
         - postgres
       attach:
-        - path: "postgresql://admin-rsi-core:admin-rsi-core@localhost:5432/rsi-core"
+        - path: "postgresql://{{ env_var('DBT_USER_CORE', 'admin-rsi-core') }}:{{ env_var('DBT_PASS_CORE', 'admin-rsi-core') }}@{{ env_var('DBT_HOST_CORE', 'localhost') }}:{{ env_var('DBT_PORT_CORE', 5432) }}/{{ env_var('DBT_NAME_CORE', 'rsi-core') }}"
           alias: "pg_core"
           type: postgres
+
 
         - path: "postgresql://{{ env_var('DB_USER') }}:{{ env_var('DB_PASSWORD') }}@{{ env_var('DB_HOST') }}:{{ env_var('DB_PORT') }}/{{ env_var('DB_NAME') }}?sslmode=require"
           alias: "pg_analytics"
