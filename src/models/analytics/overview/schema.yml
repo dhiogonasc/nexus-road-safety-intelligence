@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: agg_categorizacao_espacial
+  - name: overview
 
     config:
       contract:
@@ -16,3 +16,45 @@ models:
         tests:
           - unique
           
+      - name: classificacao_acidente
+        data_type: varchar
+
+      - name: condicao_metereologica
+        data_type: varchar
+
+      - name: br
+        data_type: varchar
+
+      - name: regiao
+        data_type: varhcar
+
+      - name: estado
+        data_type: varchar
+
+      - name: tipo_area
+        data_type: varchar
+
+      - name: ano
+        data_type: integer
+
+      - name: mes
+        data_type: integer
+
+      - name: semana
+        data_type: integer
+
+      - name: dia_semana
+        data_type: integer
+
+      - name: mes_nome
+        data_type: varchar
+
+      - name: dia_semana_nome
+        data_type: varchar
+
+      - name: total_envolvidos
+        data_type: bigint
+
+      - name: total_mortos
+        data_type: bigint
+    
