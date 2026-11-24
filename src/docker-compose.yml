@@ -1,34 +1,101 @@
 services:
-  db:
+
+  rsi-db-core:
     image: postgres:16-alpine
-    container_name: rsi-db
+    container_name: db-core
     environment:
-      POSTGRES_DB: default
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rsi-core
+      POSTGRES_USER: admin-rsi-core
+      POSTGRES_PASSWORD: admin-rsi-core
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata-core:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d default"]
+      test: ["CMD-SHELL", "pg_isready -U admin-rsi-core -d rsi-core"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  db-ui:
-    image: dpage/pgadmin4
-    container_name: rsi-db-ui
+  rsi-db-analytics:
+    image: postgres:16-alpine
+    container_name: db-analytics
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      POSTGRES_DB: rsi-analytics
+      POSTGRES_USER: admin-rsi-analytics
+      POSTGRES_PASSWORD: admin-rsi-analytics
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-analytics:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin-rsi-analytics -d rsi-analytics"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rsi-db-metabase:
+    image: postgres:16-alpine
+    container_name: db-metabase
+    environment:
+      POSTGRES_DB: rsi-metabase
+      POSTGRES_USER: admin-rsi-metabase
+      POSTGRES_PASSWORD: admin-rsi-metabase
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata-metabase:/var/lib/postgresql/data
+      - ./data/metabase/backup:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin-rsi-metabase -d rsi-metabase"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rsi-app-metabase:
+    image: metabase/metabase:latest
+    container_name: app-metabase
+    ports:
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: rsi-metabase
+      MB_DB_USER: admin-rsi-metabase
+      MB_DB_PASS: admin-rsi-metabase
+      MB_DB_HOST: rsi-db-metabase
+      MB_DB_PORT: 5432
+    restart: unless-stopped
+    depends_on:
+      rsi-db-metabase:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  rsi-app-pgadmin:
+    image: dpage/pgadmin4
+    container_name: app-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: nexus@rsi.com
+      PGADMIN_DEFAULT_PASSWORD: nexusrsi
     ports:
       - "5050:80"
     restart: unless-stopped
     depends_on:
-      db:
+      rsi-db-core:
+        condition: service_healthy
+      rsi-db-analytics:
+        condition: service_healthy
+      rsi-db-metabase:
         condition: service_healthy
 
 volumes:
-  pgdata:
+  pgdata-core:
+  pgdata-analytics:
+  pgdata-metabase:

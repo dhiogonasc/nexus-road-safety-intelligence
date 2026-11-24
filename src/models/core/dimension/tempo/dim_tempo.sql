@@ -10,6 +10,7 @@ with
 staging as (
     select distinct data
     from {{ ref('stg_ocorrencias') }}
+    where data is not null
 ),
 
 extraction as (

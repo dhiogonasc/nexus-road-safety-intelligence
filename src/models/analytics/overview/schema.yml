@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: agg_categorizacao_espacial
+
+    config:
+      contract:
+        enforced: true 
+
+    columns:
+      - name: id
+        data_type: varchar
+        constraints:
+          - type: primary_key
+          - type: not_null
+        tests:
+          - unique
+          

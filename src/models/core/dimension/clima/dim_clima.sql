@@ -8,12 +8,7 @@
 with 
 
 staging as (
-    select distinct 
-        case
-            when condicao_metereologica in ('céu claro', 'ceu claro') then 'céu claro'
-            when condicao_metereologica in ('ignorado', 'ignorada') then 'ignorado'
-            else condicao_metereologica
-        end as condicao_metereologica
+    select distinct condicao_metereologica
     from {{ ref('stg_ocorrencias') }}
 ),
 

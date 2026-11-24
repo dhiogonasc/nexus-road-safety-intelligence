@@ -12,17 +12,7 @@ malha_geografica as (
 ),
 
 staging as (
-    select distinct 
-        uf, 
-        case
-            when br = 'não informado' then 'não informado'
-            else 'br-' || lpad(regexp_replace(br, '[^\d]', '', 'g'), 3, '0')
-        end as br,
-        case 
-            when tipo_area in ('não', 'rural') then 'rural'
-            when tipo_area in ('sim', 'urbano') then 'urbano'
-            else 'não informado'
-        end as tipo_area
+    select distinct uf, br, tipo_area
     from {{ ref('stg_ocorrencias') }}
 ),
 

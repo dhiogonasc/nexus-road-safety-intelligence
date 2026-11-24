@@ -1,13 +1,32 @@
 src:
-  target: environment
+  target: dev
   outputs:
-    environment:
+    dev:
       type: duckdb
-      path: target/temp_{{ env_var('DB_NAME') }}.duckdb
-      threads: "{{ env_var('THREADS') | int }}"
+      path: target/stg.duckdb
+      threads: 4
       extensions:
         - postgres
       attach:
-        - path: "postgresql://{{ env_var('DB_USER') }}:{{ env_var('DB_PASSWORD') }}@{{ env_var('DB_HOST') }}:{{ env_var('DB_PORT') }}/{{ env_var('DB_NAME') }}"
-          alias: "pg_{{ env_var('DB_NAME') }}"
+        - path: "postgresql://admin-rsi-core:admin-rsi-core@localhost:5432/rsi-core"
+          alias: "pg_core"
+          type: postgres
+
+        - path: "postgresql://admin-rsi-analytics:admin-rsi-analytics@localhost:5433/rsi-analytics"
+          alias: "pg_analytics"
+          type: postgres
+
+    prod:
+      type: duckdb
+      path: target/stg.duckdb
+      threads: 8
+      extensions:
+        - postgres
+      attach:
+        - path: "postgresql://admin-rsi-core:admin-rsi-core@localhost:5432/rsi-core"
+          alias: "pg_core"
+          type: postgres
+
+        - path: "postgresql://{{ env_var('DB_USER') }}:{{ env_var('DB_PASSWORD') }}@{{ env_var('DB_HOST') }}:{{ env_var('DB_PORT') }}/{{ env_var('DB_NAME') }}?sslmode=require"
+          alias: "pg_analytics"
           type: postgres
