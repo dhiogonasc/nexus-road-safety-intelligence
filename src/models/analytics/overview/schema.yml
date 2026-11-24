@@ -26,7 +26,7 @@ models:
         data_type: varchar
 
       - name: regiao
-        data_type: varhcar
+        data_type: varchar
 
       - name: estado
         data_type: varchar
@@ -53,8 +53,8 @@ models:
         data_type: varchar
 
       - name: total_envolvidos
-        data_type: bigint
+        data_type: integer
 
       - name: total_mortos
-        data_type: bigint
+        data_type: integer
     

@@ -29,10 +29,6 @@ aggregation as (
         tempo.dia_semana,
         tempo.dia_semana_nome,
         tempo.semana
-
-        
-        staging.total_envolvidos,
-        staging.total_mortos
     from staging
 
     join {{ ref('dim_categoria') }} as categoria
@@ -53,6 +49,6 @@ select * from aggregation
 {% if is_incremental() %}
     where not exists (
         select 1 from {{ this }} as this
-        where this.id = id
+        where this.id = aggregation.id
     )
 {% endif %}

@@ -18,36 +18,35 @@ models:
 
       - name: sk_categoria
         data_type: varchar
-        constraints:
-          - type: foreign_key
-            to: ref('dim_categoria')
-            to_columns: [sk_categoria]
-          - type: not_null
+        tests:
+        - relationships:
+            arguments:
+              to: ref('dim_categoria')
+              field: sk_categoria
 
       - name: sk_clima
         data_type: varchar
-        constraints:
-          - type: foreign_key
-            to: ref('dim_clima')
-            to_columns: [sk_clima]
-          - type: not_null
+        tests:
+        - relationships:
+            arguments:
+              to: ref('dim_clima')
+              field: sk_clima
 
       - name: sk_local
         data_type: varchar
-        constraints:
-          - type: foreign_key
-            to: ref('dim_local')
-            to_columns: [sk_local]
-          - type: not_null
+        tests:
+        - relationships:
+            arguments:
+              to: ref('dim_local')
+              field: sk_local
 
       - name: sk_tempo
         data_type: varchar
-        constraints:
-          - type: foreign_key
-            to: ref('dim_tempo')
-            to_columns: [sk_tempo]
-          - type: not_null
-
+        tests:
+        - relationships:
+            arguments:
+              to: ref('dim_tempo')
+              field: sk_tempo
 
       - name: total_envolvidos
         data_type: integer

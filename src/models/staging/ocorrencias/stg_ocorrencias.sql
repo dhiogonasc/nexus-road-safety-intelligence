@@ -24,12 +24,13 @@ normalized as (
 
         coalesce(
             try_cast(try_strptime(data_inversa, '%Y-%m-%d') as date),
-            try_cast(try_strptime(data_inversa, '%d/%m/%Y') as date),
             try_cast(try_strptime(
-                regexp_replace(data_inversa, '/([0-9]{2})$', '/20\\1'), 
+                case 
+                    when data_inversa LIKE '%/16' then regexp_replace(data_inversa, '/16$', '/2016') 
+                    else data_inversa 
+                end, 
                 '%d/%m/%Y'
-            ) as date),
-            try_cast(try_strptime(data_inversa, '%d/%m/%y') as date)
+            ) as date)
         ) as data,
 
         try_cast(coalesce(pessoas, '0') as integer) as total_envolvidos,
@@ -70,6 +71,6 @@ staging as (
         partition by id_ocorrencia
         order by total_mortos desc, total_envolvidos desc
     ) = 1
-),
+)
 
 select * from staging
