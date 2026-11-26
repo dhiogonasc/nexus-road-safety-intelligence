@@ -10,11 +10,6 @@ with
 staging as (
     select distinct classificacao_acidente
     from {{ ref('stg_ocorrencias') }}
-    where 1=1
-        and (
-            classificacao_acidente <> 'não informado'
-            or classificacao_acidente <> 'ignorado'
-        )
 ),
 
 dimension as (

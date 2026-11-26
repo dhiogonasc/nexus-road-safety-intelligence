@@ -10,11 +10,6 @@ with
 staging as (
     select distinct data
     from {{ ref('stg_ocorrencias') }}
-    where 1=1
-        and (
-            data <> 'não informado'
-            or data is not null
-        )
 ),
 
 extraction as (

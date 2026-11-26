@@ -18,7 +18,7 @@ with staging as (
 
         total_envolvidos,
         total_mortos
-    from {{ ref('stg_ocorrencias') }} 
+    from {{ ref('stg_ocorrencias') }}
 ),
 
 fact as (

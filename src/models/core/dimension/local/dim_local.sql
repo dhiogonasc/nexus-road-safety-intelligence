@@ -14,10 +14,6 @@ malha_geografica as (
 staging as (
     select distinct uf, br, tipo_area
     from {{ ref('stg_ocorrencias') }}
-    where 1=1
-        and uf <> 'não informado'
-        and br <> 'não informado'
-        and tipo_area <> 'não informado'
 ),
 
 enriched as (

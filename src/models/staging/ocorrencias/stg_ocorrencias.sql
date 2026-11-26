@@ -65,7 +65,14 @@ staging as (
         total_envolvidos,
         total_mortos
     from normalized
-    where id_ocorrencia is not null
+    where 1=1
+        and classificacao_acidente not in ('ignorado', 'não informado')
+        and condicao_metereologica not in ('ignorado', 'não informado')
+        and br <> 'não informado'
+        and uf <> 'não informado'
+        and tipo_area <> 'não informado'
+        and id_ocorrencia is not null
+        and data is not null
 
     qualify row_number() over (
         partition by id_ocorrencia
