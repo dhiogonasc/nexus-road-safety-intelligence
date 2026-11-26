@@ -48,8 +48,7 @@ models:
                 values: [
                   'janeiro', 'fevereiro', 'março', 'abril', 'maio', 
                   'junho', 'julho', 'agosto', 'setembro', 'outubro',
-                  'novembro', 'dezembro', 
-                  'não informado'
+                  'novembro', 'dezembro'
                 ]
 
       - name: dia_semana_nome
@@ -60,7 +59,6 @@ models:
               arguments:
                 values: [
                   'segunda-feira', 'terça-feira', 'quarta-feira',
-                  'quinta-feira', 'sexta-feira', 'sábado', 'domingo',
-                  'não informado'
+                  'quinta-feira', 'sexta-feira', 'sábado', 'domingo'
                 ]
                 

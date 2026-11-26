@@ -30,8 +30,7 @@ models:
               arguments:
                 values: [
                   'centro-oeste', 'nordeste', 
-                  'norte', 'sudeste', 'sul', 
-                  'não informado'
+                  'norte', 'sudeste', 'sul'
                 ]
 
       - name: estado
@@ -46,8 +45,7 @@ models:
                   'mato grosso', 'mato grosso do sul', 'minas gerais', 'pará', 
                   'paraíba', 'paraná', 'pernambuco', 'piauí', 'rio de janeiro', 
                   'rio grande do norte', 'rio grande do sul', 'rondônia', 
-                  'roraima', 'santa catarina', 'são paulo', 'sergipe', 'tocantins',
-                  'não informado'
+                  'roraima', 'santa catarina', 'são paulo', 'sergipe', 'tocantins'
                 ]
 
       - name: tipo_area
@@ -57,6 +55,5 @@ models:
           - accepted_values:
               arguments:
                 values: [
-                  'rural', 'urbano', 
-                  'não informado'
+                  'rural', 'urbano'
                 ]

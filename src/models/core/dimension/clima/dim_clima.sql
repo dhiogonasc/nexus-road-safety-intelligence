@@ -10,6 +10,11 @@ with
 staging as (
     select distinct condicao_metereologica
     from {{ ref('stg_ocorrencias') }}
+    where 1=1
+        and (
+            condicao_metereologica <> 'não informado'
+            or condicao_metereologica <> 'ignorado'
+        )
 ),
 
 dimension as (
